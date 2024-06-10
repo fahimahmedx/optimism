@@ -220,5 +220,5 @@ func calculateTimeDiff(now, then uint64) uint64 {
 }
 
 func currentTimeProvicer() uint64 {
-	return uint64(time.Now().Unix())
+	return uint64(time.Now().UnixMilli())
 }

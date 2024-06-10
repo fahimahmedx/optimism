@@ -39,7 +39,7 @@ func randConfig() *Config {
 				GasLimit:    1234567,
 			},
 		},
-		BlockTime:              2,
+		BlockTime:              2000,
 		MaxSequencerDrift:      100,
 		SeqWindowSize:          2,
 		ChannelTimeout:         123,

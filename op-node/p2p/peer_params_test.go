@@ -51,8 +51,8 @@ func (testSuite *PeerParamsTestSuite) TestGetPeerScoreParams_None() {
 // TestLightPeerScoreParams validates the light peer score params.
 func (testSuite *PeerParamsTestSuite) TestGetPeerScoreParams_Light() {
 	cfg := chaincfg.Sepolia
-	cfg.BlockTime = 1
-	slot := time.Duration(cfg.BlockTime) * time.Second
+	cfg.BlockTime = 1000
+	slot := time.Duration(cfg.BlockTime) * time.Millisecond
 	epoch := 6 * slot
 	oneHundredEpochs := 100 * epoch
 

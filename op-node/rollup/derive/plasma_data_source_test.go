@@ -85,7 +85,7 @@ func TestPlasmaDataSource(t *testing.T) {
 			L2:     refA0.ID(),
 			L2Time: refA0.Time,
 		},
-		BlockTime:         1,
+		BlockTime:         1000,
 		SeqWindowSize:     20,
 		BatchInboxAddress: batcherInbox,
 		PlasmaConfig: &rollup.PlasmaConfig{
@@ -328,7 +328,7 @@ func TestPlasmaDataSourceStall(t *testing.T) {
 			L2:     refA0.ID(),
 			L2Time: refA0.Time,
 		},
-		BlockTime:         1,
+		BlockTime:         1000,
 		SeqWindowSize:     20,
 		BatchInboxAddress: batcherInbox,
 		PlasmaConfig: &rollup.PlasmaConfig{
@@ -447,7 +447,7 @@ func TestPlasmaDataSourceInvalidData(t *testing.T) {
 			L2:     refA0.ID(),
 			L2Time: refA0.Time,
 		},
-		BlockTime:         1,
+		BlockTime:         1000,
 		SeqWindowSize:     20,
 		BatchInboxAddress: batcherInbox,
 		PlasmaConfig: &rollup.PlasmaConfig{

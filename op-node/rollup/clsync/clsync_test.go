@@ -88,7 +88,7 @@ func TestCLSync(t *testing.T) {
 				GasLimit:    20_000_000,
 			},
 		},
-		BlockTime:     1,
+		BlockTime:     1000,
 		SeqWindowSize: 2,
 	}
 

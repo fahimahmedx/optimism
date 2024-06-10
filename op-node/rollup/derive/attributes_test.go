@@ -22,7 +22,7 @@ import (
 func TestPreparePayloadAttributes(t *testing.T) {
 	// test sysCfg, only init the necessary fields
 	cfg := &rollup.Config{
-		BlockTime:              2,
+		BlockTime:              2000,
 		L1ChainID:              big.NewInt(101),
 		L2ChainID:              big.NewInt(102),
 		DepositContractAddress: common.Address{0xbb},

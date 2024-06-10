@@ -77,7 +77,7 @@ func setupSyncTestData(length uint64) (*rollup.Config, *syncTestData) {
 			L2:     eth.BlockID{Hash: common.Hash{0xbb}},
 			L2Time: 9000,
 		},
-		BlockTime: 2,
+		BlockTime: 2000,
 		L2ChainID: big.NewInt(1234),
 	}
 
