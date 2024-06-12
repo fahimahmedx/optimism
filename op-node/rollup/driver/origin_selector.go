@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/log"
@@ -50,7 +51,7 @@ func (los *L1OriginSelector) FindL1Origin(ctx context.Context, l2Head eth.L2Bloc
 
 	// If we are past the sequencer depth, we may want to advance the origin, but need to still
 	// check the time of the next origin.
-	pastSeqDrift := l2Head.Time+los.cfg.BlockTime/1000 > currentOrigin.Time+msd
+	pastSeqDrift := l2Head.Time*uint64(time.Second)+los.cfg.BlockTime*uint64(time.Millisecond) > (currentOrigin.Time+msd)*uint64(time.Second)
 	if pastSeqDrift {
 		log.Warn("Next L2 block time is past the sequencer drift + current origin time")
 	}
@@ -76,7 +77,7 @@ func (los *L1OriginSelector) FindL1Origin(ctx context.Context, l2Head eth.L2Bloc
 	// could decide to continue to build on top of the previous origin until the Sequencer runs out
 	// of slack. For simplicity, we implement our Sequencer to always start building on the latest
 	// L1 block when we can.
-	if l2Head.Time+los.cfg.BlockTime/1000 >= nextOrigin.Time {
+	if l2Head.Time*uint64(time.Second)+los.cfg.BlockTime*uint64(time.Millisecond) >= nextOrigin.Time*uint64(time.Second) {
 		return nextOrigin, nil
 	}
 

@@ -408,7 +408,7 @@ func TestMixedWithdrawalValidity(t *testing.T) {
 			// Create our system configuration, funding all accounts we created for L1/L2, and start it
 			cfg := DefaultSystemConfig(t)
 			cfg.Nodes["sequencer"].SafeDBPath = t.TempDir()
-			cfg.DeployConfig.L2BlockTime = 2
+			cfg.DeployConfig.L2BlockTime = 2000
 			require.LessOrEqual(t, cfg.DeployConfig.FinalizationPeriodSeconds, uint64(6))
 			require.Equal(t, cfg.DeployConfig.FundDevAccounts, true)
 			sys, err := cfg.Start(t)

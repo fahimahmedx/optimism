@@ -175,7 +175,7 @@ func TestBackupUnsafe(gt *testing.T) {
 	minTs := hexutil.Uint64(0)
 	// Activate Delta hardfork
 	dp.DeployConfig.L2GenesisDeltaTimeOffset = &minTs
-	dp.DeployConfig.L2BlockTime = 2
+	dp.DeployConfig.L2BlockTime = 2000
 	sd := e2eutils.Setup(t, dp, defaultAlloc)
 	log := testlog.Logger(t, log.LvlInfo)
 	_, dp, miner, sequencer, seqEng, verifier, _, batcher := setupReorgTestActors(t, dp, sd, log)
@@ -338,7 +338,7 @@ func TestBackupUnsafeReorgForkChoiceInputError(gt *testing.T) {
 	minTs := hexutil.Uint64(0)
 	// Activate Delta hardfork
 	dp.DeployConfig.L2GenesisDeltaTimeOffset = &minTs
-	dp.DeployConfig.L2BlockTime = 2
+	dp.DeployConfig.L2BlockTime = 2000
 	sd := e2eutils.Setup(t, dp, defaultAlloc)
 	log := testlog.Logger(t, log.LvlInfo)
 	_, dp, miner, sequencer, seqEng, verifier, _, batcher := setupReorgTestActors(t, dp, sd, log)
@@ -477,7 +477,7 @@ func TestBackupUnsafeReorgForkChoiceNotInputError(gt *testing.T) {
 	minTs := hexutil.Uint64(0)
 	// Activate Delta hardfork
 	dp.DeployConfig.L2GenesisDeltaTimeOffset = &minTs
-	dp.DeployConfig.L2BlockTime = 2
+	dp.DeployConfig.L2BlockTime = 2000
 	sd := e2eutils.Setup(t, dp, defaultAlloc)
 	log := testlog.Logger(t, log.LvlInfo)
 	_, dp, miner, sequencer, seqEng, verifier, _, batcher := setupReorgTestActors(t, dp, sd, log)
@@ -836,7 +836,7 @@ func TestInvalidPayloadInSpanBatch(gt *testing.T) {
 	minTs := hexutil.Uint64(0)
 	// Activate Delta hardfork
 	dp.DeployConfig.L2GenesisDeltaTimeOffset = &minTs
-	dp.DeployConfig.L2BlockTime = 2
+	dp.DeployConfig.L2BlockTime = 2000
 	sd := e2eutils.Setup(t, dp, defaultAlloc)
 	log := testlog.Logger(t, log.LevelInfo)
 	_, _, miner, sequencer, seqEng, verifier, _, batcher := setupReorgTestActors(t, dp, sd, log)
@@ -941,7 +941,7 @@ func TestSpanBatchAtomicity_Consolidation(gt *testing.T) {
 	minTs := hexutil.Uint64(0)
 	// Activate Delta hardfork
 	dp.DeployConfig.L2GenesisDeltaTimeOffset = &minTs
-	dp.DeployConfig.L2BlockTime = 2
+	dp.DeployConfig.L2BlockTime = 2000
 	sd := e2eutils.Setup(t, dp, defaultAlloc)
 	log := testlog.Logger(t, log.LevelInfo)
 	_, _, miner, sequencer, seqEng, verifier, _, batcher := setupReorgTestActors(t, dp, sd, log)
@@ -1000,7 +1000,7 @@ func TestSpanBatchAtomicity_ForceAdvance(gt *testing.T) {
 	minTs := hexutil.Uint64(0)
 	// Activate Delta hardfork
 	dp.DeployConfig.L2GenesisDeltaTimeOffset = &minTs
-	dp.DeployConfig.L2BlockTime = 2
+	dp.DeployConfig.L2BlockTime = 2000
 	sd := e2eutils.Setup(t, dp, defaultAlloc)
 	log := testlog.Logger(t, log.LevelInfo)
 	_, _, miner, sequencer, _, verifier, _, batcher := setupReorgTestActors(t, dp, sd, log)

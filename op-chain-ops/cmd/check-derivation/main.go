@@ -309,7 +309,7 @@ func confirmTransaction(ctx context.Context, ethClient *ethclient.Client, l2Bloc
 			log.Info("Waiting for transaction receipt", "txHash", txHash.String())
 			retryCount++
 			// wait at least l2 block time
-			time.Sleep(time.Duration(l2BlockTime) * time.Second)
+			time.Sleep(time.Duration(l2BlockTime) * time.Millisecond)
 			continue
 		}
 		block := eth.BlockID{
@@ -343,7 +343,7 @@ func checkConsolidation(cliCtx *cli.Context) error {
 		return fmt.Errorf("tx count %d is too low. requires minimum 4 txs to test all tx types", txCount)
 	}
 	l2ChainID := new(big.Int).SetUint64(cliCtx.Uint64("l2-chain-id"))
-	l2BlockTime := uint64(2)
+	l2BlockTime := uint64(2000)
 	rollupCfg, err := rollup.LoadOPStackRollupConfig(l2ChainID.Uint64())
 	if err == nil {
 		l2BlockTime = rollupCfg.BlockTime

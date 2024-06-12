@@ -143,7 +143,7 @@ func init() {
 	DeployConfig.FundDevAccounts = true
 	// Speed up the in memory tests
 	DeployConfig.L1BlockTime = 2
-	DeployConfig.L2BlockTime = 1
+	DeployConfig.L2BlockTime = 1000
 
 	if L1Deployments != nil {
 		DeployConfig.SetDeployments(L1Deployments)
