@@ -278,20 +278,20 @@ func TestSequencerChaosMonkey(t *testing.T) {
 			Time:       l1Times[l2Head.L1Origin],
 		}
 		// randomly make a L1 origin appear, if we can even select it
-		nextL2Time := l2Head.Time + cfg.BlockTime/1000
-		if nextL2Time <= origin.Time {
+		nextL2Time := time.Duration(l2Head.Time)*time.Second + time.Duration(cfg.BlockTime)*time.Millisecond
+		if nextL2Time <= time.Duration(origin.Time)*time.Second {
 			return origin, nil
 		}
-		maxTimeIncrement := nextL2Time - origin.Time
-		if maxTimeIncrement > maxL1BlockTimeGap {
-			maxTimeIncrement = maxL1BlockTimeGap
+		maxTimeIncrement := nextL2Time - time.Duration(origin.Time)*time.Second
+		if maxTimeIncrement > time.Duration(maxL1BlockTimeGap)*time.Second {
+			maxTimeIncrement = time.Duration(maxL1BlockTimeGap) * time.Second
 		}
 		if rng.Intn(10) == 0 {
 			nextOrigin := eth.L1BlockRef{
 				Hash:       mockL1Hash(origin.Number + 1),
 				Number:     origin.Number + 1,
 				ParentHash: origin.Hash,
-				Time:       origin.Time + 1 + uint64(rng.Int63n(int64(maxTimeIncrement))),
+				Time:       origin.Time + 1 + uint64(rng.Int63n(int64(maxTimeIncrement.Seconds()))),
 			}
 			l1Times[nextOrigin.ID()] = nextOrigin.Time
 			return nextOrigin, nil
@@ -371,7 +371,7 @@ func TestSequencerChaosMonkey(t *testing.T) {
 	l2Head := engControl.UnsafeL2Head()
 	t.Logf("avg build time: %s, clock timestamp: %d, L2 head time: %d, L1 origin time: %d, avg txs per block: %f", engControl.avgBuildingTime(), clockFn().Unix(), l2Head.Time, l1Times[l2Head.L1Origin], engControl.avgTxsPerBlock())
 	require.Equal(t, engControl.totalBuiltBlocks, desiredBlocks, "persist through random errors and build the desired blocks")
-	require.Equal(t, l2Head.Time, cfg.Genesis.L2Time+uint64(desiredBlocks)*cfg.BlockTime/1000, "reached desired L2 block timestamp")
+	require.Equal(t, l2Head.Time*uint64(time.Second), cfg.Genesis.L2Time*uint64(time.Second)+uint64(desiredBlocks)*cfg.BlockTime*uint64(time.Millisecond), "reached desired L2 block timestamp")
 	require.GreaterOrEqual(t, l2Head.Time, l1Times[l2Head.L1Origin], "the L2 time >= the L1 time")
 	require.Less(t, l2Head.Time-l1Times[l2Head.L1Origin], uint64(100), "The L1 origin time is close to the L2 time")
 	require.Less(t, clockTime.Sub(time.Unix(int64(l2Head.Time), 0)).Abs(), 2*time.Second, "L2 time is accurate, within 2 seconds of wallclock")
