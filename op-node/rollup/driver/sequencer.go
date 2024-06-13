@@ -159,7 +159,7 @@ func (d *Sequencer) PlanNextSequencerAction() time.Duration {
 	}
 
 	blockTime := time.Duration(d.rollupCfg.BlockTime) * time.Millisecond
-	payloadTime := time.Unix(int64(head.Time), 0).Add(time.Duration(d.rollupCfg.BlockTime) * time.Millisecond)
+	payloadTime := time.UnixMilli(int64(head.Time)).Add(blockTime)
 	remainingTime := payloadTime.Sub(now)
 
 	// If we started building a block already, and if that work is still consistent,

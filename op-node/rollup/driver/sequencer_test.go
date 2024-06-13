@@ -255,12 +255,13 @@ func TestSequencerChaosMonkey(t *testing.T) {
 
 		testGasLimit := eth.Uint64Quantity(10_000_000)
 		return &eth.PayloadAttributes{
-			Timestamp:             eth.Uint64Quantity(l2Parent.Time + cfg.BlockTime/1000),
+			Timestamp:             eth.Uint64Quantity((l2Parent.Time + cfg.BlockTime) / 1000),
 			PrevRandao:            eth.Bytes32{},
 			SuggestedFeeRecipient: common.Address{},
 			Transactions:          []eth.Data{infoDep},
 			NoTxPool:              false,
 			GasLimit:              &testGasLimit,
+			Milliseconds:          eth.Uint64Quantity((l2Parent.Time + cfg.BlockTime) % 1000),
 		}, nil
 	})
 
@@ -278,11 +279,11 @@ func TestSequencerChaosMonkey(t *testing.T) {
 			Time:       l1Times[l2Head.L1Origin],
 		}
 		// randomly make a L1 origin appear, if we can even select it
-		nextL2Time := time.Duration(l2Head.Time)*time.Second + time.Duration(cfg.BlockTime)*time.Millisecond
-		if nextL2Time <= time.Duration(origin.Time)*time.Second {
+		nextL2Time := time.Duration(l2Head.Time+cfg.BlockTime) * time.Millisecond
+		if nextL2Time <= time.Duration(origin.Time)*time.Millisecond {
 			return origin, nil
 		}
-		maxTimeIncrement := nextL2Time - time.Duration(origin.Time)*time.Second
+		maxTimeIncrement := nextL2Time - time.Duration(origin.Time)*time.Millisecond
 		if maxTimeIncrement > time.Duration(maxL1BlockTimeGap)*time.Second {
 			maxTimeIncrement = time.Duration(maxL1BlockTimeGap) * time.Second
 		}
@@ -371,7 +372,7 @@ func TestSequencerChaosMonkey(t *testing.T) {
 	l2Head := engControl.UnsafeL2Head()
 	t.Logf("avg build time: %s, clock timestamp: %d, L2 head time: %d, L1 origin time: %d, avg txs per block: %f", engControl.avgBuildingTime(), clockFn().Unix(), l2Head.Time, l1Times[l2Head.L1Origin], engControl.avgTxsPerBlock())
 	require.Equal(t, engControl.totalBuiltBlocks, desiredBlocks, "persist through random errors and build the desired blocks")
-	require.Equal(t, l2Head.Time*uint64(time.Second), cfg.Genesis.L2Time*uint64(time.Second)+uint64(desiredBlocks)*cfg.BlockTime*uint64(time.Millisecond), "reached desired L2 block timestamp")
+	require.Equal(t, l2Head.Time*uint64(time.Millisecond), cfg.Genesis.L2Time*uint64(time.Millisecond)+uint64(desiredBlocks)*cfg.BlockTime*uint64(time.Millisecond), "reached desired L2 block timestamp")
 	require.GreaterOrEqual(t, l2Head.Time, l1Times[l2Head.L1Origin], "the L2 time >= the L1 time")
 	require.Less(t, l2Head.Time-l1Times[l2Head.L1Origin], uint64(100), "The L1 origin time is close to the L2 time")
 	require.Less(t, clockTime.Sub(time.Unix(int64(l2Head.Time), 0)).Abs(), 2*time.Second, "L2 time is accurate, within 2 seconds of wallclock")

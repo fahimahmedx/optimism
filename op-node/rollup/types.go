@@ -177,9 +177,9 @@ func (cfg *Config) ValidateL2Config(ctx context.Context, client L2Client, skipL2
 	return nil
 }
 
-// TimestampForBlock returns the timestamp for the given block number, rounded down to the nearest second.
+// TimestampForBlock returns the timestamp in milliseconds for the given block number.
 func (cfg *Config) TimestampForBlock(blockNumber uint64) uint64 {
-	return cfg.Genesis.L2Time + ((blockNumber-cfg.Genesis.L2.Number)*cfg.BlockTime)/1000
+	return cfg.Genesis.L2Time + (blockNumber-cfg.Genesis.L2.Number)*cfg.BlockTime
 }
 
 func (cfg *Config) TargetBlockNumber(timestamp uint64) (num uint64, err error) {

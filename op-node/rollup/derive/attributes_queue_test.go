@@ -70,12 +70,13 @@ func TestAttributesQueue(t *testing.T) {
 	l1InfoTx, err := L1InfoDepositBytes(&rollupCfg, expectedL1Cfg, safeHead.SequenceNumber+1, l1Info, 0)
 	require.NoError(t, err)
 	attrs := eth.PayloadAttributes{
-		Timestamp:             eth.Uint64Quantity(safeHead.Time + cfg.BlockTime),
+		Timestamp:             eth.Uint64Quantity((safeHead.Time + cfg.BlockTime) / 1000),
 		PrevRandao:            eth.Bytes32(l1Info.InfoMixDigest),
 		SuggestedFeeRecipient: predeploys.SequencerFeeVaultAddr,
 		Transactions:          []eth.Data{l1InfoTx, eth.Data("foobar"), eth.Data("example")},
 		NoTxPool:              true,
 		GasLimit:              (*eth.Uint64Quantity)(&expectedL1Cfg.GasLimit),
+		Milliseconds:          eth.Uint64Quantity((safeHead.Time + cfg.BlockTime) % 1000),
 	}
 	attrBuilder := NewFetchingAttributesBuilder(cfg, l1Fetcher, l2Fetcher)
 

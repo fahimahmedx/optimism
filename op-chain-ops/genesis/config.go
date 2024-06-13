@@ -67,7 +67,7 @@ type DeployConfig struct {
 	// finalized. This impacts the amount of time that withdrawals take to finalize and is
 	// generally set to 1 week.
 	FinalizationPeriodSeconds uint64 `json:"finalizationPeriodSeconds"`
-	// MaxSequencerDrift is the number of seconds after the L1 timestamp of the end of the
+	// MaxSequencerDrift is the number of milliseconds after the L1 timestamp of the end of the
 	// sequencing window that batches must be included, otherwise L2 blocks including
 	// deposits are force included.
 	MaxSequencerDrift uint64 `json:"maxSequencerDrift"`
