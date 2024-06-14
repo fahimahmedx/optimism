@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"math/big"
+	"time"
 
 	"github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum/go-ethereum/common"
@@ -69,7 +70,7 @@ func NewBlockProcessorFromHeader(provider BlockDataProvider, h *types.Header) (*
 		return nil, fmt.Errorf("invalid gasLimit: have %v, max %v", header.GasLimit, params.MaxGasLimit)
 	}
 	parentHeader := provider.GetHeaderByHash(header.ParentHash)
-	if header.Time <= parentHeader.Time {
+	if header.Time*uint64(time.Second)+header.Milliseconds*uint64(time.Millisecond) <= parentHeader.Time*uint64(time.Second)+parentHeader.Milliseconds*uint64(time.Millisecond) {
 		return nil, errors.New("invalid timestamp")
 	}
 	statedb, err := provider.StateAt(parentHeader.Root)
