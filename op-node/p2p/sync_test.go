@@ -98,10 +98,9 @@ func setupSyncTestData(length uint64) (*rollup.Config, *syncTestData) {
 		timestamp := cfg.Genesis.L2Time + i*cfg.BlockTime
 		payload := &eth.ExecutionPayloadEnvelope{
 			ExecutionPayload: &eth.ExecutionPayload{
-				ParentHash:   payloads[i-1].ExecutionPayload.BlockHash,
-				BlockNumber:  eth.Uint64Quantity(i),
-				Timestamp:    eth.Uint64Quantity(timestamp / 1000),
-				Milliseconds: eth.Uint64Quantity(timestamp % 1000),
+				ParentHash:  payloads[i-1].ExecutionPayload.BlockHash,
+				BlockNumber: eth.Uint64Quantity(i),
+				Timestamp:   eth.Uint64Quantity(timestamp / 1000),
 			},
 		}
 

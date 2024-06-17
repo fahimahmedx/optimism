@@ -70,7 +70,7 @@ func NewBlockProcessorFromHeader(provider BlockDataProvider, h *types.Header) (*
 		return nil, fmt.Errorf("invalid gasLimit: have %v, max %v", header.GasLimit, params.MaxGasLimit)
 	}
 	parentHeader := provider.GetHeaderByHash(header.ParentHash)
-	if header.Time*uint64(time.Second)+header.Milliseconds*uint64(time.Millisecond) <= parentHeader.Time*uint64(time.Second)+parentHeader.Milliseconds*uint64(time.Millisecond) {
+	if header.Time*uint64(time.Second) <= parentHeader.Time*uint64(time.Second) {
 		return nil, errors.New("invalid timestamp")
 	}
 	statedb, err := provider.StateAt(parentHeader.Root)

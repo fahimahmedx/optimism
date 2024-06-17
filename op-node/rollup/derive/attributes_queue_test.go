@@ -76,7 +76,6 @@ func TestAttributesQueue(t *testing.T) {
 		Transactions:          []eth.Data{l1InfoTx, eth.Data("foobar"), eth.Data("example")},
 		NoTxPool:              true,
 		GasLimit:              (*eth.Uint64Quantity)(&expectedL1Cfg.GasLimit),
-		Milliseconds:          eth.Uint64Quantity((safeHead.Time + cfg.BlockTime) % 1000),
 	}
 	attrBuilder := NewFetchingAttributesBuilder(cfg, l1Fetcher, l2Fetcher)
 

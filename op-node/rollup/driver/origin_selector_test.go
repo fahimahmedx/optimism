@@ -123,7 +123,7 @@ func TestOriginSelectorRespectsConfDepth(t *testing.T) {
 	}
 	l2Head := eth.L2BlockRef{
 		L1Origin: a.ID(),
-		Time:     27,
+		Time:     27 * 1000,
 	}
 
 	l1.ExpectL1BlockRefByHash(a.Hash, a, nil)

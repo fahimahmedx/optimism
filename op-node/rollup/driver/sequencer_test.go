@@ -262,7 +262,6 @@ func TestSequencerChaosMonkey(t *testing.T) {
 			Transactions:          []eth.Data{infoDep},
 			NoTxPool:              false,
 			GasLimit:              &testGasLimit,
-			Milliseconds:          eth.Uint64Quantity((l2Parent.Time + cfg.BlockTime) % 1000),
 		}, nil
 	})
 
