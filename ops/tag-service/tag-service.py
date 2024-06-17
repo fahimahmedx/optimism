@@ -3,7 +3,6 @@ import logging.config
 import os
 import re
 import subprocess
-import sys
 
 import click
 import semver
@@ -19,7 +18,6 @@ MIN_VERSIONS = {
     'op-program': '0.0.0',
     'op-dispute-mon': '0.0.0',
     'op-proposer': '0.10.14',
-    'proxyd': '3.16.0',
     'op-heartbeat': '0.1.0',
     'op-contracts': '1.0.0',
     'op-conductor': '0.0.0',
