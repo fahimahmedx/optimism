@@ -178,7 +178,7 @@ func TestSequencerChaosMonkey(t *testing.T) {
 		Genesis: rollup.Genesis{
 			L1:           mockL1ID(100000),
 			L2:           mockL2ID(200000),
-			L2Time:       l1Time + 300, // L2 may start with a relative old L1 origin and will have to catch it up
+			L2Time:       (l1Time + 300) * 1000, // L2 may start with a relative old L1 origin and will have to catch it up. converted l1 time into milliseconds
 			SystemConfig: eth.SystemConfig{},
 		},
 		BlockTime:         2000,
@@ -191,7 +191,7 @@ func TestSequencerChaosMonkey(t *testing.T) {
 		Hash:           cfg.Genesis.L2.Hash,
 		Number:         cfg.Genesis.L2.Number,
 		ParentHash:     mockL2Hash(cfg.Genesis.L2.Number - 1),
-		Time:           cfg.Genesis.L2Time,
+		Time:           cfg.Genesis.L2Time, // in milliseconds
 		L1Origin:       cfg.Genesis.L1,
 		SequenceNumber: 0,
 	}
@@ -204,7 +204,7 @@ func TestSequencerChaosMonkey(t *testing.T) {
 	}
 
 	// start wallclock at 5 minutes after the current L2 head. The sequencer has some catching up to do!
-	clockTime := time.Unix(int64(engControl.unsafe.Time)+5*60, 0)
+	clockTime := time.UnixMilli(int64(engControl.unsafe.Time) + 5*60*1000) // Note that unsafe.Time is in milliseconds
 	clockFn := func() time.Time {
 		return clockTime
 	}
@@ -223,7 +223,7 @@ func TestSequencerChaosMonkey(t *testing.T) {
 		return &eth.ExecutionPayload{
 			ParentHash:   onto.Hash,
 			BlockNumber:  eth.Uint64Quantity(onto.Number) + 1,
-			Timestamp:    attrs.Timestamp,
+			Timestamp:    attrs.Timestamp * 1000, // in milliseconds
 			BlockHash:    mockL2Hash(onto.Number),
 			Transactions: txs,
 		}
@@ -283,7 +283,7 @@ func TestSequencerChaosMonkey(t *testing.T) {
 		if nextL2Time <= time.Duration(origin.Time)*time.Millisecond {
 			return origin, nil
 		}
-		maxTimeIncrement := nextL2Time - time.Duration(origin.Time)*time.Millisecond
+		maxTimeIncrement := nextL2Time - time.Duration(origin.Time)*time.Second
 		if maxTimeIncrement > time.Duration(maxL1BlockTimeGap)*time.Second {
 			maxTimeIncrement = time.Duration(maxL1BlockTimeGap) * time.Second
 		}
@@ -374,8 +374,8 @@ func TestSequencerChaosMonkey(t *testing.T) {
 	require.Equal(t, engControl.totalBuiltBlocks, desiredBlocks, "persist through random errors and build the desired blocks")
 	require.Equal(t, l2Head.Time*uint64(time.Millisecond), cfg.Genesis.L2Time*uint64(time.Millisecond)+uint64(desiredBlocks)*cfg.BlockTime*uint64(time.Millisecond), "reached desired L2 block timestamp")
 	require.GreaterOrEqual(t, l2Head.Time, l1Times[l2Head.L1Origin], "the L2 time >= the L1 time")
-	require.Less(t, l2Head.Time-l1Times[l2Head.L1Origin], uint64(100), "The L1 origin time is close to the L2 time")
-	require.Less(t, clockTime.Sub(time.Unix(int64(l2Head.Time), 0)).Abs(), 2*time.Second, "L2 time is accurate, within 2 seconds of wallclock")
+	require.Less(t, l2Head.Time*uint64(time.Millisecond)-l1Times[l2Head.L1Origin]*uint64(time.Second), uint64(100)*uint64(time.Second), "The L1 origin time is close to the L2 time")
+	require.Less(t, clockTime.Sub(time.UnixMilli(int64(l2Head.Time))).Abs(), 2*time.Second, "L2 time is accurate, within 2 seconds of wallclock")
 	require.Greater(t, engControl.avgBuildingTime(), time.Second, "With 2 second block time and 1 second error backoff and healthy-on-average errors, building time should at least be a second")
 	require.Greater(t, engControl.avgTxsPerBlock(), 3.0, "We expect at least 1 system tx per block, but with a mocked 0-10 txs we expect an higher avg")
 }
