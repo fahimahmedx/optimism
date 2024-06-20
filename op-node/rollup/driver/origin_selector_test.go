@@ -42,7 +42,7 @@ func TestOriginSelectorAdvances(t *testing.T) {
 	}
 	l2Head := eth.L2BlockRef{
 		L1Origin: a.ID(),
-		Time:     24,
+		Time:     24 * 1000, //  in milliseconds
 	}
 
 	l1.ExpectL1BlockRefByHash(a.Hash, a, nil)
@@ -83,7 +83,7 @@ func TestOriginSelectorRespectsOriginTiming(t *testing.T) {
 	}
 	l2Head := eth.L2BlockRef{
 		L1Origin: a.ID(),
-		Time:     22,
+		Time:     22 * 1000, // in milliseconds
 	}
 
 	l1.ExpectL1BlockRefByHash(a.Hash, a, nil)
@@ -123,7 +123,7 @@ func TestOriginSelectorRespectsConfDepth(t *testing.T) {
 	}
 	l2Head := eth.L2BlockRef{
 		L1Origin: a.ID(),
-		Time:     27 * 1000,
+		Time:     27 * 1000, // in milliseconds
 	}
 
 	l1.ExpectL1BlockRefByHash(a.Hash, a, nil)
@@ -166,7 +166,7 @@ func TestOriginSelectorStrictConfDepth(t *testing.T) {
 	}
 	l2Head := eth.L2BlockRef{
 		L1Origin: a.ID(),
-		Time:     27,
+		Time:     27 * 1000, // in milliseconds
 	}
 
 	l1.ExpectL1BlockRefByHash(a.Hash, a, nil)
@@ -201,7 +201,7 @@ func TestOriginSelector_FjordSeqDrift(t *testing.T) {
 	}
 	l2Head := eth.L2BlockRef{
 		L1Origin: a.ID(),
-		Time:     27, // next L2 block time would be past pre-Fjord seq drift
+		Time:     27 * 1000, // next L2 block time would be past pre-Fjord seq drift
 	}
 
 	l1.ExpectL1BlockRefByHash(a.Hash, a, nil)
@@ -240,7 +240,7 @@ func TestOriginSelectorSeqDriftRespectsNextOriginTime(t *testing.T) {
 	}
 	l2Head := eth.L2BlockRef{
 		L1Origin: a.ID(),
-		Time:     27,
+		Time:     27 * 1000,
 	}
 
 	l1.ExpectL1BlockRefByHash(a.Hash, a, nil)
@@ -294,7 +294,7 @@ func TestOriginSelectorHandlesLateL1Blocks(t *testing.T) {
 	}
 	l2Head := eth.L2BlockRef{
 		L1Origin: a.ID(),
-		Time:     27,
+		Time:     27 * 1000,
 	}
 
 	// l2 head does not change, so we start at the same origin again and again until we meet the conf depth
