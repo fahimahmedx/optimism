@@ -118,7 +118,7 @@ func checkSingularBatch(cfg *rollup.Config, log log.Logger, l1Blocks []eth.L1Blo
 		return BatchDrop
 	}
 
-	if batch.Timestamp < batchOrigin.Time {
+	if batch.Timestamp < batchOrigin.Time*1000 { // because L1BlockRef's timestamp is in seconds, we convert batchOrigin.Time into milliseconds
 		log.Warn("batch timestamp is less than L1 origin timestamp", "l2_timestamp", batch.Timestamp, "l1_timestamp", batchOrigin.Time, "origin", batchOrigin.ID())
 		return BatchDrop
 	}
