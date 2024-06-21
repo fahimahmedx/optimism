@@ -126,7 +126,7 @@ func TestParseL1InfoDepositTxData(t *testing.T) {
 			RegolithTime: &zero,
 			EcotoneTime:  &zero,
 		}
-		depTx, err := L1InfoDeposit(&rollupCfg, randomL1Cfg(rng, info), randomSeqNr(rng), info, 1)
+		depTx, err := L1InfoDeposit(&rollupCfg, randomL1Cfg(rng, info), randomSeqNr(rng), info, 1*1000)
 		require.NoError(t, err)
 		require.False(t, depTx.IsSystemTransaction)
 		require.Equal(t, depTx.Gas, uint64(RegolithSystemTxGas))
@@ -141,7 +141,7 @@ func TestParseL1InfoDepositTxData(t *testing.T) {
 			EcotoneTime:  &zero,
 			BlockTime:    2000,
 		}
-		depTx, err := L1InfoDeposit(&rollupCfg, randomL1Cfg(rng, info), randomSeqNr(rng), info, 2)
+		depTx, err := L1InfoDeposit(&rollupCfg, randomL1Cfg(rng, info), randomSeqNr(rng), info, rollupCfg.BlockTime)
 		require.NoError(t, err)
 		require.False(t, depTx.IsSystemTransaction)
 		require.Equal(t, depTx.Gas, uint64(RegolithSystemTxGas))
