@@ -372,7 +372,7 @@ func BatchQueueInvalidInternalAdvance(t *testing.T, batchType int) {
 		} else {
 			require.Equal(t, expectedOutputBatches[i], b)
 			safeHead.Number += 1
-			safeHead.Time += 2
+			safeHead.Time += 2 * 1000
 			safeHead.Hash = mockHash(b.Timestamp, 2)
 			safeHead.L1Origin = b.Epoch()
 		}
@@ -396,10 +396,10 @@ func BatchQueueInvalidInternalAdvance(t *testing.T, batchType int) {
 	b, _, e = bq.NextBatch(context.Background(), safeHead)
 	require.Nil(t, e)
 	require.NotNil(t, b)
-	require.Equal(t, safeHead.Time+2, b.Timestamp)
+	require.Equal(t, safeHead.Time+2*1000, b.Timestamp)
 	require.Equal(t, rollup.Epoch(1), b.EpochNum)
 	safeHead.Number += 1
-	safeHead.Time += 2
+	safeHead.Time += 2 * 1000
 	safeHead.Hash = mockHash(b.Timestamp, 2)
 	safeHead.L1Origin = b.Epoch()
 	b, _, e = bq.NextBatch(context.Background(), safeHead)
@@ -412,9 +412,9 @@ func BatchQueueInvalidInternalAdvance(t *testing.T, batchType int) {
 	require.Nil(t, e)
 	require.NotNil(t, b)
 	require.Equal(t, rollup.Epoch(2), b.EpochNum)
-	require.Equal(t, safeHead.Time+2, b.Timestamp)
+	require.Equal(t, safeHead.Time+2*1000, b.Timestamp)
 	safeHead.Number += 1
-	safeHead.Time += 2
+	safeHead.Time += 2 * 1000
 	safeHead.Hash = mockHash(b.Timestamp, 2)
 	safeHead.L1Origin = b.Epoch()
 	b, _, e = bq.NextBatch(context.Background(), safeHead)
