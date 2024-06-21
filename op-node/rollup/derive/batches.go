@@ -3,6 +3,7 @@ package derive
 import (
 	"bytes"
 	"context"
+	"time"
 
 	"github.com/ethereum-optimism/optimism/op-node/rollup"
 	"github.com/ethereum-optimism/optimism/op-service/eth"
@@ -125,7 +126,7 @@ func checkSingularBatch(cfg *rollup.Config, log log.Logger, l1Blocks []eth.L1Blo
 
 	spec := rollup.NewChainSpec(cfg)
 	// Check if we ran out of sequencer time drift
-	if max := batchOrigin.Time + spec.MaxSequencerDrift(batchOrigin.Time); batch.Timestamp > max {
+	if max := (batchOrigin.Time + spec.MaxSequencerDrift(batchOrigin.Time)) * uint64(time.Second); batch.Timestamp*uint64(time.Millisecond) > max {
 		if len(batch.Transactions) == 0 {
 			// If the sequencer is co-operating by producing an empty batch,
 			// then allow the batch if it was the right thing to do to maintain the L2 time >= L1 time invariant.
