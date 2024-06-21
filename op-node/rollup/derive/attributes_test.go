@@ -204,12 +204,12 @@ func TestPreparePayloadAttributes(t *testing.T) {
 			regolithTime uint64
 			regolith     bool
 		}{
-			{"exactly", 900, 1000 - cfg.BlockTime, 1000, true},
-			{"almost", 900, 1000 - cfg.BlockTime - 1, 1000, false},
-			{"inactive", 700, 700, 1000, false},
-			{"l1 time before regolith", 1000, 1001, 1001, true},
-			{"l1 time way before regolith", 1000, 2000, 2000, true},
-			{"l1 time before regoltih and l2 after", 1000, 3000, 2000, true},
+			{"exactly", 900, 1000*1000 - cfg.BlockTime, 1000 * 1000, true},
+			{"almost", 900, 1000*1000 - cfg.BlockTime - 1*1000, 1000 * 1000, false},
+			{"inactive", 700, 700 * 1000, 1000 * 1000, false},
+			{"l1 time before regolith", 1000, 1001 * 1000, 1001 * 1000, true},
+			{"l1 time way before regolith", 1000, 2000 * 1000, 2000 * 1000, true},
+			{"l1 time before regoltih and l2 after", 1000, 3000 * 1000, 2000 * 1000, true},
 		}
 		for _, tc := range testCases {
 			t.Run(tc.name, func(t *testing.T) {
