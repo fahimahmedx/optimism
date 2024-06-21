@@ -545,16 +545,16 @@ func BatchQueueAdvancedEpoch(t *testing.T, batchType int) {
 	l1 := L1Chain([]uint64{0, 6, 12, 18, 24}) // L1 block time: 6s
 	chainId := big.NewInt(1234)
 	safeHead := eth.L2BlockRef{
-		Hash:           mockHash(4, 2),
+		Hash:           mockHash(4*1000, 2),
 		Number:         0,
 		ParentHash:     common.Hash{},
-		Time:           4,
+		Time:           4 * 1000,
 		L1Origin:       l1[0].ID(),
 		SequenceNumber: 0,
 	}
 	cfg := &rollup.Config{
 		Genesis: rollup.Genesis{
-			L2Time: 10,
+			L2Time: 10 * 1000,
 		},
 		BlockTime:         2000,
 		MaxSequencerDrift: 600,
@@ -566,15 +566,15 @@ func BatchQueueAdvancedEpoch(t *testing.T, batchType int) {
 	// expected output of BatchQueue.NextBatch()
 	expectedOutputBatches := []*SingularBatch{
 		// 3 L2 blocks per L1 block
-		b(cfg.L2ChainID, 6, l1[1]),
-		b(cfg.L2ChainID, 8, l1[1]),
-		b(cfg.L2ChainID, 10, l1[1]),
-		b(cfg.L2ChainID, 12, l1[2]),
-		b(cfg.L2ChainID, 14, l1[2]),
-		b(cfg.L2ChainID, 16, l1[2]),
-		b(cfg.L2ChainID, 18, l1[3]),
-		b(cfg.L2ChainID, 20, l1[3]),
-		b(cfg.L2ChainID, 22, l1[3]),
+		b(cfg.L2ChainID, 6*1000, l1[1]),
+		b(cfg.L2ChainID, 8*1000, l1[1]),
+		b(cfg.L2ChainID, 10*1000, l1[1]),
+		b(cfg.L2ChainID, 12*1000, l1[2]),
+		b(cfg.L2ChainID, 14*1000, l1[2]),
+		b(cfg.L2ChainID, 16*1000, l1[2]),
+		b(cfg.L2ChainID, 18*1000, l1[3]),
+		b(cfg.L2ChainID, 20*1000, l1[3]),
+		b(cfg.L2ChainID, 22*1000, l1[3]),
 		nil,
 	}
 	// expected error of BatchQueue.NextBatch()
@@ -632,16 +632,16 @@ func BatchQueueShuffle(t *testing.T, batchType int) {
 	l1 := L1Chain([]uint64{0, 6, 12, 18, 24}) // L1 block time: 6s
 	chainId := big.NewInt(1234)
 	safeHead := eth.L2BlockRef{
-		Hash:           mockHash(4, 2),
+		Hash:           mockHash(4*1000, 2),
 		Number:         0,
 		ParentHash:     common.Hash{},
-		Time:           4,
+		Time:           4 * 1000,
 		L1Origin:       l1[0].ID(),
 		SequenceNumber: 0,
 	}
 	cfg := &rollup.Config{
 		Genesis: rollup.Genesis{
-			L2Time: 10,
+			L2Time: 10 * 1000,
 		},
 		BlockTime:         2000,
 		MaxSequencerDrift: 600,
@@ -653,15 +653,15 @@ func BatchQueueShuffle(t *testing.T, batchType int) {
 	// expected output of BatchQueue.NextBatch()
 	expectedOutputBatches := []*SingularBatch{
 		// 3 L2 blocks per L1 block
-		b(cfg.L2ChainID, 6, l1[1]),
-		b(cfg.L2ChainID, 8, l1[1]),
-		b(cfg.L2ChainID, 10, l1[1]),
-		b(cfg.L2ChainID, 12, l1[2]),
-		b(cfg.L2ChainID, 14, l1[2]),
-		b(cfg.L2ChainID, 16, l1[2]),
-		b(cfg.L2ChainID, 18, l1[3]),
-		b(cfg.L2ChainID, 20, l1[3]),
-		b(cfg.L2ChainID, 22, l1[3]),
+		b(cfg.L2ChainID, 6*1000, l1[1]),
+		b(cfg.L2ChainID, 8*1000, l1[1]),
+		b(cfg.L2ChainID, 10*1000, l1[1]),
+		b(cfg.L2ChainID, 12*1000, l1[2]),
+		b(cfg.L2ChainID, 14*1000, l1[2]),
+		b(cfg.L2ChainID, 16*1000, l1[2]),
+		b(cfg.L2ChainID, 18*1000, l1[3]),
+		b(cfg.L2ChainID, 20*1000, l1[3]),
+		b(cfg.L2ChainID, 22*1000, l1[3]),
 	}
 	// expected error of BatchQueue.NextBatch()
 	expectedOutputErrors := []error{nil, nil, nil, nil, nil, nil, nil, nil, nil, io.EOF}
@@ -730,16 +730,16 @@ func TestBatchQueueOverlappingSpanBatch(t *testing.T) {
 	l1 := L1Chain([]uint64{10, 20, 30})
 	chainId := big.NewInt(1234)
 	safeHead := eth.L2BlockRef{
-		Hash:           mockHash(10, 2),
+		Hash:           mockHash(10*1000, 2),
 		Number:         0,
 		ParentHash:     common.Hash{},
-		Time:           10,
+		Time:           10 * 1000,
 		L1Origin:       l1[0].ID(),
 		SequenceNumber: 0,
 	}
 	cfg := &rollup.Config{
 		Genesis: rollup.Genesis{
-			L2Time: 10,
+			L2Time: 10 * 1000,
 		},
 		BlockTime:         2000,
 		MaxSequencerDrift: 600,
@@ -750,12 +750,12 @@ func TestBatchQueueOverlappingSpanBatch(t *testing.T) {
 
 	// expected output of BatchQueue.NextBatch()
 	expectedOutputBatches := []*SingularBatch{
-		b(cfg.L2ChainID, 12, l1[0]),
-		b(cfg.L2ChainID, 14, l1[0]),
-		b(cfg.L2ChainID, 16, l1[0]),
-		b(cfg.L2ChainID, 18, l1[0]),
-		b(cfg.L2ChainID, 20, l1[0]),
-		b(cfg.L2ChainID, 22, l1[0]),
+		b(cfg.L2ChainID, 12*1000, l1[0]),
+		b(cfg.L2ChainID, 14*1000, l1[0]),
+		b(cfg.L2ChainID, 16*1000, l1[0]),
+		b(cfg.L2ChainID, 18*1000, l1[0]),
+		b(cfg.L2ChainID, 20*1000, l1[0]),
+		b(cfg.L2ChainID, 22*1000, l1[0]),
 		nil,
 	}
 	// expected error of BatchQueue.NextBatch()
@@ -835,16 +835,16 @@ func TestBatchQueueComplex(t *testing.T) {
 	l1 := L1Chain([]uint64{0, 6, 12, 18, 24}) // L1 block time: 6s
 	chainId := big.NewInt(1234)
 	safeHead := eth.L2BlockRef{
-		Hash:           mockHash(4, 2),
+		Hash:           mockHash(4*1000, 2),
 		Number:         0,
 		ParentHash:     common.Hash{},
-		Time:           4,
+		Time:           4 * 1000,
 		L1Origin:       l1[0].ID(),
 		SequenceNumber: 0,
 	}
 	cfg := &rollup.Config{
 		Genesis: rollup.Genesis{
-			L2Time: 10,
+			L2Time: 10 * 1000,
 		},
 		BlockTime:         2000,
 		MaxSequencerDrift: 600,
@@ -856,15 +856,15 @@ func TestBatchQueueComplex(t *testing.T) {
 	// expected output of BatchQueue.NextBatch()
 	expectedOutputBatches := []*SingularBatch{
 		// 3 L2 blocks per L1 block
-		b(cfg.L2ChainID, 6, l1[1]),
-		b(cfg.L2ChainID, 8, l1[1]),
-		b(cfg.L2ChainID, 10, l1[1]),
-		b(cfg.L2ChainID, 12, l1[2]),
-		b(cfg.L2ChainID, 14, l1[2]),
-		b(cfg.L2ChainID, 16, l1[2]),
-		b(cfg.L2ChainID, 18, l1[3]),
-		b(cfg.L2ChainID, 20, l1[3]),
-		b(cfg.L2ChainID, 22, l1[3]),
+		b(cfg.L2ChainID, 6*1000, l1[1]),
+		b(cfg.L2ChainID, 8*1000, l1[1]),
+		b(cfg.L2ChainID, 10*1000, l1[1]),
+		b(cfg.L2ChainID, 12*1000, l1[2]),
+		b(cfg.L2ChainID, 14*1000, l1[2]),
+		b(cfg.L2ChainID, 16*1000, l1[2]),
+		b(cfg.L2ChainID, 18*1000, l1[3]),
+		b(cfg.L2ChainID, 20*1000, l1[3]),
+		b(cfg.L2ChainID, 22*1000, l1[3]),
 	}
 	// expected error of BatchQueue.NextBatch()
 	expectedOutputErrors := []error{nil, nil, nil, nil, nil, nil, nil, nil, nil, io.EOF}
@@ -962,7 +962,7 @@ func TestBatchQueueResetSpan(t *testing.T) {
 	}
 	cfg := &rollup.Config{
 		Genesis: rollup.Genesis{
-			L2Time: 10,
+			L2Time: 10 * 1000,
 		},
 		BlockTime:         2000,
 		MaxSequencerDrift: 600,
@@ -972,10 +972,10 @@ func TestBatchQueueResetSpan(t *testing.T) {
 	}
 
 	singularBatches := []*SingularBatch{
-		b(cfg.L2ChainID, 2, l1[0]),
-		b(cfg.L2ChainID, 4, l1[1]),
-		b(cfg.L2ChainID, 6, l1[1]),
-		b(cfg.L2ChainID, 8, l1[2]),
+		b(cfg.L2ChainID, 2*1000, l1[0]),
+		b(cfg.L2ChainID, 4*1000, l1[1]),
+		b(cfg.L2ChainID, 6*1000, l1[1]),
+		b(cfg.L2ChainID, 8*1000, l1[2]),
 	}
 
 	input := &fakeBatchQueueInput{
