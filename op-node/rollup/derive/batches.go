@@ -298,7 +298,7 @@ func checkSpanBatch(ctx context.Context, cfg *rollup.Config, log log.Logger, l1B
 
 		spec := rollup.NewChainSpec(cfg)
 		// Check if we ran out of sequencer time drift
-		if max := l1Origin.Time + spec.MaxSequencerDrift(l1Origin.Time); blockTimestamp > max {
+		if max := l1Origin.Time*uint64(time.Second) + spec.MaxSequencerDrift(l1Origin.Time)*uint64(time.Second); blockTimestamp*uint64(time.Millisecond) > max {
 			if len(batch.GetBlockTransactions(i)) == 0 {
 				// If the sequencer is co-operating by producing an empty batch,
 				// then allow the batch if it was the right thing to do to maintain the L2 time >= L1 time invariant.
