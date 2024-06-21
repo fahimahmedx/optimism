@@ -309,16 +309,16 @@ func BatchQueueInvalidInternalAdvance(t *testing.T, batchType int) {
 	l1 := L1Chain([]uint64{10, 15, 20, 25, 30})
 	chainId := big.NewInt(1234)
 	safeHead := eth.L2BlockRef{
-		Hash:           mockHash(10, 2),
+		Hash:           mockHash(10*1000, 2),
 		Number:         0,
 		ParentHash:     common.Hash{},
-		Time:           10,
+		Time:           10 * 1000,
 		L1Origin:       l1[0].ID(),
 		SequenceNumber: 0,
 	}
 	cfg := &rollup.Config{
 		Genesis: rollup.Genesis{
-			L2Time: 10,
+			L2Time: 10 * 1000,
 		},
 		BlockTime:         2000,
 		MaxSequencerDrift: 600,
@@ -329,12 +329,12 @@ func BatchQueueInvalidInternalAdvance(t *testing.T, batchType int) {
 
 	// expected output of BatchQueue.NextBatch()
 	expectedOutputBatches := []*SingularBatch{
-		b(cfg.L2ChainID, 12, l1[0]),
-		b(cfg.L2ChainID, 14, l1[0]),
-		b(cfg.L2ChainID, 16, l1[0]),
-		b(cfg.L2ChainID, 18, l1[0]),
-		b(cfg.L2ChainID, 20, l1[0]),
-		b(cfg.L2ChainID, 22, l1[0]),
+		b(cfg.L2ChainID, 12*1000, l1[0]),
+		b(cfg.L2ChainID, 14*1000, l1[0]),
+		b(cfg.L2ChainID, 16*1000, l1[0]),
+		b(cfg.L2ChainID, 18*1000, l1[0]),
+		b(cfg.L2ChainID, 20*1000, l1[0]),
+		b(cfg.L2ChainID, 22*1000, l1[0]),
 		nil,
 	}
 	// expected error of BatchQueue.NextBatch()
