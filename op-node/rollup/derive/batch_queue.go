@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"time"
 
 	"github.com/ethereum/go-ethereum/log"
 
@@ -321,7 +322,7 @@ batchLoop:
 	// Fill with empty L2 blocks of the same epoch until we meet the time of the next L1 origin,
 	// to preserve that L2 time >= L1 time. If this is the first block of the epoch, always generate a
 	// batch to ensure that we at least have one batch per epoch.
-	if nextTimestamp < nextEpoch.Time || firstOfEpoch {
+	if nextTimestamp*uint64(time.Millisecond) < nextEpoch.Time*uint64(time.Second) || firstOfEpoch {
 		bq.log.Info("Generating next batch", "epoch", epoch, "timestamp", nextTimestamp)
 		return &SingularBatch{
 			ParentHash:   parent.Hash,
