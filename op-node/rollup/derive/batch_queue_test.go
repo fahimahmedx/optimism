@@ -170,16 +170,16 @@ func BatchQueueNewOrigin(t *testing.T, batchType int) {
 	log := testlog.Logger(t, log.LevelCrit)
 	l1 := L1Chain([]uint64{10, 15, 20, 25})
 	safeHead := eth.L2BlockRef{
-		Hash:           mockHash(10, 2),
+		Hash:           mockHash(10*1000, 2),
 		Number:         0,
 		ParentHash:     common.Hash{},
-		Time:           20,
+		Time:           20 * 1000,
 		L1Origin:       l1[2].ID(),
 		SequenceNumber: 0,
 	}
 	cfg := &rollup.Config{
 		Genesis: rollup.Genesis{
-			L2Time: 10,
+			L2Time: 10 * 1000,
 		},
 		BlockTime:         2000,
 		MaxSequencerDrift: 600,
