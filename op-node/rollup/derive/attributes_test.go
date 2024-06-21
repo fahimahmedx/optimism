@@ -120,7 +120,8 @@ func TestPreparePayloadAttributes(t *testing.T) {
 		attrs, err := attrBuilder.PreparePayloadAttributes(context.Background(), l2Parent, epoch)
 		require.NoError(t, err)
 		require.NotNil(t, attrs)
-		require.Equal(t, l2Parent.Time+cfg.BlockTime, uint64(attrs.Timestamp))
+		require.Equal(t, (l2Parent.Time+cfg.BlockTime)/1000, uint64(attrs.Timestamp))
+		// TODO: add test for attrs.Milliseconds field
 		require.Equal(t, eth.Bytes32(l1Info.InfoMixDigest), attrs.PrevRandao)
 		require.Equal(t, predeploys.SequencerFeeVaultAddr, attrs.SuggestedFeeRecipient)
 		require.Equal(t, 1, len(attrs.Transactions))
@@ -160,7 +161,8 @@ func TestPreparePayloadAttributes(t *testing.T) {
 		attrs, err := attrBuilder.PreparePayloadAttributes(context.Background(), l2Parent, epoch)
 		require.NoError(t, err)
 		require.NotNil(t, attrs)
-		require.Equal(t, l2Parent.Time+cfg.BlockTime, uint64(attrs.Timestamp))
+		require.Equal(t, (l2Parent.Time+cfg.BlockTime)/1000, uint64(attrs.Timestamp))
+		// TODO: add test for attrs.Milliseconds field
 		require.Equal(t, eth.Bytes32(l1Info.InfoMixDigest), attrs.PrevRandao)
 		require.Equal(t, predeploys.SequencerFeeVaultAddr, attrs.SuggestedFeeRecipient)
 		require.Equal(t, len(l2Txs), len(attrs.Transactions), "Expected txs to equal l1 info tx + user deposit txs")
@@ -188,7 +190,8 @@ func TestPreparePayloadAttributes(t *testing.T) {
 		attrs, err := attrBuilder.PreparePayloadAttributes(context.Background(), l2Parent, epoch)
 		require.NoError(t, err)
 		require.NotNil(t, attrs)
-		require.Equal(t, l2Parent.Time+cfg.BlockTime, uint64(attrs.Timestamp))
+		require.Equal(t, (l2Parent.Time+cfg.BlockTime)/1000, uint64(attrs.Timestamp))
+		// TODO: add test for attrs.Milliseconds field
 		require.Equal(t, eth.Bytes32(l1Info.InfoMixDigest), attrs.PrevRandao)
 		require.Equal(t, predeploys.SequencerFeeVaultAddr, attrs.SuggestedFeeRecipient)
 		require.Equal(t, 1, len(attrs.Transactions))
