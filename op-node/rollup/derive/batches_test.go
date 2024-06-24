@@ -55,13 +55,13 @@ func multiMod[T any](mods ...func(T)) func(T) {
 	}
 }
 
-const defaultBlockTime = 2
+const defaultBlockTime = 2 * 1000 // in milliseconds
 
 func TestValidBatch(t *testing.T) {
 	defaultConf := func() *rollup.Config {
 		return &rollup.Config{
 			Genesis: rollup.Genesis{
-				L2Time: 31, // a genesis time that itself does not align to make it more interesting
+				L2Time: 31 * 1000, // a genesis time that itself does not align to make it more interesting
 			},
 			BlockTime:         defaultBlockTime,
 			SeqWindowSize:     4,
@@ -112,7 +112,7 @@ func TestValidBatch(t *testing.T) {
 		Hash:           testutils.RandomHash(rng),
 		Number:         100,
 		ParentHash:     testutils.RandomHash(rng),
-		Time:           l1A.Time,
+		Time:           l1A.Time * 1000,
 		L1Origin:       l1A.ID(),
 		SequenceNumber: 0,
 	}
@@ -193,7 +193,7 @@ func TestValidBatch(t *testing.T) {
 		Hash:           testutils.RandomHash(rng),
 		Number:         1000,
 		ParentHash:     testutils.RandomHash(rng),
-		Time:           10_000 + 24 + 6 - 1, // add one block, and you get ahead of next l1 block by more than the drift
+		Time:           (10_000 + 24 + 6 - 1) * 1000, // add one block, and you get ahead of next l1 block by more than the drift
 		L1Origin:       l1X.ID(),
 		SequenceNumber: 0,
 	}
@@ -227,7 +227,7 @@ func TestValidBatch(t *testing.T) {
 		Hash:       testutils.RandomHash(rng),
 		Number:     l1A.Number + 1,
 		ParentHash: l1A.Hash,
-		Time:       l2A4.Time + 1, // too late for l2A4 to adopt yet
+		Time:       l2A4.Time/1000 + 1, // too late for l2A4 to adopt yet
 	}
 
 	singularBatchTestCases := []ValidBatchTestCase{
@@ -257,7 +257,7 @@ func TestValidBatch(t *testing.T) {
 					ParentHash:   l2A1.ParentHash,
 					EpochNum:     rollup.Epoch(l2A1.L1Origin.Number),
 					EpochHash:    l2A1.L1Origin.Hash,
-					Timestamp:    l2A1.Time + 1, // 1 too high
+					Timestamp:    l2A1.Time + 1*1000, // 1 second too high
 					Transactions: nil,
 				},
 			},
@@ -289,7 +289,7 @@ func TestValidBatch(t *testing.T) {
 					ParentHash:   l2A1.ParentHash,
 					EpochNum:     rollup.Epoch(l2A1.L1Origin.Number),
 					EpochHash:    l2A1.L1Origin.Hash,
-					Timestamp:    l2A1.Time - 1, // block time is 2, so this is 1 too low
+					Timestamp:    l2A1.Time - 1*1000, // block time is 2 seconds, so this is 1 second too low
 					Transactions: nil,
 				},
 			},
@@ -627,7 +627,7 @@ func TestValidBatch(t *testing.T) {
 						ParentHash:   l2A1.ParentHash,
 						EpochNum:     rollup.Epoch(l2A1.L1Origin.Number),
 						EpochHash:    l2A1.L1Origin.Hash,
-						Timestamp:    l2A1.Time + 1, // 1 too high
+						Timestamp:    l2A1.Time + 1*1000, // 1 second too high
 						Transactions: nil,
 					},
 				}, uint64(0), big.NewInt(0)),
@@ -647,7 +647,7 @@ func TestValidBatch(t *testing.T) {
 						ParentHash:   l2A1.ParentHash,
 						EpochNum:     rollup.Epoch(l2A1.L1Origin.Number),
 						EpochHash:    l2A1.L1Origin.Hash,
-						Timestamp:    l2A1.Time - 1, // block time is 2, so this is 1 too low
+						Timestamp:    l2A1.Time - 1*1000, // block time is 2 seconds, so this is 1 second too low
 						Transactions: nil,
 					},
 				}, uint64(0), big.NewInt(0)),
@@ -1403,14 +1403,14 @@ func TestValidBatch(t *testing.T) {
 						ParentHash:   l2A0.Hash,
 						EpochNum:     rollup.Epoch(l2A1.L1Origin.Number),
 						EpochHash:    l2A1.L1Origin.Hash,
-						Timestamp:    l2A0.Time + 1,
+						Timestamp:    l2A0.Time + 1*1000,
 						Transactions: nil,
 					},
 					{
 						ParentHash:   l2A1.Hash,
 						EpochNum:     rollup.Epoch(l2A2.L1Origin.Number),
 						EpochHash:    l2A2.L1Origin.Hash,
-						Timestamp:    l2A1.Time + 1,
+						Timestamp:    l2A1.Time + 1*1000,
 						Transactions: nil,
 					},
 				}, uint64(0), big.NewInt(0)),
@@ -1430,7 +1430,7 @@ func TestValidBatch(t *testing.T) {
 						ParentHash:   l2A0.Hash,
 						EpochNum:     rollup.Epoch(l2A1.L1Origin.Number),
 						EpochHash:    l2A1.L1Origin.Hash,
-						Timestamp:    l2A0.Time - 1,
+						Timestamp:    l2A0.Time - 1*1000,
 						Transactions: nil,
 					},
 					{
