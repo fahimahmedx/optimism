@@ -100,7 +100,7 @@ func setupSyncTestData(length uint64) (*rollup.Config, *syncTestData) {
 			ExecutionPayload: &eth.ExecutionPayload{
 				ParentHash:  payloads[i-1].ExecutionPayload.BlockHash,
 				BlockNumber: eth.Uint64Quantity(i),
-				Timestamp:   eth.Uint64Quantity(timestamp / 1000),
+				Timestamp:   eth.Uint64Quantity(timestamp),
 			},
 		}
 
