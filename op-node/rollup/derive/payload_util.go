@@ -45,7 +45,7 @@ func PayloadToBlockRef(rollupCfg *rollup.Config, payload *eth.ExecutionPayload) 
 		Hash:           payload.BlockHash,
 		Number:         uint64(payload.BlockNumber),
 		ParentHash:     payload.ParentHash,
-		Time:           uint64(payload.Timestamp),
+		Time:           uint64(payload.Timestamp) * 1000,
 		L1Origin:       l1Origin,
 		SequenceNumber: sequenceNumber,
 	}, nil
