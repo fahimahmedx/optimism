@@ -1567,7 +1567,7 @@ func TestValidBatch(t *testing.T) {
 			ExecutionPayload: &eth.ExecutionPayload{
 				ParentHash:   l2Block.ParentHash,
 				BlockNumber:  hexutil.Uint64(l2Block.Number),
-				Timestamp:    hexutil.Uint64(l2Block.Time),
+				Timestamp:    hexutil.Uint64(l2Block.Time / 1000), // ExecutionPayload is in seconds
 				BlockHash:    l2Block.Hash,
 				Transactions: []hexutil.Bytes{txData},
 			},
@@ -1624,7 +1624,7 @@ func TestValidBatch(t *testing.T) {
 		ExecutionPayload: &eth.ExecutionPayload{
 			ParentHash:   l2B0.Hash,
 			BlockNumber:  hexutil.Uint64(l2B1.Number),
-			Timestamp:    hexutil.Uint64(l2B1.Time),
+			Timestamp:    hexutil.Uint64(l2B1.Time / 1000), // ExecutionPayload is in seconds
 			BlockHash:    l2B1.Hash,
 			Transactions: []hexutil.Bytes{txData, randTxData},
 		},
@@ -1670,7 +1670,7 @@ func TestValidBatch(t *testing.T) {
 		ExecutionPayload: &eth.ExecutionPayload{
 			ParentHash:  l2B0.Hash,
 			BlockNumber: hexutil.Uint64(l2B1.Number),
-			Timestamp:   hexutil.Uint64(l2B1.Time),
+			Timestamp:   hexutil.Uint64(l2B1.Time / 1000), // ExecutionPayload is in seconds
 			BlockHash:   l2B1.Hash,
 			// First TX is not a deposit TX. it will make error when extracting L2BlockRef from the payload
 			Transactions: []hexutil.Bytes{randTxData},

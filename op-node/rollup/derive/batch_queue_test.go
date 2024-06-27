@@ -104,7 +104,7 @@ func singularBatchToPayload(t *testing.T, batch *SingularBatch, blockNumber uint
 			BlockHash:    mockHash(batch.Timestamp, 2),
 			ParentHash:   batch.ParentHash,
 			BlockNumber:  hexutil.Uint64(blockNumber),
-			Timestamp:    hexutil.Uint64(batch.Timestamp),
+			Timestamp:    hexutil.Uint64(batch.Timestamp / 1000), // ExecutionPayload is in seconds
 			Transactions: txs,
 		},
 	}
