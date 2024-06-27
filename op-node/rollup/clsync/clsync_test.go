@@ -58,7 +58,7 @@ func TestCLSync(t *testing.T) {
 	aL1Info := &testutils.MockBlockInfo{
 		InfoParentHash:  refA.ParentHash,
 		InfoNum:         refA.Number,
-		InfoTime:        refA.Time,
+		InfoTime:        refA.Time, // seconds
 		InfoHash:        refA.Hash,
 		InfoBaseFee:     big.NewInt(1),
 		InfoBlobBaseFee: big.NewInt(1),
@@ -71,7 +71,7 @@ func TestCLSync(t *testing.T) {
 		Hash:           testutils.RandomHash(rng),
 		Number:         0,
 		ParentHash:     common.Hash{},
-		Time:           refA.Time,
+		Time:           refA.Time * 1000, // scale into milliseconds
 		L1Origin:       refA.ID(),
 		SequenceNumber: 0,
 	}
@@ -125,7 +125,7 @@ func TestCLSync(t *testing.T) {
 		BlockNumber:   eth.Uint64Quantity(refA1.Number),
 		GasLimit:      gasLimit,
 		GasUsed:       0,
-		Timestamp:     eth.Uint64Quantity(refA1.Time),
+		Timestamp:     eth.Uint64Quantity(refA1.Time / 1000), // payloads have their timestamp in seconds
 		ExtraData:     nil,
 		BaseFeePerGas: eth.Uint256Quantity(*uint256.NewInt(7)),
 		BlockHash:     refA1.Hash,
@@ -143,7 +143,7 @@ func TestCLSync(t *testing.T) {
 		BlockNumber:   eth.Uint64Quantity(refA2.Number),
 		GasLimit:      gasLimit,
 		GasUsed:       0,
-		Timestamp:     eth.Uint64Quantity(refA2.Time),
+		Timestamp:     eth.Uint64Quantity(refA2.Time / 1000), // payloads have their timestamp in seconds
 		ExtraData:     nil,
 		BaseFeePerGas: eth.Uint256Quantity(*uint256.NewInt(7)),
 		BlockHash:     refA2.Hash,
