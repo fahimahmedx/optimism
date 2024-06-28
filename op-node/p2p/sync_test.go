@@ -65,7 +65,8 @@ func (s *syncTestData) getBlockRef(i uint64) eth.L2BlockRef {
 		Hash:       s.payloads[i].ExecutionPayload.BlockHash,
 		Number:     uint64(s.payloads[i].ExecutionPayload.BlockNumber),
 		ParentHash: s.payloads[i].ExecutionPayload.ParentHash,
-		Time:       uint64(s.payloads[i].ExecutionPayload.Timestamp),
+		Time:       uint64(s.payloads[i].ExecutionPayload.Timestamp) * 1000, // ExecutionPayload is in seconds, L2BlockRef is in ms
+		// TODO: once ExecutionPayload has a Milliseconds field, add it to the Time field above.
 	}
 }
 
@@ -75,9 +76,9 @@ func setupSyncTestData(length uint64) (*rollup.Config, *syncTestData) {
 		Genesis: rollup.Genesis{
 			L1:     eth.BlockID{Hash: common.Hash{0xaa}},
 			L2:     eth.BlockID{Hash: common.Hash{0xbb}},
-			L2Time: 9000,
+			L2Time: 9000 * 1000,
 		},
-		BlockTime: 2000,
+		BlockTime: 2 * 1000,
 		L2ChainID: big.NewInt(1234),
 	}
 
@@ -89,7 +90,7 @@ func setupSyncTestData(length uint64) (*rollup.Config, *syncTestData) {
 	payloads := make(map[uint64]*eth.ExecutionPayloadEnvelope)
 	payloads[0] = &eth.ExecutionPayloadEnvelope{
 		ExecutionPayload: &eth.ExecutionPayload{
-			Timestamp: eth.Uint64Quantity(cfg.Genesis.L2Time),
+			Timestamp: eth.Uint64Quantity(cfg.Genesis.L2Time / 1000),
 		},
 	}
 
@@ -100,7 +101,7 @@ func setupSyncTestData(length uint64) (*rollup.Config, *syncTestData) {
 			ExecutionPayload: &eth.ExecutionPayload{
 				ParentHash:  payloads[i-1].ExecutionPayload.BlockHash,
 				BlockNumber: eth.Uint64Quantity(i),
-				Timestamp:   eth.Uint64Quantity(timestamp),
+				Timestamp:   eth.Uint64Quantity(timestamp / 1000),
 			},
 		}
 
@@ -124,7 +125,7 @@ func setupSyncTestData(length uint64) (*rollup.Config, *syncTestData) {
 }
 
 func TestSinglePeerSync(t *testing.T) {
-	t.Parallel() // Takes a while, but can run in parallel
+	// t.Parallel() // Takes a while, but can run in parallel
 
 	log := testlog.Logger(t, log.LevelError)
 
