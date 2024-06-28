@@ -97,13 +97,13 @@ func (d *Sequencer) StartBuildingBlock(ctx context.Context) error {
 	attrs.NoTxPool = uint64(attrs.Timestamp) > l1Origin.Time+d.spec.MaxSequencerDrift(l1Origin.Time)
 
 	// For the Ecotone activation block we shouldn't include any sequencer transactions.
-	if d.rollupCfg.IsEcotoneActivationBlock(uint64(attrs.Timestamp)) {
+	if d.rollupCfg.IsEcotoneActivationBlock(uint64(attrs.Timestamp) * 1000) {
 		attrs.NoTxPool = true
 		d.log.Info("Sequencing Ecotone upgrade block")
 	}
 
 	// For the Fjord activation block we shouldn't include any sequencer transactions.
-	if d.rollupCfg.IsFjordActivationBlock(uint64(attrs.Timestamp)) {
+	if d.rollupCfg.IsFjordActivationBlock(uint64(attrs.Timestamp) * 1000) {
 		attrs.NoTxPool = true
 		d.log.Info("Sequencing Fjord upgrade block")
 	}

@@ -223,7 +223,7 @@ func TestSequencerChaosMonkey(t *testing.T) {
 		return &eth.ExecutionPayload{
 			ParentHash:   onto.Hash,
 			BlockNumber:  eth.Uint64Quantity(onto.Number) + 1,
-			Timestamp:    attrs.Timestamp, // in milliseconds
+			Timestamp:    attrs.Timestamp,
 			BlockHash:    mockL2Hash(onto.Number),
 			Transactions: txs,
 		}
