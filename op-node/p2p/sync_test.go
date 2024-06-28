@@ -125,7 +125,7 @@ func setupSyncTestData(length uint64) (*rollup.Config, *syncTestData) {
 }
 
 func TestSinglePeerSync(t *testing.T) {
-	// t.Parallel() // Takes a while, but can run in parallel
+	t.Parallel() // Takes a while, but can run in parallel
 
 	log := testlog.Logger(t, log.LevelError)
 
