@@ -155,7 +155,8 @@ type Data = hexutil.Bytes
 type (
 	PayloadID   = engine.PayloadID
 	PayloadInfo struct {
-		ID        PayloadID
+		ID PayloadID
+		// Timestamp in seconds
 		Timestamp uint64
 	}
 )
@@ -166,15 +167,16 @@ type ExecutionPayloadEnvelope struct {
 }
 
 type ExecutionPayload struct {
-	ParentHash    common.Hash     `json:"parentHash"`
-	FeeRecipient  common.Address  `json:"feeRecipient"`
-	StateRoot     Bytes32         `json:"stateRoot"`
-	ReceiptsRoot  Bytes32         `json:"receiptsRoot"`
-	LogsBloom     Bytes256        `json:"logsBloom"`
-	PrevRandao    Bytes32         `json:"prevRandao"`
-	BlockNumber   Uint64Quantity  `json:"blockNumber"`
-	GasLimit      Uint64Quantity  `json:"gasLimit"`
-	GasUsed       Uint64Quantity  `json:"gasUsed"`
+	ParentHash   common.Hash    `json:"parentHash"`
+	FeeRecipient common.Address `json:"feeRecipient"`
+	StateRoot    Bytes32        `json:"stateRoot"`
+	ReceiptsRoot Bytes32        `json:"receiptsRoot"`
+	LogsBloom    Bytes256       `json:"logsBloom"`
+	PrevRandao   Bytes32        `json:"prevRandao"`
+	BlockNumber  Uint64Quantity `json:"blockNumber"`
+	GasLimit     Uint64Quantity `json:"gasLimit"`
+	GasUsed      Uint64Quantity `json:"gasUsed"`
+	// Timestamp in seconds
 	Timestamp     Uint64Quantity  `json:"timestamp"`
 	ExtraData     BytesMax32      `json:"extraData"`
 	BaseFeePerGas Uint256Quantity `json:"baseFeePerGas"`
@@ -301,7 +303,7 @@ func BlockAsPayloadEnv(bl *types.Block, canyonForkTime *uint64) (*ExecutionPaylo
 }
 
 type PayloadAttributes struct {
-	// value for the timestamp field of the new payload
+	// value for the timestamp field of the new payload in seconds
 	Timestamp Uint64Quantity `json:"timestamp"`
 	// value for the random field of the new payload
 	PrevRandao Bytes32 `json:"prevRandao"`

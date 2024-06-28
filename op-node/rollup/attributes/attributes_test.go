@@ -166,7 +166,7 @@ func TestAttributesHandler(t *testing.T) {
 	require.NoError(t, err)
 	attrA2 := &derive.AttributesWithParent{
 		Attributes: &eth.PayloadAttributes{
-			Timestamp:             eth.Uint64Quantity(refA2.Time),
+			Timestamp:             eth.Uint64Quantity(refA2.Time / 1000),
 			PrevRandao:            eth.Bytes32{},
 			SuggestedFeeRecipient: common.Address{},
 			Withdrawals:           nil,

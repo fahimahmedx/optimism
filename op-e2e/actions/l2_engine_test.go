@@ -126,7 +126,7 @@ func TestL2EngineAPIBlockBuilding(gt *testing.T) {
 		l2Cl, err := sources.NewEngineClient(engine.RPCClient(), log, nil, sources.EngineClientDefaultConfig(sd.RollupCfg))
 		require.NoError(t, err)
 
-		nextBlockTime := eth.Uint64Quantity(parent.Time) + 2
+		nextBlockTime := eth.Uint64Quantity(parent.Time) + 2*1000
 
 		var w *types.Withdrawals
 		if sd.RollupCfg.IsCanyon(uint64(nextBlockTime)) {
@@ -139,7 +139,7 @@ func TestL2EngineAPIBlockBuilding(gt *testing.T) {
 			SafeBlockHash:      genesisBlock.Hash(),
 			FinalizedBlockHash: genesisBlock.Hash(),
 		}, &eth.PayloadAttributes{
-			Timestamp:             nextBlockTime,
+			Timestamp:             nextBlockTime / 1000,
 			PrevRandao:            eth.Bytes32{},
 			SuggestedFeeRecipient: common.Address{'C'},
 			Transactions:          nil,
@@ -155,7 +155,7 @@ func TestL2EngineAPIBlockBuilding(gt *testing.T) {
 			engine.ActL2IncludeTx(dp.Addresses.Alice)(t)
 		}
 
-		envelope, err := l2Cl.GetPayload(t.Ctx(), eth.PayloadInfo{ID: *fcRes.PayloadID, Timestamp: uint64(nextBlockTime)})
+		envelope, err := l2Cl.GetPayload(t.Ctx(), eth.PayloadInfo{ID: *fcRes.PayloadID, Timestamp: uint64(nextBlockTime) / 1000})
 		payload := envelope.ExecutionPayload
 		require.NoError(t, err)
 		require.Equal(t, parent.Hash(), payload.ParentHash, "block builds on parent block")
