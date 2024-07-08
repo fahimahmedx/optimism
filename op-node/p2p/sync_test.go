@@ -184,7 +184,7 @@ func TestSinglePeerSync(t *testing.T) {
 		require.Equal(t, exp.ExecutionPayload.BlockHash, p.ExecutionPayload.BlockHash, "expecting the correct payload")
 
 		require.Equal(t, exp.ParentBeaconBlockRoot, p.ParentBeaconBlockRoot)
-		if cfg.IsEcotone(uint64(p.ExecutionPayload.Timestamp)) {
+		if cfg.IsEcotone(uint64(p.ExecutionPayload.Timestamp) * 1000) { // ExecutionPayload.Timestamp is in seconds, IsEcotone requires milliseconds
 			require.NotNil(t, p.ParentBeaconBlockRoot)
 		} else {
 			require.Nil(t, p.ParentBeaconBlockRoot)
@@ -334,7 +334,7 @@ func TestMultiPeerSync(t *testing.T) {
 		require.True(t, ok, "expecting known payload")
 		require.Equal(t, exp.ExecutionPayload.BlockHash, p.ExecutionPayload.BlockHash, "expecting the correct payload")
 		require.Equal(t, exp.ParentBeaconBlockRoot, p.ParentBeaconBlockRoot)
-		if cfg.IsEcotone(uint64(p.ExecutionPayload.Timestamp)) {
+		if cfg.IsEcotone(uint64(p.ExecutionPayload.Timestamp) * 1000) { // ExecutionPayload.Timestamp is in seconds, IsEcotone requires milliseconds
 			require.NotNil(t, p.ParentBeaconBlockRoot)
 		} else {
 			require.Nil(t, p.ParentBeaconBlockRoot)
