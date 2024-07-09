@@ -46,7 +46,7 @@ func TestRegolithTimeZero(t *testing.T) {
 func TestRegolithTimeAsOffset(t *testing.T) {
 	regolithOffset := hexutil.Uint64(1500)
 	config := &DeployConfig{L2GenesisRegolithTimeOffset: &regolithOffset}
-	require.Equal(t, uint64(1500+5000), *config.RegolithTime(5000))
+	require.Equal(t, uint64(5000*1000+1500), *config.RegolithTime(5000))
 }
 
 func TestCanyonTimeZero(t *testing.T) {
@@ -58,7 +58,7 @@ func TestCanyonTimeZero(t *testing.T) {
 func TestCanyonTimeOffset(t *testing.T) {
 	canyonOffset := hexutil.Uint64(1500)
 	config := &DeployConfig{L2GenesisCanyonTimeOffset: &canyonOffset}
-	require.Equal(t, uint64(1234+1500), *config.CanyonTime(1234))
+	require.Equal(t, uint64(1234*1000+1500), *config.CanyonTime(1234))
 }
 
 // TestCopy will copy a DeployConfig and ensure that the copy is equal to the original.

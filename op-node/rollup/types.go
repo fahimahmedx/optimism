@@ -461,7 +461,7 @@ func (c *Config) ForkchoiceUpdatedVersion(attr *eth.PayloadAttributes) eth.Engin
 		// Don't begin payload build process.
 		return eth.FCUV3
 	}
-	ts := uint64(attr.Timestamp)
+	ts := uint64(attr.Timestamp) * 1000 // convert to milliseconds
 	if c.IsEcotone(ts) {
 		// Cancun
 		return eth.FCUV3

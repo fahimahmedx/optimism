@@ -733,7 +733,7 @@ func TestRegolith(t *testing.T) {
 }
 
 func TestPreCanyon(t *testing.T) {
-	futureTimestamp := hexutil.Uint64(4)
+	futureTimestamp := hexutil.Uint64(4 * 1000)
 
 	tests := []struct {
 		name       string
