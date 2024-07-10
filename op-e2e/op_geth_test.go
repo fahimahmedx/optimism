@@ -422,7 +422,7 @@ func TestRegolith(t *testing.T) {
 		activateRegolith func(ctx context.Context, opGeth *OpGeth)
 	}{
 		{name: "ActivateAtGenesis", regolithTime: 0, activateRegolith: func(ctx context.Context, opGeth *OpGeth) {}},
-		{name: "ActivateAfterGenesis", regolithTime: 2, activateRegolith: func(ctx context.Context, opGeth *OpGeth) {
+		{name: "ActivateAfterGenesis", regolithTime: 2 * 1000, activateRegolith: func(ctx context.Context, opGeth *OpGeth) {
 			_, err := opGeth.AddL2Block(ctx)
 			require.NoError(t, err)
 		}},
