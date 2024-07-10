@@ -212,7 +212,8 @@ func (d *OpGeth) StartBlockBuilding(ctx context.Context, attrs *eth.PayloadAttri
 // CreatePayloadAttributes creates a valid PayloadAttributes containing a L1Info deposit transaction followed by the supplied transactions.
 func (d *OpGeth) CreatePayloadAttributes(txs ...*types.Transaction) (*eth.PayloadAttributes, error) {
 	timestamp := d.L2Head.Timestamp + 2 // in seconds, as d.L2Head.Timestamp is in seconds not milliseconds because it's an ExecutionPayload already.
-	l1Info, err := derive.L1InfoDepositBytes(d.l2Engine.RollupConfig(), d.SystemConfig, d.sequenceNum, d.L1Head, uint64(timestamp))
+	// IMPORTANT NOTE: + 2 above should be changed to + blockTime, as we can't assume a 2 second blocktime.
+	l1Info, err := derive.L1InfoDepositBytes(d.l2Engine.RollupConfig(), d.SystemConfig, d.sequenceNum, d.L1Head, uint64(timestamp*1000))
 	if err != nil {
 		return nil, err
 	}
