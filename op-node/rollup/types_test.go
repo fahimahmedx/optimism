@@ -580,29 +580,29 @@ func TestForkchoiceUpdatedVersion(t *testing.T) {
 	}{
 		{
 			name:           "NoAttrs",
-			canyonTime:     10 * 1000,
-			ecotoneTime:    20 * 1000,
+			canyonTime:     10,
+			ecotoneTime:    20,
 			attrs:          nil,
 			expectedMethod: eth.FCUV3,
 		},
 		{
 			name:           "BeforeCanyon",
-			canyonTime:     10 * 1000, // milliseconds
-			ecotoneTime:    20 * 1000,
-			attrs:          &eth.PayloadAttributes{Timestamp: 5}, // seconds
+			canyonTime:     10,
+			ecotoneTime:    20,
+			attrs:          &eth.PayloadAttributes{Timestamp: 5},
 			expectedMethod: eth.FCUV1,
 		},
 		{
 			name:           "Canyon",
-			canyonTime:     10 * 1000,
-			ecotoneTime:    20 * 1000,
+			canyonTime:     10,
+			ecotoneTime:    20,
 			attrs:          &eth.PayloadAttributes{Timestamp: 15},
 			expectedMethod: eth.FCUV2,
 		},
 		{
 			name:           "Ecotone",
-			canyonTime:     10 * 1000,
-			ecotoneTime:    20 * 1000,
+			canyonTime:     10,
+			ecotoneTime:    20,
 			attrs:          &eth.PayloadAttributes{Timestamp: 25},
 			expectedMethod: eth.FCUV3,
 		},

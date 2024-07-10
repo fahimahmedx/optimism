@@ -542,14 +542,13 @@ func (d *DeployConfig) GovernanceEnabled() bool {
 	return d.EnableGovernance
 }
 
-// RegolithTime returns the time in milliseconds at which the Regolith hard fork activates, given a genesisTime in seconds.
 func (d *DeployConfig) RegolithTime(genesisTime uint64) *uint64 {
 	if d.L2GenesisRegolithTimeOffset == nil {
 		return nil
 	}
 	v := uint64(0)
 	if offset := *d.L2GenesisRegolithTimeOffset; offset > 0 {
-		v = genesisTime*1000 + uint64(offset) // milliseconds
+		v = genesisTime + uint64(offset)
 	}
 	return &v
 }
@@ -560,7 +559,7 @@ func (d *DeployConfig) CanyonTime(genesisTime uint64) *uint64 {
 	}
 	v := uint64(0)
 	if offset := *d.L2GenesisCanyonTimeOffset; offset > 0 {
-		v = genesisTime*1000 + uint64(offset)
+		v = genesisTime + uint64(offset)
 	}
 	return &v
 }
@@ -571,7 +570,7 @@ func (d *DeployConfig) DeltaTime(genesisTime uint64) *uint64 {
 	}
 	v := uint64(0)
 	if offset := *d.L2GenesisDeltaTimeOffset; offset > 0 {
-		v = genesisTime*1000 + uint64(offset)
+		v = genesisTime + uint64(offset)
 	}
 	return &v
 }
@@ -582,7 +581,7 @@ func (d *DeployConfig) EcotoneTime(genesisTime uint64) *uint64 {
 	}
 	v := uint64(0)
 	if offset := *d.L2GenesisEcotoneTimeOffset; offset > 0 {
-		v = genesisTime*1000 + uint64(offset)
+		v = genesisTime + uint64(offset)
 	}
 	return &v
 }
@@ -593,7 +592,7 @@ func (d *DeployConfig) FjordTime(genesisTime uint64) *uint64 {
 	}
 	v := uint64(0)
 	if offset := *d.L2GenesisFjordTimeOffset; offset > 0 {
-		v = genesisTime*1000 + uint64(offset)
+		v = genesisTime + uint64(offset)
 	}
 	return &v
 }
@@ -604,7 +603,7 @@ func (d *DeployConfig) InteropTime(genesisTime uint64) *uint64 {
 	}
 	v := uint64(0)
 	if offset := *d.L2GenesisInteropTimeOffset; offset > 0 {
-		v = genesisTime*1000 + uint64(offset)
+		v = genesisTime + uint64(offset)
 	}
 	return &v
 }
