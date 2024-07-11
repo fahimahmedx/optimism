@@ -139,7 +139,7 @@ func (cb *ChannelBank) Read() (data []byte, err error) {
 	// Post-Canyon we read the entire channelQueue for the first ready channel. If no channel is
 	// available, we return `nil, io.EOF`.
 	// Canyon is activated when the first L1 block whose time >= CanyonTime, not on the L2 timestamp.
-	if !cb.spec.IsCanyon(cb.Origin().Time) {
+	if !cb.spec.IsCanyon(cb.Origin().Time * 1000) {
 		return cb.tryReadChannelAtIndex(0)
 	}
 

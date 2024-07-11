@@ -250,6 +250,7 @@ func isEcotoneButNotFirstBlock(rollupCfg *rollup.Config, l2BlockTime uint64) boo
 }
 
 // L1BlockInfoFromBytes is the inverse of L1InfoDeposit, to see where the L2 chain is derived from
+// l2BlockTime is in milliseconds.
 func L1BlockInfoFromBytes(rollupCfg *rollup.Config, l2BlockTime uint64, data []byte) (*L1BlockInfo, error) {
 	var info L1BlockInfo
 	if isEcotoneButNotFirstBlock(rollupCfg, l2BlockTime) {

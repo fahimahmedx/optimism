@@ -247,18 +247,18 @@ func TestActivations(t *testing.T) {
 			config := randConfig()
 			test.setUpgradeTime(nil, config)
 			require.False(t, tt.checkEnabled(0, config), "false if nil time, even if checking 0")
-			require.False(t, tt.checkEnabled(123456, config), "false if nil time")
+			require.False(t, tt.checkEnabled(123456*1000, config), "false if nil time")
 
 			test.setUpgradeTime(new(uint64), config)
 			require.True(t, tt.checkEnabled(0, config), "true at zero")
-			require.True(t, tt.checkEnabled(123456, config), "true for any")
+			require.True(t, tt.checkEnabled(123456*1000, config), "true for any")
 
 			x := uint64(123)
 			test.setUpgradeTime(&x, config)
 			require.False(t, tt.checkEnabled(0, config))
-			require.False(t, tt.checkEnabled(122, config))
-			require.True(t, tt.checkEnabled(123, config))
-			require.True(t, tt.checkEnabled(124, config))
+			require.False(t, tt.checkEnabled(122*1000, config))
+			require.True(t, tt.checkEnabled(123*1000, config))
+			require.True(t, tt.checkEnabled(124*1000, config))
 		})
 	}
 }
@@ -631,13 +631,13 @@ func TestNewPayloadVersion(t *testing.T) {
 		{
 			name:           "BeforeEcotone",
 			ecotoneTime:    10,
-			payloadTime:    5,
+			payloadTime:    5 * 1000,
 			expectedMethod: eth.NewPayloadV2,
 		},
 		{
 			name:           "Ecotone",
 			ecotoneTime:    10,
-			payloadTime:    15,
+			payloadTime:    15 * 1000,
 			expectedMethod: eth.NewPayloadV3,
 		},
 	}
@@ -664,13 +664,13 @@ func TestGetPayloadVersion(t *testing.T) {
 		{
 			name:           "BeforeEcotone",
 			ecotoneTime:    10,
-			payloadTime:    5,
+			payloadTime:    5 * 1000,
 			expectedMethod: eth.GetPayloadV2,
 		},
 		{
 			name:           "Ecotone",
 			ecotoneTime:    10,
-			payloadTime:    15,
+			payloadTime:    15 * 1000,
 			expectedMethod: eth.GetPayloadV3,
 		},
 	}

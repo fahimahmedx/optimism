@@ -974,7 +974,7 @@ func TestL1InfoContract(t *testing.T) {
 			require.NoError(t, err)
 			txList = append(txList, infoFromTx)
 
-			ecotone := sys.RollupConfig.IsEcotone(b.Time()) && !sys.RollupConfig.IsEcotoneActivationBlock(b.Time())
+			ecotone := sys.RollupConfig.IsEcotone(b.Time()*1000) && !sys.RollupConfig.IsEcotoneActivationBlock(b.Time()*1000)
 			infoFromState, err := L1InfoFromState(ctx, contract, b.Number(), ecotone)
 			require.Nil(t, err)
 			stateList = append(stateList, infoFromState)
@@ -1005,7 +1005,7 @@ func TestL1InfoContract(t *testing.T) {
 			SequenceNumber: 0, // ignored, will be overwritten
 			BatcherAddr:    sys.RollupConfig.Genesis.SystemConfig.BatcherAddr,
 		}
-		if sys.RollupConfig.IsEcotone(b.Time()) && !sys.RollupConfig.IsEcotoneActivationBlock(b.Time()) {
+		if sys.RollupConfig.IsEcotone(b.Time()*1000) && !sys.RollupConfig.IsEcotoneActivationBlock(b.Time()*1000) {
 			scalars, err := sys.RollupConfig.Genesis.SystemConfig.EcotoneScalars()
 			require.NoError(t, err)
 			l1blocks[h].BlobBaseFeeScalar = scalars.BlobBaseFeeScalar

@@ -63,15 +63,15 @@ func NewChainSpec(config *Config) *ChainSpec {
 	return &ChainSpec{config: config}
 }
 
-// IsCanyon returns true if t >= canyon_time
+// IsCanyon returns true if t >= canyon_time, where t is in milliseconds
 func (s *ChainSpec) IsCanyon(t uint64) bool {
 	return s.config.IsCanyon(t)
 }
 
 // MaxChannelBankSize returns the maximum number of bytes the can allocated inside the channel bank
-// before pruning occurs at the given timestamp.
+// before pruning occurs at the given timestamp in seconds.
 func (s *ChainSpec) MaxChannelBankSize(t uint64) uint64 {
-	if s.config.IsFjord(t) {
+	if s.config.IsFjord(t * 1000) {
 		return maxChannelBankSizeFjord
 	}
 	return maxChannelBankSizeBedrock
@@ -83,18 +83,18 @@ func (s *ChainSpec) ChannelTimeout() uint64 {
 }
 
 // MaxRLPBytesPerChannel returns the maximum amount of bytes that will be read from
-// a channel at a given timestamp.
+// a channel at a given timestamp in seconds.
 func (s *ChainSpec) MaxRLPBytesPerChannel(t uint64) uint64 {
-	if s.config.IsFjord(t) {
+	if s.config.IsFjord(t * 1000) {
 		return maxRLPBytesPerChannelFjord
 	}
 	return maxRLPBytesPerChannelBedrock
 }
 
 // IsFeatMaxSequencerDriftConstant specifies in which fork the max sequencer drift change to a
-// constant will be performed.
+// constant will be performed, given a timestamp in seconds.
 func (s *ChainSpec) IsFeatMaxSequencerDriftConstant(t uint64) bool {
-	return s.config.IsFjord(t)
+	return s.config.IsFjord(t * 1000)
 }
 
 // MaxSequencerDrift returns the maximum sequencer drift for the given block timestamp. Until Fjord,

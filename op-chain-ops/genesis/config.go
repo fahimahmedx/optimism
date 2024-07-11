@@ -542,6 +542,7 @@ func (d *DeployConfig) GovernanceEnabled() bool {
 	return d.EnableGovernance
 }
 
+// RegolithTime returns the time in seconds at which the Regolith hard fork activates, given a genesis time in seconds.
 func (d *DeployConfig) RegolithTime(genesisTime uint64) *uint64 {
 	if d.L2GenesisRegolithTimeOffset == nil {
 		return nil

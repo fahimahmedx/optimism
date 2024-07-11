@@ -190,7 +190,7 @@ func checkSpanBatch(ctx context.Context, cfg *rollup.Config, log log.Logger, l1B
 		}
 		batchOrigin = l1Blocks[1]
 	}
-	if !cfg.IsDelta(batchOrigin.Time) {
+	if !cfg.IsDelta(batchOrigin.Time * 1000) {
 		log.Warn("received SpanBatch with L1 origin before Delta hard fork", "l1_origin", batchOrigin.ID(), "l1_origin_time", batchOrigin.Time)
 		return BatchDrop
 	}

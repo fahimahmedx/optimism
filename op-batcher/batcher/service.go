@@ -221,15 +221,15 @@ func (bs *BatcherService) initChannelConfig(cfg *CLIConfig) error {
 
 	cc.InitCompressorConfig(cfg.ApproxComprRatio, cfg.Compressor, cfg.CompressionAlgo)
 
-	if bs.UseBlobs && !bs.RollupConfig.IsEcotone(uint64(time.Now().Unix())) {
+	if bs.UseBlobs && !bs.RollupConfig.IsEcotone(uint64(time.Now().UnixMilli())) {
 		bs.Log.Error("Cannot use Blob data before Ecotone!") // log only, the batcher may not be actively running.
 	}
-	if !bs.UseBlobs && bs.RollupConfig.IsEcotone(uint64(time.Now().Unix())) {
+	if !bs.UseBlobs && bs.RollupConfig.IsEcotone(uint64(time.Now().UnixMilli())) {
 		bs.Log.Warn("Ecotone upgrade is active, but batcher is not configured to use Blobs!")
 	}
 
 	// Checking for brotli compression only post Fjord
-	if bs.ChannelConfig.CompressorConfig.CompressionAlgo.IsBrotli() && !bs.RollupConfig.IsFjord(uint64(time.Now().Unix())) {
+	if bs.ChannelConfig.CompressorConfig.CompressionAlgo.IsBrotli() && !bs.RollupConfig.IsFjord(uint64(time.Now().UnixMilli())) {
 		return fmt.Errorf("cannot use brotli compression before Fjord")
 	}
 

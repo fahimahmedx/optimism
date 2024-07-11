@@ -111,7 +111,7 @@ func ProcessSystemConfigUpdateLogEvent(destSysCfg *eth.SystemConfig, ev *types.L
 		if !solabi.EmptyReader(reader) {
 			return NewCriticalError(errors.New("too many bytes"))
 		}
-		if rollupCfg.IsEcotone(l1Time) {
+		if rollupCfg.IsEcotone(l1Time * 1000) {
 			if err := eth.CheckEcotoneL1SystemConfigScalar(scalar); err != nil {
 				return nil // ignore invalid scalars, retain the old system-config scalar
 			}

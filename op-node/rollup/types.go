@@ -385,28 +385,33 @@ func (c *Config) L1Signer() types.Signer {
 	return types.NewCancunSigner(c.L1ChainID)
 }
 
-// IsRegolith returns true if the Regolith hardfork is active at or past the given timestamp.
+// IsRegolith returns true if the Regolith hardfork is active at or past the given timestamp in milliseconds.
 func (c *Config) IsRegolith(timestamp uint64) bool {
+	timestamp /= 1000 // convert temporarily convert to seconds
 	return c.RegolithTime != nil && timestamp >= *c.RegolithTime
 }
 
-// IsCanyon returns true if the Canyon hardfork is active at or past the given timestamp.
+// IsCanyon returns true if the Canyon hardfork is active at or past the given timestamp in milliseconds.
 func (c *Config) IsCanyon(timestamp uint64) bool {
+	timestamp /= 1000 // convert temporarily convert to seconds
 	return c.CanyonTime != nil && timestamp >= *c.CanyonTime
 }
 
-// IsDelta returns true if the Delta hardfork is active at or past the given timestamp.
+// IsDelta returns true if the Delta hardfork is active at or past the given timestamp in milliseconds.
 func (c *Config) IsDelta(timestamp uint64) bool {
+	timestamp /= 1000 // convert temporarily convert to seconds
 	return c.DeltaTime != nil && timestamp >= *c.DeltaTime
 }
 
-// IsEcotone returns true if the Ecotone hardfork is active at or past the given timestamp.
+// IsEcotone returns true if the Ecotone hardfork is active at or past the given timestamp in milliseconds.
 func (c *Config) IsEcotone(timestamp uint64) bool {
+	timestamp /= 1000 // convert temporarily convert to seconds
 	return c.EcotoneTime != nil && timestamp >= *c.EcotoneTime
 }
 
-// IsFjord returns true if the Fjord hardfork is active at or past the given timestamp.
+// IsFjord returns true if the Fjord hardfork is active at or past the given timestamp in milliseconds.
 func (c *Config) IsFjord(timestamp uint64) bool {
+	timestamp /= 1000 // convert temporarily convert to seconds
 	return c.FjordTime != nil && timestamp >= *c.FjordTime
 }
 
@@ -418,23 +423,27 @@ func (c *Config) IsFjordActivationBlock(l2BlockTime uint64) bool {
 		!c.IsFjord(l2BlockTime-c.BlockTime)
 }
 
-// IsInterop returns true if the Interop hardfork is active at or past the given timestamp.
+// IsInterop returns true if the Interop hardfork is active at or past the given timestamp in milliseconds.
 func (c *Config) IsInterop(timestamp uint64) bool {
+	timestamp /= 1000 // convert temporarily convert to seconds
 	return c.InteropTime != nil && timestamp >= *c.InteropTime
 }
 
+// Requires a timestamp in milliseconds.
 func (c *Config) IsRegolithActivationBlock(l2BlockTime uint64) bool {
 	return c.IsRegolith(l2BlockTime) &&
 		l2BlockTime >= c.BlockTime &&
 		!c.IsRegolith(l2BlockTime-c.BlockTime)
 }
 
+// Requires a timestamp in milliseconds.
 func (c *Config) IsCanyonActivationBlock(l2BlockTime uint64) bool {
 	return c.IsCanyon(l2BlockTime) &&
 		l2BlockTime >= c.BlockTime &&
 		!c.IsCanyon(l2BlockTime-c.BlockTime)
 }
 
+// Requires a timestamp in milliseconds.
 func (c *Config) IsDeltaActivationBlock(l2BlockTime uint64) bool {
 	return c.IsDelta(l2BlockTime) &&
 		l2BlockTime >= c.BlockTime &&
@@ -443,12 +452,14 @@ func (c *Config) IsDeltaActivationBlock(l2BlockTime uint64) bool {
 
 // IsEcotoneActivationBlock returns whether the specified block is the first block subject to the
 // Ecotone upgrade. Ecotone activation at genesis does not count.
+// Requires a timestamp in milliseconds.
 func (c *Config) IsEcotoneActivationBlock(l2BlockTime uint64) bool {
 	return c.IsEcotone(l2BlockTime) &&
 		l2BlockTime >= c.BlockTime &&
 		!c.IsEcotone(l2BlockTime-c.BlockTime)
 }
 
+// Requires a timestamp in milliseconds.
 func (c *Config) IsInteropActivationBlock(l2BlockTime uint64) bool {
 	return c.IsInterop(l2BlockTime) &&
 		l2BlockTime >= c.BlockTime &&
@@ -476,6 +487,7 @@ func (c *Config) ForkchoiceUpdatedVersion(attr *eth.PayloadAttributes) eth.Engin
 }
 
 // NewPayloadVersion returns the EngineAPIMethod suitable for the chain hard fork version.
+// Requires a timestamp in milliseconds.
 func (c *Config) NewPayloadVersion(timestamp uint64) eth.EngineAPIMethod {
 	if c.IsEcotone(timestamp) {
 		// Cancun
@@ -486,6 +498,7 @@ func (c *Config) NewPayloadVersion(timestamp uint64) eth.EngineAPIMethod {
 }
 
 // GetPayloadVersion returns the EngineAPIMethod suitable for the chain hard fork version.
+// Requires a timestamp in milliseconds.
 func (c *Config) GetPayloadVersion(timestamp uint64) eth.EngineAPIMethod {
 	if c.IsEcotone(timestamp) {
 		// Cancun

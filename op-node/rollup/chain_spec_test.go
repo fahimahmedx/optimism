@@ -60,12 +60,12 @@ func TestChainSpec_CanyonForkActivation(t *testing.T) {
 		isCanyon bool
 	}{
 		{"Genesis", 0, false},
-		{"CanyonTimeMinusOne", 19, false},
-		{"CanyonTime", 20, true},
-		{"CanyonTimePlusOne", 21, true},
-		{"DeltaTime", 30, true},
-		{"EcotoneTime", 40, true},
-		{"FjordTime", 50, true},
+		{"CanyonTimeMinusOne", 19 * 1000, false},
+		{"CanyonTime", 20 * 1000, true},
+		{"CanyonTimePlusOne", 21 * 1000, true},
+		{"DeltaTime", 30 * 1000, true},
+		{"EcotoneTime", 40 * 1000, true},
+		{"FjordTime", 50 * 1000, true},
 	}
 
 	for _, tt := range tests {
@@ -154,25 +154,25 @@ func TestCheckForkActivation(t *testing.T) {
 	}{
 		{
 			name:                "Regolith activation",
-			block:               eth.L2BlockRef{Time: 10, Number: 5, Hash: common.Hash{0x5}},
+			block:               eth.L2BlockRef{Time: 10 * 1000, Number: 5, Hash: common.Hash{0x5}},
 			expectedCurrentFork: Regolith,
 			expectedLog:         "Detected hardfork activation block",
 		},
 		{
 			name:                "Still Regolith",
-			block:               eth.L2BlockRef{Time: 11, Number: 6, Hash: common.Hash{0x6}},
+			block:               eth.L2BlockRef{Time: 11 * 1000, Number: 6, Hash: common.Hash{0x6}},
 			expectedCurrentFork: Regolith,
 			expectedLog:         "",
 		},
 		{
 			name:                "Canyon activation",
-			block:               eth.L2BlockRef{Time: 20, Number: 7, Hash: common.Hash{0x7}},
+			block:               eth.L2BlockRef{Time: 20 * 1000, Number: 7, Hash: common.Hash{0x7}},
 			expectedCurrentFork: Canyon,
 			expectedLog:         "Detected hardfork activation block",
 		},
 		{
 			name:                "No more hardforks",
-			block:               eth.L2BlockRef{Time: 700, Number: 8, Hash: common.Hash{0x8}},
+			block:               eth.L2BlockRef{Time: 700 * 1000, Number: 8, Hash: common.Hash{0x8}},
 			expectedCurrentFork: Fjord,
 			expectedLog:         "",
 		},
@@ -185,7 +185,7 @@ func TestCheckForkActivation(t *testing.T) {
 
 			chainSpec := NewChainSpec(&testConfig)
 			// First call initializes chainSpec.currentFork value
-			chainSpec.CheckForkActivation(lgr, eth.L2BlockRef{Time: tt.block.Time - 1, Number: 1, Hash: common.Hash{0x1}})
+			chainSpec.CheckForkActivation(lgr, eth.L2BlockRef{Time: tt.block.Time - 1*1000, Number: 1, Hash: common.Hash{0x1}})
 			chainSpec.CheckForkActivation(lgr, tt.block)
 			require.Equal(t, tt.expectedCurrentFork, chainSpec.currentFork)
 			if tt.expectedLog != "" {
