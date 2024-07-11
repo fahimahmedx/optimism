@@ -1512,7 +1512,7 @@ func TestBatcherMultiTx(t *testing.T) {
 	l1Client := sys.Clients["l1"]
 	l2Seq := sys.Clients["sequencer"]
 
-	_, err = geth.WaitForBlock(big.NewInt(10), l2Seq, time.Duration(cfg.DeployConfig.L2BlockTime*15)*time.Millisecond)
+	_, err = geth.WaitForBlock(big.NewInt(10), l2Seq, time.Duration(cfg.DeployConfig.L2BlockTime*15000)*time.Millisecond)
 	require.NoError(t, err, "Waiting for L2 blocks")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
