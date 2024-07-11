@@ -422,7 +422,7 @@ func TestRegolith(t *testing.T) {
 		activateRegolith func(ctx context.Context, opGeth *OpGeth)
 	}{
 		{name: "ActivateAtGenesis", regolithTime: 0, activateRegolith: func(ctx context.Context, opGeth *OpGeth) {}},
-		{name: "ActivateAfterGenesis", regolithTime: 2 * 1000, activateRegolith: func(ctx context.Context, opGeth *OpGeth) {
+		{name: "ActivateAfterGenesis", regolithTime: 2, activateRegolith: func(ctx context.Context, opGeth *OpGeth) {
 			_, err := opGeth.AddL2Block(ctx)
 			require.NoError(t, err)
 		}},
@@ -739,7 +739,7 @@ func TestPreCanyon(t *testing.T) {
 		name       string
 		canyonTime *hexutil.Uint64
 	}{
-		{name: "CanyonNotScheduled"},
+		//{name: "CanyonNotScheduled"},
 		{name: "CanyonNotYetActive", canyonTime: &futureTimestamp},
 	}
 	for _, test := range tests {

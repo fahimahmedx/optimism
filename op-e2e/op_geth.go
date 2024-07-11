@@ -229,12 +229,12 @@ func (d *OpGeth) CreatePayloadAttributes(txs ...*types.Transaction) (*eth.Payloa
 	}
 
 	var withdrawals *types.Withdrawals
-	if d.L2ChainConfig.IsCanyon(uint64(timestamp) * 1000) {
+	if d.L2ChainConfig.IsCanyon(uint64(timestamp)) {
 		withdrawals = &types.Withdrawals{}
 	}
 
 	var parentBeaconBlockRoot *common.Hash
-	if d.L2ChainConfig.IsEcotone(uint64(timestamp) * 1000) {
+	if d.L2ChainConfig.IsEcotone(uint64(timestamp)) {
 		parentBeaconBlockRoot = d.L1Head.ParentBeaconRoot()
 	}
 
