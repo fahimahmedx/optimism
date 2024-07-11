@@ -631,13 +631,13 @@ func TestNewPayloadVersion(t *testing.T) {
 		{
 			name:           "BeforeEcotone",
 			ecotoneTime:    10,
-			payloadTime:    5 * 1000,
+			payloadTime:    5,
 			expectedMethod: eth.NewPayloadV2,
 		},
 		{
 			name:           "Ecotone",
 			ecotoneTime:    10,
-			payloadTime:    15 * 1000,
+			payloadTime:    15,
 			expectedMethod: eth.NewPayloadV3,
 		},
 	}
@@ -664,13 +664,13 @@ func TestGetPayloadVersion(t *testing.T) {
 		{
 			name:           "BeforeEcotone",
 			ecotoneTime:    10,
-			payloadTime:    5 * 1000,
+			payloadTime:    5,
 			expectedMethod: eth.GetPayloadV2,
 		},
 		{
 			name:           "Ecotone",
 			ecotoneTime:    10,
-			payloadTime:    15 * 1000,
+			payloadTime:    15,
 			expectedMethod: eth.GetPayloadV3,
 		},
 	}

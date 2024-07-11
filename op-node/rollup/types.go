@@ -487,9 +487,9 @@ func (c *Config) ForkchoiceUpdatedVersion(attr *eth.PayloadAttributes) eth.Engin
 }
 
 // NewPayloadVersion returns the EngineAPIMethod suitable for the chain hard fork version.
-// Requires a timestamp in milliseconds.
+// Requires a timestamp in seconds (to be changed into milliseconds).
 func (c *Config) NewPayloadVersion(timestamp uint64) eth.EngineAPIMethod {
-	if c.IsEcotone(timestamp) {
+	if c.IsEcotone(timestamp * 1000) {
 		// Cancun
 		return eth.NewPayloadV3
 	} else {
@@ -498,9 +498,9 @@ func (c *Config) NewPayloadVersion(timestamp uint64) eth.EngineAPIMethod {
 }
 
 // GetPayloadVersion returns the EngineAPIMethod suitable for the chain hard fork version.
-// Requires a timestamp in milliseconds.
+// Requires a timestamp in seconds (to be changed into milliseconds).
 func (c *Config) GetPayloadVersion(timestamp uint64) eth.EngineAPIMethod {
-	if c.IsEcotone(timestamp) {
+	if c.IsEcotone(timestamp * 1000) {
 		// Cancun
 		return eth.GetPayloadV3
 	} else {
