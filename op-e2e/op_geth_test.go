@@ -739,7 +739,7 @@ func TestPreCanyon(t *testing.T) {
 		name       string
 		canyonTime *hexutil.Uint64
 	}{
-		//{name: "CanyonNotScheduled"},
+		{name: "CanyonNotScheduled"},
 		{name: "CanyonNotYetActive", canyonTime: &futureTimestamp},
 	}
 	for _, test := range tests {
