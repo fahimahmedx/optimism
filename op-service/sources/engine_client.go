@@ -15,6 +15,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-service/client"
 	"github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum-optimism/optimism/op-service/sources/caching"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 type EngineClientConfig struct {
@@ -57,8 +58,8 @@ type EngineAPIClient struct {
 
 type EngineVersionProvider interface {
 	ForkchoiceUpdatedVersion(attr *eth.PayloadAttributes) eth.EngineAPIMethod
-	NewPayloadVersion(timestamp uint64) eth.EngineAPIMethod
-	GetPayloadVersion(timestamp uint64) eth.EngineAPIMethod
+	NewPayloadVersion(timestamp timeint.Seconds) eth.EngineAPIMethod
+	GetPayloadVersion(timestamp timeint.Seconds) eth.EngineAPIMethod
 }
 
 func NewEngineAPIClient(rpc client.RPC, l log.Logger, evp EngineVersionProvider) *EngineAPIClient {
@@ -125,7 +126,7 @@ func (s *EngineAPIClient) NewPayload(ctx context.Context, payload *eth.Execution
 	var result eth.PayloadStatusV1
 
 	var err error
-	switch method := s.evp.NewPayloadVersion(uint64(payload.Timestamp)); method {
+	switch method := s.evp.NewPayloadVersion(timeint.Seconds(payload.Timestamp)); method {
 	case eth.NewPayloadV3:
 		err = s.RPC.CallContext(execCtx, &result, string(method), payload, []common.Hash{}, parentBeaconBlockRoot)
 	case eth.NewPayloadV2:
