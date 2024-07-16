@@ -44,10 +44,10 @@ func BytesToBigInt(b []byte) *big.Int {
 
 // FuzzL1InfoBedrockRoundTrip checks that our Bedrock l1 info encoder round trips properly
 func FuzzL1InfoBedrockRoundTrip(f *testing.F) {
-	f.Fuzz(func(t *testing.T, number uint64, time timeint.Seconds, baseFee, hash []byte, seqNumber uint64) {
+	f.Fuzz(func(t *testing.T, number uint64, time uint64, baseFee, hash []byte, seqNumber uint64) {
 		in := L1BlockInfo{
 			Number:         number,
-			Time:           time,
+			Time:           timeint.FromUint64ToSec(time),
 			BaseFee:        BytesToBigInt(baseFee),
 			BlockHash:      common.BytesToHash(hash),
 			SequenceNumber: seqNumber,
@@ -70,10 +70,10 @@ func FuzzL1InfoBedrockRoundTrip(f *testing.F) {
 
 // FuzzL1InfoEcotoneRoundTrip checks that our Ecotone encoder round trips properly
 func FuzzL1InfoEcotoneRoundTrip(f *testing.F) {
-	f.Fuzz(func(t *testing.T, number uint64, time timeint.Seconds, baseFee, blobBaseFee, hash []byte, seqNumber uint64, baseFeeScalar, blobBaseFeeScalar uint32) {
+	f.Fuzz(func(t *testing.T, number uint64, time uint64, baseFee, blobBaseFee, hash []byte, seqNumber uint64, baseFeeScalar, blobBaseFeeScalar uint32) {
 		in := L1BlockInfo{
 			Number:            number,
-			Time:              time,
+			Time:              timeint.FromUint64ToSec(time),
 			BaseFee:           BytesToBigInt(baseFee),
 			BlockHash:         common.BytesToHash(hash),
 			SequenceNumber:    seqNumber,
@@ -105,10 +105,10 @@ func FuzzL1InfoBedrockAgainstContract(f *testing.F) {
 	l1BlockInfoContract, err := bindings.NewL1Block(common.Address{0x42, 0xff}, nil)
 	require.NoError(f, err)
 
-	f.Fuzz(func(t *testing.T, number uint64, time timeint.Seconds, baseFee, hash []byte, seqNumber uint64, batcherHash []byte, l1FeeOverhead []byte, l1FeeScalar []byte) {
+	f.Fuzz(func(t *testing.T, number uint64, time uint64, baseFee, hash []byte, seqNumber uint64, batcherHash []byte, l1FeeOverhead []byte, l1FeeScalar []byte) {
 		expected := L1BlockInfo{
 			Number:         number,
-			Time:           time,
+			Time:           timeint.FromUint64ToSec(time),
 			BaseFee:        BytesToBigInt(baseFee),
 			BlockHash:      common.BytesToHash(hash),
 			SequenceNumber: seqNumber,
@@ -126,7 +126,7 @@ func FuzzL1InfoBedrockAgainstContract(f *testing.F) {
 		tx, err := l1BlockInfoContract.SetL1BlockValues(
 			opts,
 			number,
-			time.ToUint64Sec(),
+			time,
 			BytesToBigInt(baseFee),
 			common.BytesToHash(hash),
 			seqNumber,

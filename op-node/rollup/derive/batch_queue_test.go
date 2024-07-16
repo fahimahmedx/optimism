@@ -498,7 +498,7 @@ func BatchQueueMissing(t *testing.T, batchType int) {
 	// Check for a generated batch at t = 12
 	b, _, e = bq.NextBatch(context.Background(), safeHead)
 	require.Nil(t, e)
-	require.Equal(t, b.Timestamp, uint64(12))
+	require.Equal(t, b.Timestamp, timeint.Seconds(12))
 	require.Empty(t, b.Transactions)
 	require.Equal(t, rollup.Epoch(0), b.EpochNum)
 	safeHead.Number += 1
@@ -508,7 +508,7 @@ func BatchQueueMissing(t *testing.T, batchType int) {
 	// Check for generated batch at t = 14
 	b, _, e = bq.NextBatch(context.Background(), safeHead)
 	require.Nil(t, e)
-	require.Equal(t, b.Timestamp, uint64(14))
+	require.Equal(t, b.Timestamp, timeint.Seconds(14))
 	require.Empty(t, b.Transactions)
 	require.Equal(t, rollup.Epoch(0), b.EpochNum)
 	safeHead.Number += 1
@@ -534,7 +534,7 @@ func BatchQueueMissing(t *testing.T, batchType int) {
 	require.Equal(t, e, io.EOF)
 	b, _, e = bq.NextBatch(context.Background(), safeHead)
 	require.Nil(t, e)
-	require.Equal(t, b.Timestamp, uint64(18))
+	require.Equal(t, b.Timestamp, timeint.Seconds(18))
 	require.Empty(t, b.Transactions)
 	require.Equal(t, rollup.Epoch(1), b.EpochNum)
 }

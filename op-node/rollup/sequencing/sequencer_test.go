@@ -259,7 +259,7 @@ func TestSequencerBuild(t *testing.T) {
 		x, ok := ev.(engine.BuildStartEvent)
 		require.True(t, ok)
 		require.Equal(t, head, x.Attributes.Parent)
-		require.Equal(t, head.Time+deps.cfg.BlockTime, uint64(x.Attributes.Attributes.Timestamp))
+		require.Equal(t, head.Time+deps.cfg.BlockTime, timeint.Seconds(x.Attributes.Attributes.Timestamp))
 		require.Equal(t, eth.L1BlockRef{}, x.Attributes.DerivedFrom)
 		sentAttributes = x.Attributes
 	})
