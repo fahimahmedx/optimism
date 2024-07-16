@@ -29,7 +29,7 @@ func (p *logProcessor) ProcessLogs(_ context.Context, block eth.L1BlockRef, rcpt
 	for _, rcpt := range rcpts {
 		for _, l := range rcpt.Logs {
 			logHash := logToHash(l)
-			err := p.logStore.AddLog(p.chain, logHash, block.ID(), block.Time, uint32(l.Index), nil)
+			err := p.logStore.AddLog(p.chain, logHash, block.ID(), block.Time.ToUint64Sec(), uint32(l.Index), nil)
 			if err != nil {
 				return fmt.Errorf("failed to add log %d from block %v: %w", l.Index, block.ID(), err)
 			}
