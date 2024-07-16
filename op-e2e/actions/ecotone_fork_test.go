@@ -20,6 +20,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-node/rollup/derive"
 	"github.com/ethereum-optimism/optimism/op-service/predeploys"
 	"github.com/ethereum-optimism/optimism/op-service/testlog"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 var (
@@ -96,7 +97,7 @@ func TestEcotoneNetworkUpgradeTransactions(gt *testing.T) {
 	// See [derive.EcotoneNetworkUpgradeTransactions]
 	require.Equal(t, 7, len(transactions))
 
-	l1Info, err := derive.L1BlockInfoFromBytes(sd.RollupCfg, latestBlock.Time(), transactions[0].Data())
+	l1Info, err := derive.L1BlockInfoFromBytes(sd.RollupCfg, timeint.Seconds(latestBlock.Time()), transactions[0].Data())
 	require.NoError(t, err)
 	require.Equal(t, derive.L1InfoBedrockLen, len(transactions[0].Data()))
 	require.Nil(t, l1Info.BlobBaseFee)

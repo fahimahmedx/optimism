@@ -16,6 +16,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum-optimism/optimism/op-service/testlog"
 	"github.com/ethereum-optimism/optimism/op-service/testutils"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 const (
@@ -208,11 +209,11 @@ func (s *HealthMonitorTestSuite) TestHealthyWithUnsafeLag() {
 func mockSyncStatus(unsafeTime, unsafeNum, safeTime, safeNum uint64) *eth.SyncStatus {
 	return &eth.SyncStatus{
 		UnsafeL2: eth.L2BlockRef{
-			Time:   unsafeTime,
+			Time:   timeint.Seconds(unsafeTime),
 			Number: unsafeNum,
 		},
 		SafeL2: eth.L2BlockRef{
-			Time:   safeTime,
+			Time:   timeint.Seconds(safeTime),
 			Number: safeNum,
 		},
 	}

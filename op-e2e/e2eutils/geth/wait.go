@@ -10,6 +10,7 @@ import (
 
 	"github.com/ethereum-optimism/optimism/op-node/rollup"
 	"github.com/ethereum-optimism/optimism/op-node/rollup/derive"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -41,7 +42,7 @@ func WaitForL1OriginOnL2(rollupCfg *rollup.Config, l1BlockNum uint64, client *et
 			if err != nil {
 				return nil, err
 			}
-			l1Info, err := derive.L1BlockInfoFromBytes(rollupCfg, block.Time(), block.Transactions()[0].Data())
+			l1Info, err := derive.L1BlockInfoFromBytes(rollupCfg, timeint.Seconds(block.Time()), block.Transactions()[0].Data())
 			if err != nil {
 				return nil, err
 			}

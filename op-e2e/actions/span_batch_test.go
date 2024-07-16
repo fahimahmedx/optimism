@@ -26,6 +26,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-e2e/e2eutils"
 	"github.com/ethereum-optimism/optimism/op-node/rollup/sync"
 	"github.com/ethereum-optimism/optimism/op-service/testlog"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 // TestDropSpanBatchBeforeHardfork tests behavior of op-node before Delta hardfork.
@@ -179,7 +180,7 @@ func TestHardforkMiddleOfSpanBatch(gt *testing.T) {
 	unsafeOriginNum := new(big.Int).SetUint64(sequencer.L2Unsafe().L1Origin.Number)
 	unsafeHeader, err := minerCl.HeaderByNumber(t.Ctx(), unsafeOriginNum)
 	require.NoError(t, err)
-	require.False(t, sd.RollupCfg.IsDelta(unsafeHeader.Time))
+	require.False(t, sd.RollupCfg.IsDelta(timeint.Seconds(unsafeHeader.Time)))
 
 	// Make L2 blocks until the next epoch
 	sequencer.ActBuildToL1Head(t)
@@ -188,7 +189,7 @@ func TestHardforkMiddleOfSpanBatch(gt *testing.T) {
 	unsafeOriginNum = new(big.Int).SetUint64(sequencer.L2Unsafe().L1Origin.Number)
 	unsafeHeader, err = minerCl.HeaderByNumber(t.Ctx(), unsafeOriginNum)
 	require.NoError(t, err)
-	require.True(t, sd.RollupCfg.IsDelta(unsafeHeader.Time))
+	require.True(t, sd.RollupCfg.IsDelta(timeint.Seconds(unsafeHeader.Time)))
 
 	// Batch submit to L1. batcher should submit span batches.
 	batcher.ActSubmitAll(t)

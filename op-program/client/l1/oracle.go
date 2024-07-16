@@ -100,7 +100,7 @@ func (p *PreimageOracle) GetBlob(ref eth.L1BlockRef, blobHash eth.IndexedBlobHas
 	// Send a hint for the blob commitment & blob field elements.
 	blobReqMeta := make([]byte, 16)
 	binary.BigEndian.PutUint64(blobReqMeta[0:8], blobHash.Index)
-	binary.BigEndian.PutUint64(blobReqMeta[8:16], ref.Time)
+	binary.BigEndian.PutUint64(blobReqMeta[8:16], ref.Time.ToUint64Sec())
 	p.hint.Hint(BlobHint(append(blobHash.Hash[:], blobReqMeta...)))
 
 	commitment := p.oracle.Get(preimage.Sha256Key(blobHash.Hash))

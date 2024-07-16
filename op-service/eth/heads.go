@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/event"
@@ -47,7 +48,7 @@ func WatchHeadChanges(ctx context.Context, src NewHeadSource, fn HeadSignalFn) (
 					Hash:       header.Hash(),
 					Number:     header.Number.Uint64(),
 					ParentHash: header.ParentHash,
-					Time:       header.Time,
+					Time:       timeint.Seconds(header.Time),
 				})
 			case <-eventsCtx.Done():
 				return nil

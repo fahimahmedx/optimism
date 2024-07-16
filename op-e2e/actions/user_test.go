@@ -15,6 +15,7 @@ import (
 
 	"github.com/ethereum-optimism/optimism/op-e2e/e2eutils"
 	"github.com/ethereum-optimism/optimism/op-service/testlog"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 type hardforkScheduledTest struct {
@@ -30,8 +31,8 @@ func (tc *hardforkScheduledTest) SetFork(fork string, v uint64) {
 	*tc.fork(fork) = (*hexutil.Uint64)(&v)
 }
 
-func (tc *hardforkScheduledTest) GetFork(fork string) *uint64 {
-	return (*uint64)(*tc.fork(fork))
+func (tc *hardforkScheduledTest) GetFork(fork string) *timeint.Seconds {
+	return (*timeint.Seconds)(*tc.fork(fork))
 }
 
 func (tc *hardforkScheduledTest) fork(fork string) **hexutil.Uint64 {

@@ -19,6 +19,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum-optimism/optimism/op-service/testlog"
 	"github.com/ethereum-optimism/optimism/op-service/testutils"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 type fakeBatchQueueInput struct {
@@ -42,13 +43,13 @@ func (f *fakeBatchQueueInput) NextBatch(ctx context.Context) (Batch, error) {
 	return b, e
 }
 
-func mockHash(time uint64, layer uint8) common.Hash {
+func mockHash(time timeint.Seconds, layer uint8) common.Hash {
 	hash := common.Hash{31: layer} // indicate L1 or L2
-	binary.LittleEndian.PutUint64(hash[:], time)
+	binary.LittleEndian.PutUint64(hash[:], time.ToUint64Sec())
 	return hash
 }
 
-func b(chainId *big.Int, timestamp uint64, epoch eth.L1BlockRef) *SingularBatch {
+func b(chainId *big.Int, timestamp timeint.Seconds, epoch eth.L1BlockRef) *SingularBatch {
 	rng := rand.New(rand.NewSource(int64(timestamp)))
 	signer := types.NewLondonSigner(chainId)
 	tx := testutils.RandomTx(rng, new(big.Int).SetUint64(rng.Uint64()), signer)
@@ -66,7 +67,7 @@ func buildSpanBatches(t *testing.T, parent *eth.L2BlockRef, singularBatches []*S
 	var spanBatches []Batch
 	idx := 0
 	for _, count := range blockCounts {
-		span := initializedSpanBatch(singularBatches[idx:idx+count], uint64(0), chainId)
+		span := initializedSpanBatch(singularBatches[idx:idx+count], timeint.Seconds(0), chainId)
 		spanBatches = append(spanBatches, span)
 		idx += count
 	}
@@ -120,7 +121,7 @@ func singularBatchToBlockRef(t *testing.T, batch *SingularBatch, blockNumber uin
 	}
 }
 
-func L1Chain(l1Times []uint64) []eth.L1BlockRef {
+func L1Chain(l1Times []timeint.Seconds) []eth.L1BlockRef {
 	var out []eth.L1BlockRef
 	var parentHash common.Hash
 	for i, time := range l1Times {
@@ -168,7 +169,7 @@ func TestBatchQueue(t *testing.T) {
 // This issue was fixed in https://github.com/ethereum-optimism/optimism/pull/3694
 func BatchQueueNewOrigin(t *testing.T, batchType int) {
 	log := testlog.Logger(t, log.LevelCrit)
-	l1 := L1Chain([]uint64{10, 15, 20, 25})
+	l1 := L1Chain([]timeint.Seconds{10, 15, 20, 25})
 	safeHead := eth.L2BlockRef{
 		Hash:           mockHash(10, 2),
 		Number:         0,
@@ -228,7 +229,7 @@ func BatchQueueNewOrigin(t *testing.T, batchType int) {
 // enough calls to `NextBatch` return all of those batches.
 func BatchQueueEager(t *testing.T, batchType int) {
 	log := testlog.Logger(t, log.LevelCrit)
-	l1 := L1Chain([]uint64{10, 20, 30})
+	l1 := L1Chain([]timeint.Seconds{10, 20, 30})
 	chainId := big.NewInt(1234)
 	safeHead := eth.L2BlockRef{
 		Hash:           mockHash(10, 2),
@@ -306,7 +307,7 @@ func BatchQueueEager(t *testing.T, batchType int) {
 // This is a regression test for CLI-3378.
 func BatchQueueInvalidInternalAdvance(t *testing.T, batchType int) {
 	log := testlog.Logger(t, log.LevelTrace)
-	l1 := L1Chain([]uint64{10, 15, 20, 25, 30})
+	l1 := L1Chain([]timeint.Seconds{10, 15, 20, 25, 30})
 	chainId := big.NewInt(1234)
 	safeHead := eth.L2BlockRef{
 		Hash:           mockHash(10, 2),
@@ -425,7 +426,7 @@ func BatchQueueInvalidInternalAdvance(t *testing.T, batchType int) {
 
 func BatchQueueMissing(t *testing.T, batchType int) {
 	log := testlog.Logger(t, log.LevelCrit)
-	l1 := L1Chain([]uint64{10, 15, 20, 25})
+	l1 := L1Chain([]timeint.Seconds{10, 15, 20, 25})
 	chainId := big.NewInt(1234)
 	safeHead := eth.L2BlockRef{
 		Hash:           mockHash(10, 2),
@@ -542,7 +543,7 @@ func BatchQueueMissing(t *testing.T, batchType int) {
 // Batch queue's l1blocks list should be updated along epochs.
 func BatchQueueAdvancedEpoch(t *testing.T, batchType int) {
 	log := testlog.Logger(t, log.LevelCrit)
-	l1 := L1Chain([]uint64{0, 6, 12, 18, 24}) // L1 block time: 6s
+	l1 := L1Chain([]timeint.Seconds{0, 6, 12, 18, 24}) // L1 block time: 6s
 	chainId := big.NewInt(1234)
 	safeHead := eth.L2BlockRef{
 		Hash:           mockHash(4, 2),
@@ -629,7 +630,7 @@ func BatchQueueAdvancedEpoch(t *testing.T, batchType int) {
 // BatchQueueShuffle tests batch queue can reorder shuffled valid batches
 func BatchQueueShuffle(t *testing.T, batchType int) {
 	log := testlog.Logger(t, log.LevelCrit)
-	l1 := L1Chain([]uint64{0, 6, 12, 18, 24}) // L1 block time: 6s
+	l1 := L1Chain([]timeint.Seconds{0, 6, 12, 18, 24}) // L1 block time: 6s
 	chainId := big.NewInt(1234)
 	safeHead := eth.L2BlockRef{
 		Hash:           mockHash(4, 2),
@@ -727,7 +728,7 @@ func BatchQueueShuffle(t *testing.T, batchType int) {
 
 func TestBatchQueueOverlappingSpanBatch(t *testing.T) {
 	log := testlog.Logger(t, log.LevelCrit)
-	l1 := L1Chain([]uint64{10, 20, 30})
+	l1 := L1Chain([]timeint.Seconds{10, 20, 30})
 	chainId := big.NewInt(1234)
 	safeHead := eth.L2BlockRef{
 		Hash:           mockHash(10, 2),
@@ -767,7 +768,7 @@ func TestBatchQueueOverlappingSpanBatch(t *testing.T) {
 	var inputBatches []Batch
 	batchSize := 3
 	for i := 0; i < len(expectedOutputBatches)-batchSize; i++ {
-		inputBatches = append(inputBatches, initializedSpanBatch(expectedOutputBatches[i:i+batchSize], uint64(0), chainId))
+		inputBatches = append(inputBatches, initializedSpanBatch(expectedOutputBatches[i:i+batchSize], timeint.Seconds(0), chainId))
 	}
 	inputBatches = append(inputBatches, nil)
 	// inputBatches:
@@ -832,7 +833,7 @@ func TestBatchQueueOverlappingSpanBatch(t *testing.T) {
 
 func TestBatchQueueComplex(t *testing.T) {
 	log := testlog.Logger(t, log.LevelCrit)
-	l1 := L1Chain([]uint64{0, 6, 12, 18, 24}) // L1 block time: 6s
+	l1 := L1Chain([]timeint.Seconds{0, 6, 12, 18, 24}) // L1 block time: 6s
 	chainId := big.NewInt(1234)
 	safeHead := eth.L2BlockRef{
 		Hash:           mockHash(4, 2),
@@ -872,12 +873,12 @@ func TestBatchQueueComplex(t *testing.T) {
 	inputErrors := []error{nil, nil, nil, nil, nil, nil, io.EOF}
 	// batches will be returned by fakeBatchQueueInput
 	inputBatches := []Batch{
-		initializedSpanBatch(expectedOutputBatches[0:2], uint64(0), chainId), // [6, 8] - no overlap
+		initializedSpanBatch(expectedOutputBatches[0:2], timeint.Seconds(0), chainId), // [6, 8] - no overlap
 		expectedOutputBatches[2], // [10] - no overlap
-		initializedSpanBatch(expectedOutputBatches[1:4], uint64(0), chainId), // [8, 10, 12] - overlapped blocks: 8 or 8, 10
+		initializedSpanBatch(expectedOutputBatches[1:4], timeint.Seconds(0), chainId), // [8, 10, 12] - overlapped blocks: 8 or 8, 10
 		expectedOutputBatches[4], // [14] - no overlap
-		initializedSpanBatch(expectedOutputBatches[4:6], uint64(0), chainId), // [14, 16] - overlapped blocks: nothing or 14
-		initializedSpanBatch(expectedOutputBatches[6:9], uint64(0), chainId), // [18, 20, 22] - no overlap
+		initializedSpanBatch(expectedOutputBatches[4:6], timeint.Seconds(0), chainId), // [14, 16] - overlapped blocks: nothing or 14
+		initializedSpanBatch(expectedOutputBatches[6:9], timeint.Seconds(0), chainId), // [18, 20, 22] - no overlap
 	}
 
 	// Shuffle the order of input batches
@@ -951,7 +952,7 @@ func TestBatchQueueComplex(t *testing.T) {
 func TestBatchQueueResetSpan(t *testing.T) {
 	log := testlog.Logger(t, log.LevelCrit)
 	chainId := big.NewInt(1234)
-	l1 := L1Chain([]uint64{0, 4, 8})
+	l1 := L1Chain([]timeint.Seconds{0, 4, 8})
 	safeHead := eth.L2BlockRef{
 		Hash:           mockHash(0, 2),
 		Number:         0,
@@ -979,7 +980,7 @@ func TestBatchQueueResetSpan(t *testing.T) {
 	}
 
 	input := &fakeBatchQueueInput{
-		batches: []Batch{initializedSpanBatch(singularBatches, uint64(0), chainId)},
+		batches: []Batch{initializedSpanBatch(singularBatches, timeint.Seconds(0), chainId)},
 		errors:  []error{nil},
 		origin:  l1[2],
 	}

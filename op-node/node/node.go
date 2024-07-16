@@ -31,6 +31,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-service/oppprof"
 	"github.com/ethereum-optimism/optimism/op-service/retry"
 	"github.com/ethereum-optimism/optimism/op-service/sources"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 var ErrAlreadyClosed = errors.New("node is already closed")
@@ -609,7 +610,7 @@ func (n *OpNode) RequestL2Range(ctx context.Context, start, end eth.L2BlockRef) 
 }
 
 // unixTimeStale returns true if the unix timestamp is before the current time minus the supplied duration.
-func unixTimeStale(timestamp uint64, duration time.Duration) bool {
+func unixTimeStale(timestamp timeint.Seconds, duration time.Duration) bool {
 	return time.Unix(int64(timestamp), 0).Before(time.Now().Add(-1 * duration))
 }
 

@@ -7,6 +7,7 @@ import (
 
 	"github.com/ethereum-optimism/optimism/op-node/rollup"
 	"github.com/ethereum-optimism/optimism/op-service/eth"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/log"
@@ -23,7 +24,7 @@ type SingularBatch struct {
 	ParentHash   common.Hash  // parent L2 block hash
 	EpochNum     rollup.Epoch // aka l1 num
 	EpochHash    common.Hash  // l1 block hash
-	Timestamp    uint64
+	Timestamp    timeint.Seconds
 	Transactions []hexutil.Bytes
 }
 
@@ -36,7 +37,7 @@ func (b *SingularBatch) GetBatchType() int {
 }
 
 // GetTimestamp returns its block timestamp
-func (b *SingularBatch) GetTimestamp() uint64 {
+func (b *SingularBatch) GetTimestamp() timeint.Seconds {
 	return b.Timestamp
 }
 

@@ -20,6 +20,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-node/rollup"
 	plasma "github.com/ethereum-optimism/optimism/op-plasma"
 	"github.com/ethereum-optimism/optimism/op-service/eth"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 var (
@@ -58,15 +59,15 @@ type DeployConfig struct {
 	// L2ChainID is the chain ID of the L2 chain.
 	L2ChainID uint64 `json:"l2ChainID"`
 	// L2BlockTime is the number of seconds between each L2 block.
-	L2BlockTime uint64 `json:"l2BlockTime"`
+	L2BlockTime timeint.Seconds `json:"l2BlockTime"`
 	// FinalizationPeriodSeconds represents the number of seconds before an output is considered
 	// finalized. This impacts the amount of time that withdrawals take to finalize and is
 	// generally set to 1 week.
-	FinalizationPeriodSeconds uint64 `json:"finalizationPeriodSeconds"`
+	FinalizationPeriodSeconds timeint.Seconds `json:"finalizationPeriodSeconds"`
 	// MaxSequencerDrift is the number of seconds after the L1 timestamp of the end of the
 	// sequencing window that batches must be included, otherwise L2 blocks including
 	// deposits are force included.
-	MaxSequencerDrift uint64 `json:"maxSequencerDrift"`
+	MaxSequencerDrift timeint.Seconds `json:"maxSequencerDrift"`
 	// SequencerWindowSize is the number of L1 blocks per sequencing window.
 	SequencerWindowSize uint64 `json:"sequencerWindowSize"`
 	// ChannelTimeout is the number of L1 blocks that a frame stays valid when included in L1.
@@ -99,17 +100,17 @@ type DeployConfig struct {
 	// L1UseClique represents whether or not to use the clique consensus engine.
 	L1UseClique bool `json:"l1UseClique"`
 
-	L1BlockTime                 uint64         `json:"l1BlockTime"`
-	L1GenesisBlockTimestamp     hexutil.Uint64 `json:"l1GenesisBlockTimestamp"`
-	L1GenesisBlockNonce         hexutil.Uint64 `json:"l1GenesisBlockNonce"`
-	L1GenesisBlockGasLimit      hexutil.Uint64 `json:"l1GenesisBlockGasLimit"`
-	L1GenesisBlockDifficulty    *hexutil.Big   `json:"l1GenesisBlockDifficulty"`
-	L1GenesisBlockMixHash       common.Hash    `json:"l1GenesisBlockMixHash"`
-	L1GenesisBlockCoinbase      common.Address `json:"l1GenesisBlockCoinbase"`
-	L1GenesisBlockNumber        hexutil.Uint64 `json:"l1GenesisBlockNumber"`
-	L1GenesisBlockGasUsed       hexutil.Uint64 `json:"l1GenesisBlockGasUsed"`
-	L1GenesisBlockParentHash    common.Hash    `json:"l1GenesisBlockParentHash"`
-	L1GenesisBlockBaseFeePerGas *hexutil.Big   `json:"l1GenesisBlockBaseFeePerGas"`
+	L1BlockTime                 timeint.Seconds `json:"l1BlockTime"`
+	L1GenesisBlockTimestamp     hexutil.Uint64  `json:"l1GenesisBlockTimestamp"`
+	L1GenesisBlockNonce         hexutil.Uint64  `json:"l1GenesisBlockNonce"`
+	L1GenesisBlockGasLimit      hexutil.Uint64  `json:"l1GenesisBlockGasLimit"`
+	L1GenesisBlockDifficulty    *hexutil.Big    `json:"l1GenesisBlockDifficulty"`
+	L1GenesisBlockMixHash       common.Hash     `json:"l1GenesisBlockMixHash"`
+	L1GenesisBlockCoinbase      common.Address  `json:"l1GenesisBlockCoinbase"`
+	L1GenesisBlockNumber        hexutil.Uint64  `json:"l1GenesisBlockNumber"`
+	L1GenesisBlockGasUsed       hexutil.Uint64  `json:"l1GenesisBlockGasUsed"`
+	L1GenesisBlockParentHash    common.Hash     `json:"l1GenesisBlockParentHash"`
+	L1GenesisBlockBaseFeePerGas *hexutil.Big    `json:"l1GenesisBlockBaseFeePerGas"`
 
 	L2GenesisBlockNonce         hexutil.Uint64 `json:"l2GenesisBlockNonce"`
 	L2GenesisBlockGasLimit      hexutil.Uint64 `json:"l2GenesisBlockGasLimit"`
@@ -538,68 +539,68 @@ func (d *DeployConfig) GovernanceEnabled() bool {
 	return d.EnableGovernance
 }
 
-func (d *DeployConfig) RegolithTime(genesisTime uint64) *uint64 {
+func (d *DeployConfig) RegolithTime(genesisTime timeint.Seconds) *timeint.Seconds {
 	if d.L2GenesisRegolithTimeOffset == nil {
 		return nil
 	}
-	v := uint64(0)
+	v := timeint.Seconds(0)
 	if offset := *d.L2GenesisRegolithTimeOffset; offset > 0 {
-		v = genesisTime + uint64(offset)
+		v = genesisTime + timeint.Seconds(offset)
 	}
 	return &v
 }
 
-func (d *DeployConfig) CanyonTime(genesisTime uint64) *uint64 {
+func (d *DeployConfig) CanyonTime(genesisTime timeint.Seconds) *timeint.Seconds {
 	if d.L2GenesisCanyonTimeOffset == nil {
 		return nil
 	}
-	v := uint64(0)
+	v := timeint.Seconds(0)
 	if offset := *d.L2GenesisCanyonTimeOffset; offset > 0 {
-		v = genesisTime + uint64(offset)
+		v = genesisTime + timeint.Seconds(offset)
 	}
 	return &v
 }
 
-func (d *DeployConfig) DeltaTime(genesisTime uint64) *uint64 {
+func (d *DeployConfig) DeltaTime(genesisTime timeint.Seconds) *timeint.Seconds {
 	if d.L2GenesisDeltaTimeOffset == nil {
 		return nil
 	}
-	v := uint64(0)
+	v := timeint.Seconds(0)
 	if offset := *d.L2GenesisDeltaTimeOffset; offset > 0 {
-		v = genesisTime + uint64(offset)
+		v = genesisTime + timeint.Seconds(offset)
 	}
 	return &v
 }
 
-func (d *DeployConfig) EcotoneTime(genesisTime uint64) *uint64 {
+func (d *DeployConfig) EcotoneTime(genesisTime timeint.Seconds) *timeint.Seconds {
 	if d.L2GenesisEcotoneTimeOffset == nil {
 		return nil
 	}
-	v := uint64(0)
+	v := timeint.Seconds(0)
 	if offset := *d.L2GenesisEcotoneTimeOffset; offset > 0 {
-		v = genesisTime + uint64(offset)
+		v = genesisTime + timeint.Seconds(offset)
 	}
 	return &v
 }
 
-func (d *DeployConfig) FjordTime(genesisTime uint64) *uint64 {
+func (d *DeployConfig) FjordTime(genesisTime timeint.Seconds) *timeint.Seconds {
 	if d.L2GenesisFjordTimeOffset == nil {
 		return nil
 	}
-	v := uint64(0)
+	v := timeint.Seconds(0)
 	if offset := *d.L2GenesisFjordTimeOffset; offset > 0 {
-		v = genesisTime + uint64(offset)
+		v = genesisTime + timeint.Seconds(offset)
 	}
 	return &v
 }
 
-func (d *DeployConfig) InteropTime(genesisTime uint64) *uint64 {
+func (d *DeployConfig) InteropTime(genesisTime timeint.Seconds) *timeint.Seconds {
 	if d.L2GenesisInteropTimeOffset == nil {
 		return nil
 	}
-	v := uint64(0)
+	v := timeint.Seconds(0)
 	if offset := *d.L2GenesisInteropTimeOffset; offset > 0 {
-		v = genesisTime + uint64(offset)
+		v = genesisTime + timeint.Seconds(offset)
 	}
 	return &v
 }
@@ -633,7 +634,7 @@ func (d *DeployConfig) RollupConfig(l1StartBlock *types.Block, l2GenesisBlockHas
 				Hash:   l2GenesisBlockHash,
 				Number: l2GenesisBlockNumber,
 			},
-			L2Time: l1StartBlock.Time(),
+			L2Time: timeint.Seconds(l1StartBlock.Time()),
 			SystemConfig: eth.SystemConfig{
 				BatcherAddr: d.BatchSenderAddress,
 				Overhead:    eth.Bytes32(common.BigToHash(new(big.Int).SetUint64(d.GasPriceOracleOverhead))),
@@ -650,12 +651,12 @@ func (d *DeployConfig) RollupConfig(l1StartBlock *types.Block, l2GenesisBlockHas
 		BatchInboxAddress:      d.BatchInboxAddress,
 		DepositContractAddress: d.OptimismPortalProxy,
 		L1SystemConfigAddress:  d.SystemConfigProxy,
-		RegolithTime:           d.RegolithTime(l1StartBlock.Time()),
-		CanyonTime:             d.CanyonTime(l1StartBlock.Time()),
-		DeltaTime:              d.DeltaTime(l1StartBlock.Time()),
-		EcotoneTime:            d.EcotoneTime(l1StartBlock.Time()),
-		FjordTime:              d.FjordTime(l1StartBlock.Time()),
-		InteropTime:            d.InteropTime(l1StartBlock.Time()),
+		RegolithTime:           d.RegolithTime(timeint.Seconds(l1StartBlock.Time())),
+		CanyonTime:             d.CanyonTime(timeint.Seconds(l1StartBlock.Time())),
+		DeltaTime:              d.DeltaTime(timeint.Seconds(l1StartBlock.Time())),
+		EcotoneTime:            d.EcotoneTime(timeint.Seconds(l1StartBlock.Time())),
+		FjordTime:              d.FjordTime(timeint.Seconds(l1StartBlock.Time())),
+		InteropTime:            d.InteropTime(timeint.Seconds(l1StartBlock.Time())),
 		PlasmaConfig:           plasma,
 	}, nil
 }

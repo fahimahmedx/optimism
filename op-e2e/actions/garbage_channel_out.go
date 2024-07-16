@@ -11,6 +11,7 @@ import (
 
 	"github.com/ethereum-optimism/optimism/op-node/rollup"
 	"github.com/ethereum-optimism/optimism/op-node/rollup/derive"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/rlp"
@@ -250,7 +251,7 @@ func blockToBatch(rollupCfg *rollup.Config, block *types.Block) (*derive.BatchDa
 	if l1InfoTx.Type() != types.DepositTxType {
 		return nil, derive.ErrNotDepositTx
 	}
-	l1Info, err := derive.L1BlockInfoFromBytes(rollupCfg, block.Time(), l1InfoTx.Data())
+	l1Info, err := derive.L1BlockInfoFromBytes(rollupCfg, timeint.Seconds(block.Time()), l1InfoTx.Data())
 	if err != nil {
 		return nil, fmt.Errorf("could not parse the L1 Info deposit: %w", err)
 	}
@@ -259,7 +260,7 @@ func blockToBatch(rollupCfg *rollup.Config, block *types.Block) (*derive.BatchDa
 		ParentHash:   block.ParentHash(),
 		EpochNum:     rollup.Epoch(l1Info.Number),
 		EpochHash:    l1Info.BlockHash,
-		Timestamp:    block.Time(),
+		Timestamp:    timeint.Seconds(block.Time()),
 		Transactions: opaqueTxs,
 	}
 

@@ -18,6 +18,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-node/rollup"
 	plasma "github.com/ethereum-optimism/optimism/op-plasma"
 	"github.com/ethereum-optimism/optimism/op-service/eth"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 var testingJWTSecret = [32]byte{123}
@@ -42,10 +43,10 @@ type DeployParams struct {
 
 // TestParams parametrizes the most essential rollup configuration parameters
 type TestParams struct {
-	MaxSequencerDrift   uint64
+	MaxSequencerDrift   timeint.Seconds
 	SequencerWindowSize uint64
 	ChannelTimeout      uint64
-	L1BlockTime         uint64
+	L1BlockTime         timeint.Seconds
 	UsePlasma           bool
 }
 
@@ -127,7 +128,7 @@ func Setup(t require.TestingT, deployParams *DeployParams, alloc *AllocParams) *
 
 	var allocsMode genesis.L2AllocsMode
 	allocsMode = genesis.L2AllocsDelta
-	if ecotoneTime := deployConf.EcotoneTime(l1Block.Time()); ecotoneTime != nil && *ecotoneTime == 0 {
+	if ecotoneTime := deployConf.EcotoneTime(timeint.Seconds(l1Block.Time())); ecotoneTime != nil && *ecotoneTime == 0 {
 		allocsMode = genesis.L2AllocsEcotone
 	}
 	l2Allocs := config.L2Allocs(allocsMode)
@@ -164,7 +165,7 @@ func Setup(t require.TestingT, deployParams *DeployParams, alloc *AllocParams) *
 				Hash:   l2Genesis.ToBlock().Hash(),
 				Number: 0,
 			},
-			L2Time:       uint64(deployConf.L1GenesisBlockTimestamp),
+			L2Time:       timeint.Seconds(deployConf.L1GenesisBlockTimestamp),
 			SystemConfig: SystemConfigFromDeployConfig(deployConf),
 		},
 		BlockTime:              deployConf.L2BlockTime,
@@ -176,12 +177,12 @@ func Setup(t require.TestingT, deployParams *DeployParams, alloc *AllocParams) *
 		BatchInboxAddress:      deployConf.BatchInboxAddress,
 		DepositContractAddress: deployConf.OptimismPortalProxy,
 		L1SystemConfigAddress:  deployConf.SystemConfigProxy,
-		RegolithTime:           deployConf.RegolithTime(uint64(deployConf.L1GenesisBlockTimestamp)),
-		CanyonTime:             deployConf.CanyonTime(uint64(deployConf.L1GenesisBlockTimestamp)),
-		DeltaTime:              deployConf.DeltaTime(uint64(deployConf.L1GenesisBlockTimestamp)),
-		EcotoneTime:            deployConf.EcotoneTime(uint64(deployConf.L1GenesisBlockTimestamp)),
-		FjordTime:              deployConf.FjordTime(uint64(deployConf.L1GenesisBlockTimestamp)),
-		InteropTime:            deployConf.InteropTime(uint64(deployConf.L1GenesisBlockTimestamp)),
+		RegolithTime:           deployConf.RegolithTime(timeint.Seconds(deployConf.L1GenesisBlockTimestamp)),
+		CanyonTime:             deployConf.CanyonTime(timeint.Seconds(deployConf.L1GenesisBlockTimestamp)),
+		DeltaTime:              deployConf.DeltaTime(timeint.Seconds(deployConf.L1GenesisBlockTimestamp)),
+		EcotoneTime:            deployConf.EcotoneTime(timeint.Seconds(deployConf.L1GenesisBlockTimestamp)),
+		FjordTime:              deployConf.FjordTime(timeint.Seconds(deployConf.L1GenesisBlockTimestamp)),
+		InteropTime:            deployConf.InteropTime(timeint.Seconds(deployConf.L1GenesisBlockTimestamp)),
 		PlasmaConfig:           pcfg,
 	}
 

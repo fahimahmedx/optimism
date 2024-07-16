@@ -24,10 +24,11 @@ import (
 	"github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum-optimism/optimism/op-service/testlog"
 	"github.com/ethereum-optimism/optimism/op-service/testutils"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 func mockConfig(t *testing.T) Config {
-	now := uint64(time.Now().Unix())
+	now := timeint.Seconds(time.Now().Unix())
 	return Config{
 		ConsensusAddr:  "127.0.0.1",
 		ConsensusPort:  50050,

@@ -8,6 +8,7 @@ import (
 
 	"github.com/ethereum-optimism/optimism/op-node/rollup"
 	"github.com/ethereum-optimism/optimism/op-service/eth"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 // PayloadToBlockRef extracts the essential L2BlockRef information from an execution payload,
@@ -33,7 +34,7 @@ func PayloadToBlockRef(rollupCfg *rollup.Config, payload *eth.ExecutionPayload) 
 		if tx.Type() != types.DepositTxType {
 			return eth.L2BlockRef{}, fmt.Errorf("first payload tx has unexpected tx type: %d", tx.Type())
 		}
-		info, err := L1BlockInfoFromBytes(rollupCfg, uint64(payload.Timestamp), tx.Data())
+		info, err := L1BlockInfoFromBytes(rollupCfg, timeint.Seconds(payload.Timestamp), tx.Data())
 		if err != nil {
 			return eth.L2BlockRef{}, fmt.Errorf("failed to parse L1 info deposit tx from L2 block: %w", err)
 		}
@@ -45,7 +46,7 @@ func PayloadToBlockRef(rollupCfg *rollup.Config, payload *eth.ExecutionPayload) 
 		Hash:           payload.BlockHash,
 		Number:         uint64(payload.BlockNumber),
 		ParentHash:     payload.ParentHash,
-		Time:           uint64(payload.Timestamp),
+		Time:           timeint.Seconds(payload.Timestamp),
 		L1Origin:       l1Origin,
 		SequenceNumber: sequenceNumber,
 	}, nil
@@ -70,11 +71,11 @@ func PayloadToSystemConfig(rollupCfg *rollup.Config, payload *eth.ExecutionPaylo
 		if tx.Type() != types.DepositTxType {
 			return eth.SystemConfig{}, fmt.Errorf("first payload tx has unexpected tx type: %d", tx.Type())
 		}
-		info, err := L1BlockInfoFromBytes(rollupCfg, uint64(payload.Timestamp), tx.Data())
+		info, err := L1BlockInfoFromBytes(rollupCfg, timeint.Seconds(payload.Timestamp), tx.Data())
 		if err != nil {
 			return eth.SystemConfig{}, fmt.Errorf("failed to parse L1 info deposit tx from L2 block: %w", err)
 		}
-		if isEcotoneButNotFirstBlock(rollupCfg, uint64(payload.Timestamp)) {
+		if isEcotoneButNotFirstBlock(rollupCfg, timeint.Seconds(payload.Timestamp)) {
 			// Translate Ecotone values back into encoded scalar if needed.
 			// We do not know if it was derived from a v0 or v1 scalar,
 			// but v1 is fine, a 0 blob base fee has the same effect.

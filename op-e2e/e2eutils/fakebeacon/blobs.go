@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/ethereum-optimism/optimism/op-service/eth"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/beacon/engine"
 	"github.com/ethereum/go-ethereum/log"
@@ -34,11 +35,11 @@ type FakeBeacon struct {
 	beaconSrv         *http.Server
 	beaconAPIListener net.Listener
 
-	genesisTime uint64
-	blockTime   uint64
+	genesisTime timeint.Seconds
+	blockTime   timeint.Seconds
 }
 
-func NewBeacon(log log.Logger, blobsDir string, genesisTime uint64, blockTime uint64) *FakeBeacon {
+func NewBeacon(log log.Logger, blobsDir string, genesisTime timeint.Seconds, blockTime timeint.Seconds) *FakeBeacon {
 	return &FakeBeacon{
 		log:         log,
 		blobsDir:    blobsDir,

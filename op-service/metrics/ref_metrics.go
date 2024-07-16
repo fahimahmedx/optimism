@@ -100,11 +100,11 @@ func (m *RefMetrics) RecordRef(layer string, name string, num uint64, timestamp 
 }
 
 func (m *RefMetrics) RecordL1Ref(name string, ref eth.L1BlockRef) {
-	m.RecordRef("l1", name, ref.Number, ref.Time, ref.Hash)
+	m.RecordRef("l1", name, ref.Number, ref.Time.ToUint64Sec(), ref.Hash)
 }
 
 func (m *RefMetrics) RecordL2Ref(name string, ref eth.L2BlockRef) {
-	m.RecordRef("l2", name, ref.Number, ref.Time, ref.Hash)
+	m.RecordRef("l2", name, ref.Number, ref.Time.ToUint64Sec(), ref.Hash)
 	m.RecordRef("l1_origin", name, ref.L1Origin.Number, 0, ref.L1Origin.Hash)
 	m.RefsSeqNr.WithLabelValues(name).Set(float64(ref.SequenceNumber))
 }

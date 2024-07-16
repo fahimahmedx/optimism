@@ -18,6 +18,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-service/retry"
 	"github.com/ethereum-optimism/optimism/op-service/sources"
 	"github.com/ethereum-optimism/optimism/op-service/testutils"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core"
@@ -298,7 +299,7 @@ func getRandomSignedTransaction(ctx context.Context, ethClient *ethclient.Client
 }
 
 // confirmTransaction polls receipts to confirm transaction is included in the block.
-func confirmTransaction(ctx context.Context, ethClient *ethclient.Client, l2BlockTime uint64, txHash common.Hash) (eth.BlockID, error) {
+func confirmTransaction(ctx context.Context, ethClient *ethclient.Client, l2BlockTime timeint.Seconds, txHash common.Hash) (eth.BlockID, error) {
 	var retryCount uint64
 	for {
 		receipt, _ := ethClient.TransactionReceipt(ctx, txHash)
@@ -343,7 +344,7 @@ func checkConsolidation(cliCtx *cli.Context) error {
 		return fmt.Errorf("tx count %d is too low. requires minimum 4 txs to test all tx types", txCount)
 	}
 	l2ChainID := new(big.Int).SetUint64(cliCtx.Uint64("l2-chain-id"))
-	l2BlockTime := uint64(2)
+	l2BlockTime := timeint.Seconds(2)
 	rollupCfg, err := rollup.LoadOPStackRollupConfig(l2ChainID.Uint64())
 	if err == nil {
 		l2BlockTime = rollupCfg.BlockTime

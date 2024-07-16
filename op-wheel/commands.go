@@ -28,6 +28,7 @@ import (
 	oplog "github.com/ethereum-optimism/optimism/op-service/log"
 	opmetrics "github.com/ethereum-optimism/optimism/op-service/metrics"
 	"github.com/ethereum-optimism/optimism/op-service/sources"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 	"github.com/ethereum-optimism/optimism/op-wheel/cheat"
 	"github.com/ethereum-optimism/optimism/op-wheel/engine"
 )
@@ -226,10 +227,10 @@ func rollupFromGethConfig(cfg *params.ChainConfig) *rollup.Config {
 	return &rollup.Config{
 		L2ChainID: cfg.ChainID,
 
-		RegolithTime: cfg.RegolithTime,
-		CanyonTime:   cfg.CanyonTime,
-		EcotoneTime:  cfg.EcotoneTime,
-		InteropTime:  cfg.InteropTime,
+		RegolithTime: timeint.Seconds(cfg.RegolithTime),
+		CanyonTime:   timeint.Seconds(cfg.CanyonTime),
+		EcotoneTime:  timeint.Seconds(cfg.EcotoneTime),
+		InteropTime:  timeint.Seconds(cfg.InteropTime),
 	}
 }
 

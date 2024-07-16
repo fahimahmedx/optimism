@@ -8,6 +8,7 @@ import (
 
 	"github.com/ethereum-optimism/optimism/op-node/rollup"
 	"github.com/ethereum-optimism/optimism/op-service/eth"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 // L2BlockRefSource is a source for the generation of a L2BlockRef. E.g. a
@@ -46,7 +47,7 @@ func L2BlockToBlockRef(rollupCfg *rollup.Config, block L2BlockRefSource) (eth.L2
 		if tx.Type() != types.DepositTxType {
 			return eth.L2BlockRef{}, fmt.Errorf("first payload tx has unexpected tx type: %d", tx.Type())
 		}
-		info, err := L1BlockInfoFromBytes(rollupCfg, block.Time(), tx.Data())
+		info, err := L1BlockInfoFromBytes(rollupCfg, timeint.Seconds(block.Time()), tx.Data())
 		if err != nil {
 			return eth.L2BlockRef{}, fmt.Errorf("failed to parse L1 info deposit tx from L2 block: %w", err)
 		}
@@ -58,7 +59,7 @@ func L2BlockToBlockRef(rollupCfg *rollup.Config, block L2BlockRefSource) (eth.L2
 		Hash:           hash,
 		Number:         number,
 		ParentHash:     block.ParentHash(),
-		Time:           block.Time(),
+		Time:           timeint.Seconds(block.Time()),
 		L1Origin:       l1Origin,
 		SequenceNumber: sequenceNumber,
 	}, nil

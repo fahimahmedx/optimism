@@ -82,7 +82,7 @@ func (o *CachingOracle) GetBlob(ref eth.L1BlockRef, blobHash eth.IndexedBlobHash
 	// Create a 32 byte hash key by hashing `blobHash.Hash ++ ref.Time ++ blobHash.Index`
 	hashBuf := make([]byte, 48)
 	copy(hashBuf[0:32], blobHash.Hash[:])
-	binary.BigEndian.PutUint64(hashBuf[32:], ref.Time)
+	binary.BigEndian.PutUint64(hashBuf[32:], ref.Time.ToUint64Sec())
 	binary.BigEndian.PutUint64(hashBuf[40:], blobHash.Index)
 	cacheKey := crypto.Keccak256Hash(hashBuf)
 

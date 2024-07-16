@@ -14,6 +14,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-node/rollup/derive"
 	"github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum-optimism/optimism/op-service/sources"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -26,7 +27,7 @@ type TransactionWithMetadata struct {
 	InboxAddr   common.Address     `json:"inbox_address"`
 	BlockNumber uint64             `json:"block_number"`
 	BlockHash   common.Hash        `json:"block_hash"`
-	BlockTime   uint64             `json:"block_time"`
+	BlockTime   timeint.Seconds    `json:"block_time"`
 	ChainId     uint64             `json:"chain_id"`
 	Sender      common.Address     `json:"sender"`
 	ValidSender bool               `json:"valid_sender"`
@@ -126,7 +127,7 @@ func fetchBatchesPerBlock(ctx context.Context, client *ethclient.Client, beacon 
 					Hash:       block.Hash(),
 					Number:     block.Number().Uint64(),
 					ParentHash: block.ParentHash(),
-					Time:       block.Time(),
+					Time:       timeint.Seconds(block.Time()),
 				}, hashes)
 				if err != nil {
 					log.Fatal(fmt.Errorf("failed to fetch blobs: %w", err))
@@ -170,7 +171,7 @@ func fetchBatchesPerBlock(ctx context.Context, client *ethclient.Client, beacon 
 				TxIndex:     uint64(i),
 				BlockNumber: block.NumberU64(),
 				BlockHash:   block.Hash(),
-				BlockTime:   block.Time(),
+				BlockTime:   timeint.Seconds(block.Time()),
 				ChainId:     config.ChainID.Uint64(),
 				InboxAddr:   config.BatchInbox,
 				Frames:      frames,

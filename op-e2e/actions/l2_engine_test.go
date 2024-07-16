@@ -24,6 +24,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum-optimism/optimism/op-service/sources"
 	"github.com/ethereum-optimism/optimism/op-service/testlog"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 func TestL2EngineAPI(gt *testing.T) {
@@ -129,7 +130,7 @@ func TestL2EngineAPIBlockBuilding(gt *testing.T) {
 		nextBlockTime := eth.Uint64Quantity(parent.Time) + 2
 
 		var w *types.Withdrawals
-		if sd.RollupCfg.IsCanyon(uint64(nextBlockTime)) {
+		if sd.RollupCfg.IsCanyon(timeint.Seconds(nextBlockTime)) {
 			w = &types.Withdrawals{}
 		}
 

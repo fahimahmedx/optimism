@@ -9,6 +9,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum-optimism/optimism/op-service/sources"
 	"github.com/ethereum-optimism/optimism/op-service/testlog"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/stretchr/testify/require"
@@ -19,7 +20,7 @@ func TestGetVersion(t *testing.T) {
 
 	l := testlog.Logger(t, log.LevelInfo)
 
-	beaconApi := fakebeacon.NewBeacon(l, t.TempDir(), uint64(0), uint64(0))
+	beaconApi := fakebeacon.NewBeacon(l, t.TempDir(), timeint.Seconds(0), timeint.Seconds(0))
 	t.Cleanup(func() {
 		_ = beaconApi.Close()
 	})
@@ -38,7 +39,7 @@ func Test404NotFound(t *testing.T) {
 
 	l := testlog.Logger(t, log.LevelInfo)
 
-	beaconApi := fakebeacon.NewBeacon(l, t.TempDir(), uint64(0), uint64(12))
+	beaconApi := fakebeacon.NewBeacon(l, t.TempDir(), timeint.Seconds(0), timeint.Seconds(12))
 	t.Cleanup(func() {
 		_ = beaconApi.Close()
 	})

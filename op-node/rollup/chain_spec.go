@@ -2,6 +2,7 @@ package rollup
 
 import (
 	"github.com/ethereum-optimism/optimism/op-service/eth"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 	"github.com/ethereum/go-ethereum/log"
 )
 
@@ -64,13 +65,13 @@ func NewChainSpec(config *Config) *ChainSpec {
 }
 
 // IsCanyon returns true if t >= canyon_time
-func (s *ChainSpec) IsCanyon(t uint64) bool {
+func (s *ChainSpec) IsCanyon(t timeint.Seconds) bool {
 	return s.config.IsCanyon(t)
 }
 
 // MaxChannelBankSize returns the maximum number of bytes the can allocated inside the channel bank
 // before pruning occurs at the given timestamp.
-func (s *ChainSpec) MaxChannelBankSize(t uint64) uint64 {
+func (s *ChainSpec) MaxChannelBankSize(t timeint.Seconds) uint64 {
 	if s.config.IsFjord(t) {
 		return maxChannelBankSizeFjord
 	}
@@ -84,7 +85,7 @@ func (s *ChainSpec) ChannelTimeout() uint64 {
 
 // MaxRLPBytesPerChannel returns the maximum amount of bytes that will be read from
 // a channel at a given timestamp.
-func (s *ChainSpec) MaxRLPBytesPerChannel(t uint64) uint64 {
+func (s *ChainSpec) MaxRLPBytesPerChannel(t timeint.Seconds) uint64 {
 	if s.config.IsFjord(t) {
 		return maxRLPBytesPerChannelFjord
 	}
@@ -93,14 +94,14 @@ func (s *ChainSpec) MaxRLPBytesPerChannel(t uint64) uint64 {
 
 // IsFeatMaxSequencerDriftConstant specifies in which fork the max sequencer drift change to a
 // constant will be performed.
-func (s *ChainSpec) IsFeatMaxSequencerDriftConstant(t uint64) bool {
+func (s *ChainSpec) IsFeatMaxSequencerDriftConstant(t timeint.Seconds) bool {
 	return s.config.IsFjord(t)
 }
 
 // MaxSequencerDrift returns the maximum sequencer drift for the given block timestamp. Until Fjord,
 // this was a rollup configuration parameter. Since Fjord, it is a constant, so its effective value
 // should always be queried via the ChainSpec.
-func (s *ChainSpec) MaxSequencerDrift(t uint64) uint64 {
+func (s *ChainSpec) MaxSequencerDrift(t timeint.Seconds) timeint.Seconds {
 	if s.IsFeatMaxSequencerDriftConstant(t) {
 		return maxSequencerDriftFjord
 	}

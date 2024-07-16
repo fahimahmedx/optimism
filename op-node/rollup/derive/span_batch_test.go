@@ -16,13 +16,14 @@ import (
 
 	"github.com/ethereum-optimism/optimism/op-node/rollup"
 	"github.com/ethereum-optimism/optimism/op-service/testutils"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 // initializedSpanBatch creates a new SpanBatch with given SingularBatches.
 // It is used *only* in tests to create a SpanBatch with given SingularBatches as a convenience.
 // It will also ignore any errors that occur during AppendSingularBatch.
 // Tests should manually set the first bit of the originBits if needed using SetFirstOriginChangedBit
-func initializedSpanBatch(singularBatches []*SingularBatch, genesisTimestamp uint64, chainID *big.Int) *SpanBatch {
+func initializedSpanBatch(singularBatches []*SingularBatch, genesisTimestamp timeint.Seconds, chainID *big.Int) *SpanBatch {
 	spanBatch := NewSpanBatch(genesisTimestamp, chainID)
 	if len(singularBatches) == 0 {
 		return spanBatch
@@ -50,7 +51,7 @@ func TestSpanBatchForBatchInterface(t *testing.T) {
 	safeL2Head := testutils.RandomL2BlockRef(rng)
 	safeL2Head.Hash = common.BytesToHash(singularBatches[0].ParentHash[:])
 
-	spanBatch := initializedSpanBatch(singularBatches, uint64(0), chainID)
+	spanBatch := initializedSpanBatch(singularBatches, timeint.Seconds(0), chainID)
 
 	// check interface method implementations except logging
 	require.Equal(t, SpanBatchType, spanBatch.GetBatchType())
@@ -68,7 +69,7 @@ func TestEmptySpanBatch(t *testing.T) {
 
 	rawSpanBatch := RawSpanBatch{
 		spanBatchPrefix: spanBatchPrefix{
-			relTimestamp:  uint64(rng.Uint32()),
+			relTimestamp:  timeint.Seconds((rng.Uint32())),
 			l1OriginNum:   rng.Uint64(),
 			parentCheck:   *(*[20]byte)(testutils.RandomData(rng, 20)),
 			l1OriginCheck: *(*[20]byte)(testutils.RandomData(rng, 20)),
@@ -337,7 +338,7 @@ func TestSpanBatchDerive(t *testing.T) {
 	rng := rand.New(rand.NewSource(0xbab0bab0))
 
 	chainID := new(big.Int).SetUint64(rng.Uint64())
-	l2BlockTime := uint64(2)
+	l2BlockTime := timeint.Seconds(2)
 
 	for originChangedBit := 0; originChangedBit < 2; originChangedBit++ {
 		singularBatches := RandomValidConsecutiveSingularBatches(rng, chainID)
@@ -378,7 +379,7 @@ func TestSpanBatchAppend(t *testing.T) {
 
 	singularBatches := RandomValidConsecutiveSingularBatches(rng, chainID)
 	// initialize empty span batch
-	spanBatch := initializedSpanBatch([]*SingularBatch{}, uint64(0), chainID)
+	spanBatch := initializedSpanBatch([]*SingularBatch{}, timeint.Seconds(0), chainID)
 
 	L := 2
 	for i := 0; i < L; i++ {
@@ -386,7 +387,7 @@ func TestSpanBatchAppend(t *testing.T) {
 		require.NoError(t, err)
 	}
 	// initialize with two singular batches
-	spanBatch2 := initializedSpanBatch(singularBatches[:L], uint64(0), chainID)
+	spanBatch2 := initializedSpanBatch(singularBatches[:L], timeint.Seconds(0), chainID)
 
 	require.Equal(t, spanBatch, spanBatch2)
 }
@@ -394,7 +395,7 @@ func TestSpanBatchAppend(t *testing.T) {
 func TestSpanBatchMerge(t *testing.T) {
 	rng := rand.New(rand.NewSource(0x73314433))
 
-	genesisTimeStamp := rng.Uint64()
+	genesisTimeStamp := timeint.Seconds(rng.Uint64())
 	chainID := new(big.Int).SetUint64(rng.Uint64())
 
 	for originChangedBit := 0; originChangedBit < 2; originChangedBit++ {

@@ -14,6 +14,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-node/rollup"
 	"github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum-optimism/optimism/op-service/testutils"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 var (
@@ -109,7 +110,7 @@ func TestParseL1InfoDepositTxData(t *testing.T) {
 	t.Run("regolith", func(t *testing.T) {
 		rng := rand.New(rand.NewSource(1234))
 		info := testutils.MakeBlockInfo(nil)(rng)
-		zero := uint64(0)
+		zero := timeint.Seconds(0)
 		rollupCfg := rollup.Config{
 			RegolithTime: &zero,
 		}
@@ -121,7 +122,7 @@ func TestParseL1InfoDepositTxData(t *testing.T) {
 	t.Run("ecotone", func(t *testing.T) {
 		rng := rand.New(rand.NewSource(1234))
 		info := testutils.MakeBlockInfo(nil)(rng)
-		zero := uint64(0)
+		zero := timeint.Seconds(0)
 		rollupCfg := rollup.Config{
 			RegolithTime: &zero,
 			EcotoneTime:  &zero,
@@ -135,10 +136,10 @@ func TestParseL1InfoDepositTxData(t *testing.T) {
 	t.Run("first-block ecotone", func(t *testing.T) {
 		rng := rand.New(rand.NewSource(1234))
 		info := testutils.MakeBlockInfo(nil)(rng)
-		zero := uint64(2)
+		two := timeint.Seconds(2)
 		rollupCfg := rollup.Config{
-			RegolithTime: &zero,
-			EcotoneTime:  &zero,
+			RegolithTime: &two,
+			EcotoneTime:  &two,
 			BlockTime:    2,
 		}
 		depTx, err := L1InfoDeposit(&rollupCfg, randomL1Cfg(rng, info), randomSeqNr(rng), info, 2)
@@ -150,7 +151,7 @@ func TestParseL1InfoDepositTxData(t *testing.T) {
 	t.Run("genesis-block ecotone", func(t *testing.T) {
 		rng := rand.New(rand.NewSource(1234))
 		info := testutils.MakeBlockInfo(nil)(rng)
-		zero := uint64(0)
+		zero := timeint.Seconds(0)
 		rollupCfg := rollup.Config{
 			RegolithTime: &zero,
 			EcotoneTime:  &zero,

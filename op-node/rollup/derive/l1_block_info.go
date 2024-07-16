@@ -15,6 +15,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum-optimism/optimism/op-service/predeploys"
 	"github.com/ethereum-optimism/optimism/op-service/solabi"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 const (
@@ -39,7 +40,7 @@ const (
 // L1BlockInfo presents the information stored in a L1Block.setL1BlockValues call
 type L1BlockInfo struct {
 	Number    uint64
-	Time      uint64
+	Time      timeint.Seconds
 	BaseFee   *big.Int
 	BlockHash common.Hash
 	// Not strictly a piece of L1 information. Represents the number of L2 blocks since the start of the epoch,
@@ -79,7 +80,7 @@ func (info *L1BlockInfo) marshalBinaryBedrock() ([]byte, error) {
 	if err := solabi.WriteUint64(w, info.Number); err != nil {
 		return nil, err
 	}
-	if err := solabi.WriteUint64(w, info.Time); err != nil {
+	if err := solabi.WriteUint64(w, info.Time.ToUint64Sec()); err != nil {
 		return nil, err
 	}
 	if err := solabi.WriteUint256(w, info.BaseFee); err != nil {
@@ -116,9 +117,11 @@ func (info *L1BlockInfo) unmarshalBinaryBedrock(data []byte) error {
 	if info.Number, err = solabi.ReadUint64(reader); err != nil {
 		return err
 	}
-	if info.Time, err = solabi.ReadUint64(reader); err != nil {
+	time, err := solabi.ReadUint64(reader)
+	if err != nil {
 		return err
 	}
+	info.Time = timeint.Seconds(time)
 	if info.BaseFee, err = solabi.ReadUint256(reader); err != nil {
 		return err
 	}
@@ -245,12 +248,12 @@ func (info *L1BlockInfo) unmarshalBinaryEcotone(data []byte) error {
 
 // isEcotoneButNotFirstBlock returns whether the specified block is subject to the Ecotone upgrade,
 // but is not the actiation block itself.
-func isEcotoneButNotFirstBlock(rollupCfg *rollup.Config, l2BlockTime uint64) bool {
+func isEcotoneButNotFirstBlock(rollupCfg *rollup.Config, l2BlockTime timeint.Seconds) bool {
 	return rollupCfg.IsEcotone(l2BlockTime) && !rollupCfg.IsEcotoneActivationBlock(l2BlockTime)
 }
 
 // L1BlockInfoFromBytes is the inverse of L1InfoDeposit, to see where the L2 chain is derived from
-func L1BlockInfoFromBytes(rollupCfg *rollup.Config, l2BlockTime uint64, data []byte) (*L1BlockInfo, error) {
+func L1BlockInfoFromBytes(rollupCfg *rollup.Config, l2BlockTime timeint.Seconds, data []byte) (*L1BlockInfo, error) {
 	var info L1BlockInfo
 	if isEcotoneButNotFirstBlock(rollupCfg, l2BlockTime) {
 		return &info, info.unmarshalBinaryEcotone(data)
@@ -260,7 +263,7 @@ func L1BlockInfoFromBytes(rollupCfg *rollup.Config, l2BlockTime uint64, data []b
 
 // L1InfoDeposit creates a L1 Info deposit transaction based on the L1 block,
 // and the L2 block-height difference with the start of the epoch.
-func L1InfoDeposit(rollupCfg *rollup.Config, sysCfg eth.SystemConfig, seqNumber uint64, block eth.BlockInfo, l2BlockTime uint64) (*types.DepositTx, error) {
+func L1InfoDeposit(rollupCfg *rollup.Config, sysCfg eth.SystemConfig, seqNumber uint64, block eth.BlockInfo, l2BlockTime timeint.Seconds) (*types.DepositTx, error) {
 	l1BlockInfo := L1BlockInfo{
 		Number:         block.NumberU64(),
 		Time:           block.Time(),
@@ -322,7 +325,7 @@ func L1InfoDeposit(rollupCfg *rollup.Config, sysCfg eth.SystemConfig, seqNumber 
 }
 
 // L1InfoDepositBytes returns a serialized L1-info attributes transaction.
-func L1InfoDepositBytes(rollupCfg *rollup.Config, sysCfg eth.SystemConfig, seqNumber uint64, l1Info eth.BlockInfo, l2BlockTime uint64) ([]byte, error) {
+func L1InfoDepositBytes(rollupCfg *rollup.Config, sysCfg eth.SystemConfig, seqNumber uint64, l1Info eth.BlockInfo, l2BlockTime timeint.Seconds) ([]byte, error) {
 	dep, err := L1InfoDeposit(rollupCfg, sysCfg, seqNumber, l1Info, l2BlockTime)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create L1 info tx: %w", err)

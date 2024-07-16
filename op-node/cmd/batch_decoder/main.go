@@ -14,6 +14,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-node/rollup/derive"
 	"github.com/ethereum-optimism/optimism/op-service/client"
 	"github.com/ethereum-optimism/optimism/op-service/sources"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/urfave/cli/v2"
@@ -153,9 +154,9 @@ func main() {
 			},
 			Action: func(cliCtx *cli.Context) error {
 				var (
-					L2GenesisTime     uint64         = cliCtx.Uint64("l2-genesis-timestamp")
-					L2BlockTime       uint64         = cliCtx.Uint64("l2-block-time")
-					BatchInboxAddress common.Address = common.HexToAddress(cliCtx.String("inbox"))
+					L2GenesisTime     timeint.Seconds = timeint.Seconds(cliCtx.Uint64("l2-genesis-timestamp"))
+					L2BlockTime       timeint.Seconds = timeint.Seconds(cliCtx.Uint64("l2-block-time"))
+					BatchInboxAddress common.Address  = common.HexToAddress(cliCtx.String("inbox"))
 				)
 				L2ChainID := new(big.Int).SetUint64(cliCtx.Uint64("l2-chain-id"))
 				rollupCfg, err := rollup.LoadOPStackRollupConfig(L2ChainID.Uint64())

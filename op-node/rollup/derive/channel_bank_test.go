@@ -13,6 +13,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum-optimism/optimism/op-service/testlog"
 	"github.com/ethereum-optimism/optimism/op-service/testutils"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/stretchr/testify/require"
 )
@@ -208,7 +209,7 @@ func TestChannelBankInterleaved(t *testing.T) {
 	input.AddFrames("a:1:second")
 	input.AddFrame(Frame{}, io.EOF)
 
-	ct := uint64(0)
+	ct := timeint.Seconds(0)
 	cfg := &rollup.Config{ChannelTimeout: 10, CanyonTime: &ct}
 
 	cb := NewChannelBank(testlog.Logger(t, log.LevelCrit), cfg, input, nil, metrics.NoopMetrics)

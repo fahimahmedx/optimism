@@ -14,6 +14,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-node/rollup"
 	"github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum-optimism/optimism/op-service/testlog"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 func TestCommitAndRead(t *testing.T) {
@@ -21,7 +22,7 @@ func TestCommitAndRead(t *testing.T) {
 	serverID := "SequencerA"
 	serverAddr := "127.0.0.1:0"
 	bootstrap := true
-	now := uint64(time.Now().Unix())
+	now := timeint.Seconds(time.Now().Unix())
 	rollupCfg := &rollup.Config{
 		CanyonTime: &now,
 	}

@@ -17,6 +17,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum-optimism/optimism/op-service/predeploys"
 	"github.com/ethereum-optimism/optimism/op-service/testutils"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 func TestPreparePayloadAttributes(t *testing.T) {
@@ -199,9 +200,9 @@ func TestPreparePayloadAttributes(t *testing.T) {
 	t.Run("regolith", func(t *testing.T) {
 		testCases := []struct {
 			name         string
-			l1Time       uint64
-			l2ParentTime uint64
-			regolithTime uint64
+			l1Time       timeint.Seconds
+			l2ParentTime timeint.Seconds
+			regolithTime timeint.Seconds
 			regolith     bool
 		}{
 			{"exactly", 900, 1000 - cfg.BlockTime, 1000, true},

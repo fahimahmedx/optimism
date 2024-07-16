@@ -23,6 +23,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-service/predeploys"
 	"github.com/ethereum-optimism/optimism/op-service/testlog"
 	"github.com/ethereum-optimism/optimism/op-service/testutils"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 type FakeAttributesBuilder struct {
@@ -59,7 +60,7 @@ func (m *FakeAttributesBuilder) PreparePayloadAttributes(ctx context.Context,
 		GasLimit:              &gasLimit,
 	}
 
-	if m.cfg.IsEcotone(uint64(attrs.Timestamp)) {
+	if m.cfg.IsEcotone(timeint.Seconds(attrs.Timestamp)) {
 		r := testutils.RandomHash(m.rng)
 		attrs.ParentBeaconBlockRoot = &r
 	}
@@ -238,7 +239,7 @@ func TestSequencerBuild(t *testing.T) {
 			Hash:   common.Hash{0x11, 0xa},
 			Number: 1000,
 		},
-		Time: uint64(testClock.Now().Unix()),
+		Time: timeint.Seconds(testClock.Now().Unix()),
 	}
 	seq.OnEvent(engine.ForkchoiceUpdateEvent{UnsafeL2Head: head})
 	emitter.AssertExpectations(t)
@@ -314,7 +315,7 @@ func TestSequencerBuild(t *testing.T) {
 		Hash:           payloadEnvelope.ExecutionPayload.BlockHash,
 		Number:         uint64(payloadEnvelope.ExecutionPayload.BlockNumber),
 		ParentHash:     payloadEnvelope.ExecutionPayload.ParentHash,
-		Time:           uint64(payloadEnvelope.ExecutionPayload.Timestamp),
+		Time:           timeint.Seconds(payloadEnvelope.ExecutionPayload.Timestamp),
 		L1Origin:       l1Origin.ID(),
 		SequenceNumber: 0,
 	}
@@ -393,11 +394,11 @@ func createSequencer(log log.Logger) (*Sequencer, *sequencerTestDeps) {
 		},
 		BlockTime:         2,
 		MaxSequencerDrift: 15 * 60,
-		RegolithTime:      new(uint64),
-		CanyonTime:        new(uint64),
-		DeltaTime:         new(uint64),
-		EcotoneTime:       new(uint64),
-		FjordTime:         new(uint64),
+		RegolithTime:      new(timeint.Seconds),
+		CanyonTime:        new(timeint.Seconds),
+		DeltaTime:         new(timeint.Seconds),
+		EcotoneTime:       new(timeint.Seconds),
+		FjordTime:         new(timeint.Seconds),
 	}
 	deps := &sequencerTestDeps{
 		cfg:           cfg,
@@ -420,7 +421,7 @@ func createSequencer(log log.Logger) (*Sequencer, *sequencerTestDeps) {
 			Hash:           payload.BlockHash,
 			Number:         uint64(payload.BlockNumber),
 			ParentHash:     payload.ParentHash,
-			Time:           uint64(payload.Timestamp),
+			Time:           timeint.Seconds(payload.Timestamp),
 			L1Origin:       decodeID(payload.Transactions[0]),
 			SequenceNumber: 0,
 		}, nil

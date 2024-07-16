@@ -26,6 +26,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum-optimism/optimism/op-service/sources"
 	"github.com/ethereum-optimism/optimism/op-service/testutils"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 // L2Engine is an in-memory implementation of the Engine API,
@@ -61,7 +62,7 @@ func NewL2Engine(t Testing, log log.Logger, genesis *core.Genesis, rollupGenesis
 		rollupGenesis: &rollup.Genesis{
 			L1:     rollupGenesisL1,
 			L2:     eth.BlockID{Hash: genesisBlock.Hash(), Number: genesisBlock.NumberU64()},
-			L2Time: genesis.Timestamp,
+			L2Time: timeint.Seconds(genesis.Timestamp),
 		},
 		l2Chain:   chain,
 		l2Signer:  types.LatestSigner(genesis.Config),

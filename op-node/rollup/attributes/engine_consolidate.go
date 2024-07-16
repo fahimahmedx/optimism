@@ -12,6 +12,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-node/rollup"
 	"github.com/ethereum-optimism/optimism/op-node/rollup/derive"
 	"github.com/ethereum-optimism/optimism/op-service/eth"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 // AttributesMatchBlock checks if the L2 attributes pre-inputs match the output
@@ -44,7 +45,7 @@ func AttributesMatchBlock(rollupCfg *rollup.Config, attrs *eth.PayloadAttributes
 	for i, otx := range attrs.Transactions {
 		if expect := block.Transactions[i]; !bytes.Equal(otx, expect) {
 			if i == 0 {
-				logL1InfoTxns(rollupCfg, l, uint64(block.BlockNumber), uint64(block.Timestamp), otx, block.Transactions[i])
+				logL1InfoTxns(rollupCfg, l, uint64(block.BlockNumber), timeint.Seconds(block.Timestamp), otx, block.Transactions[i])
 			}
 			return fmt.Errorf("transaction %d does not match. expected: %v. got: %v", i, expect, otx)
 		}
@@ -112,7 +113,7 @@ func checkWithdrawalsMatch(attrWithdrawals *types.Withdrawals, blockWithdrawals 
 
 // logL1InfoTxns reports the values from the L1 info tx when they differ to aid
 // debugging. This check is the one that has been most frequently triggered.
-func logL1InfoTxns(rollupCfg *rollup.Config, l log.Logger, l2Number, l2Timestamp uint64, safeTx, unsafeTx hexutil.Bytes) {
+func logL1InfoTxns(rollupCfg *rollup.Config, l log.Logger, l2Number uint64, l2Timestamp timeint.Seconds, safeTx, unsafeTx hexutil.Bytes) {
 	// First decode into *types.Transaction to get the tx data.
 	var safeTxValue, unsafeTxValue types.Transaction
 	errSafe := (&safeTxValue).UnmarshalBinary(safeTx)

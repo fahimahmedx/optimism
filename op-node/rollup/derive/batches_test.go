@@ -13,6 +13,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum-optimism/optimism/op-service/testlog"
 	"github.com/ethereum-optimism/optimism/op-service/testutils"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/log"
@@ -29,19 +30,19 @@ type ValidBatchTestCase struct {
 	ConfigMod      func(*rollup.Config) // optional rollup config mod
 }
 
-var zero64 = uint64(0)
+var zeroSeconds = timeint.Seconds(0)
 
 func deltaAtGenesis(c *rollup.Config) {
-	c.DeltaTime = &zero64
+	c.DeltaTime = &zeroSeconds
 }
 
-func deltaAt(t *uint64) func(*rollup.Config) {
+func deltaAt(t *timeint.Seconds) func(*rollup.Config) {
 	return func(c *rollup.Config) {
 		c.DeltaTime = t
 	}
 }
 
-func fjordAt(t *uint64) func(*rollup.Config) {
+func fjordAt(t *timeint.Seconds) func(*rollup.Config) {
 	return func(c *rollup.Config) {
 		c.FjordTime = t
 	}
@@ -610,7 +611,7 @@ func TestValidBatch(t *testing.T) {
 						Timestamp:    l2A1.Time,
 						Transactions: nil,
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			Expected:    BatchUndecided,
 			ExpectedLog: "missing L1 block input, cannot proceed with batch checking",
@@ -630,7 +631,7 @@ func TestValidBatch(t *testing.T) {
 						Timestamp:    l2A1.Time + 1, // 1 too high
 						Transactions: nil,
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			Expected:    BatchFuture,
 			ExpectedLog: "received out-of-order batch for future processing after next batch",
@@ -650,7 +651,7 @@ func TestValidBatch(t *testing.T) {
 						Timestamp:    l2A1.Time - 1, // block time is 2, so this is 1 too low
 						Transactions: nil,
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			Expected:    BatchDrop,
 			ExpectedLog: "span batch has no new blocks after safe head",
@@ -670,7 +671,7 @@ func TestValidBatch(t *testing.T) {
 						Timestamp:    l2A1.Time,
 						Transactions: nil,
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			Expected:    BatchDrop,
 			ExpectedLog: "ignoring batch with mismatching parent hash",
@@ -690,7 +691,7 @@ func TestValidBatch(t *testing.T) {
 						Timestamp:    l2A1.Time,
 						Transactions: nil,
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			Expected:    BatchDrop,
 			ExpectedLog: "batch was included too late, sequence window expired",
@@ -716,7 +717,7 @@ func TestValidBatch(t *testing.T) {
 						Timestamp:    l2B0.Time + defaultBlockTime*2,
 						Transactions: nil,
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			Expected:    BatchDrop,
 			ExpectedLog: "dropped batch, epoch is too old",
@@ -736,7 +737,7 @@ func TestValidBatch(t *testing.T) {
 						Timestamp:    l2B0.Time,
 						Transactions: nil,
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			Expected:    BatchUndecided,
 			ExpectedLog: "eager batch wants to advance epoch, but could not without more L1 blocks",
@@ -763,7 +764,7 @@ func TestValidBatch(t *testing.T) {
 						Timestamp:    l2B0.Time,
 						Transactions: nil,
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			Expected:    BatchUndecided,
 			ExpectedLog: "need more l1 blocks to check entire origins of span batch",
@@ -783,7 +784,7 @@ func TestValidBatch(t *testing.T) {
 						Timestamp:    l2B0.Time,
 						Transactions: nil,
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			Expected:    BatchDrop,
 			ExpectedLog: "batch is for future epoch too far ahead, while it has the next timestamp, so it must be invalid",
@@ -803,7 +804,7 @@ func TestValidBatch(t *testing.T) {
 						Timestamp:    l2B0.Time,
 						Transactions: nil,
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			Expected:    BatchDrop,
 			ExpectedLog: "batch is for different L1 chain, epoch hash does not match",
@@ -830,7 +831,7 @@ func TestValidBatch(t *testing.T) {
 						Timestamp:    l2B0.Time,
 						Transactions: nil,
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			Expected:    BatchDrop,
 			ExpectedLog: "batch is for different L1 chain, epoch hash does not match",
@@ -850,7 +851,7 @@ func TestValidBatch(t *testing.T) {
 						Timestamp:    l2A4.Time,
 						Transactions: []hexutil.Bytes{randTxData},
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			Expected:    BatchDrop,
 			ExpectedLog: "batch exceeded sequencer time drift, sequencer must adopt new L1 origin to include transactions again",
@@ -870,7 +871,7 @@ func TestValidBatch(t *testing.T) {
 						Timestamp:    l2A4.Time,
 						Transactions: []hexutil.Bytes{randTxData},
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			Expected:  BatchAccept,
 			ConfigMod: multiMod(deltaAtGenesis, fjordAt(&l1A.Time)),
@@ -896,7 +897,7 @@ func TestValidBatch(t *testing.T) {
 						Timestamp:    l2A4.Time,
 						Transactions: []hexutil.Bytes{randTxData},
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			Expected:    BatchDrop,
 			ExpectedLog: "batch exceeded sequencer time drift, sequencer must adopt new L1 origin to include transactions again",
@@ -916,7 +917,7 @@ func TestValidBatch(t *testing.T) {
 						Timestamp:    l2Y0.Time, // valid, but more than 6 ahead of l1Y.Time
 						Transactions: []hexutil.Bytes{randTxData},
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			Expected:    BatchDrop,
 			ExpectedLog: "batch exceeded sequencer time drift, sequencer must adopt new L1 origin to include transactions again",
@@ -936,7 +937,7 @@ func TestValidBatch(t *testing.T) {
 						Timestamp:    l2A4.Time,
 						Transactions: nil,
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			Expected:  BatchAccept, // accepted because empty & preserving L2 time invariant
 			ConfigMod: deltaAtGenesis,
@@ -962,7 +963,7 @@ func TestValidBatch(t *testing.T) {
 						Timestamp:    l2Z0.Time, // valid, but more than 6 ahead of l1Y.Time
 						Transactions: nil,
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			Expected:       BatchAccept, // accepted because empty & still advancing epoch
 			ConfigMod:      deltaAtGenesis,
@@ -982,7 +983,7 @@ func TestValidBatch(t *testing.T) {
 						Timestamp:    l2A4.Time,
 						Transactions: nil,
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			Expected:    BatchUndecided, // we have to wait till the next epoch is in sight to check the time
 			ExpectedLog: "without the next L1 origin we cannot determine yet if this empty batch that exceeds the time drift is still valid",
@@ -1009,7 +1010,7 @@ func TestValidBatch(t *testing.T) {
 						Timestamp:    l2A4.Time,
 						Transactions: nil,
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			Expected:    BatchUndecided, // we have to wait till the next epoch is in sight to check the time
 			ExpectedLog: "without the next L1 origin we cannot determine yet if this empty batch that exceeds the time drift is still valid",
@@ -1029,7 +1030,7 @@ func TestValidBatch(t *testing.T) {
 						Timestamp:    l2A4.Time,
 						Transactions: nil,
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			Expected:    BatchDrop, // dropped because it could have advanced the epoch to B
 			ExpectedLog: "batch exceeded sequencer time drift without adopting next origin, and next L1 origin would have been valid",
@@ -1056,7 +1057,7 @@ func TestValidBatch(t *testing.T) {
 						Timestamp:    l2A4.Time,
 						Transactions: nil,
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			Expected:    BatchDrop, // dropped because it could have advanced the epoch to B
 			ExpectedLog: "batch exceeded sequencer time drift without adopting next origin, and next L1 origin would have been valid",
@@ -1078,7 +1079,7 @@ func TestValidBatch(t *testing.T) {
 							[]byte{}, // empty tx data
 						},
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			Expected:    BatchDrop,
 			ExpectedLog: "transaction data must not be empty, but found empty tx",
@@ -1100,7 +1101,7 @@ func TestValidBatch(t *testing.T) {
 							[]byte{types.DepositTxType, 0}, // piece of data alike to a deposit
 						},
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			Expected:    BatchDrop,
 			ExpectedLog: "sequencers may not embed any deposits into batch data, but found tx that has one",
@@ -1120,7 +1121,7 @@ func TestValidBatch(t *testing.T) {
 						Timestamp:    l2A1.Time,
 						Transactions: []hexutil.Bytes{randTxData},
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			Expected:  BatchAccept,
 			ConfigMod: deltaAtGenesis,
@@ -1139,7 +1140,7 @@ func TestValidBatch(t *testing.T) {
 						Timestamp:    l2B0.Time,
 						Transactions: []hexutil.Bytes{randTxData},
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			Expected:  BatchAccept,
 			ConfigMod: deltaAtGenesis,
@@ -1158,7 +1159,7 @@ func TestValidBatch(t *testing.T) {
 						Timestamp:    l2A2.Time + defaultBlockTime,
 						Transactions: nil,
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			Expected:    BatchDrop,
 			ExpectedLog: "block timestamp is less than L1 origin timestamp",
@@ -1185,7 +1186,7 @@ func TestValidBatch(t *testing.T) {
 						Timestamp:    l2A2.Time + defaultBlockTime,
 						Transactions: nil,
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			Expected:    BatchDrop,
 			ExpectedLog: "block timestamp is less than L1 origin timestamp",
@@ -1212,7 +1213,7 @@ func TestValidBatch(t *testing.T) {
 						Timestamp:    l2A3.Time,
 						Transactions: nil,
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			Expected:  BatchAccept,
 			ConfigMod: deltaAtGenesis,
@@ -1245,7 +1246,7 @@ func TestValidBatch(t *testing.T) {
 						Timestamp:    l2A3.Time,
 						Transactions: nil,
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			Expected:  BatchAccept,
 			ConfigMod: deltaAtGenesis,
@@ -1271,7 +1272,7 @@ func TestValidBatch(t *testing.T) {
 						Timestamp:    l2A2.Time,
 						Transactions: nil,
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			Expected:    BatchDrop,
 			ExpectedLog: "span batch has no new blocks after safe head",
@@ -1298,7 +1299,7 @@ func TestValidBatch(t *testing.T) {
 						Timestamp:    l2A3.Time,
 						Transactions: nil,
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			Expected:    BatchDrop,
 			ExpectedLog: "ignoring batch with mismatching parent hash",
@@ -1325,7 +1326,7 @@ func TestValidBatch(t *testing.T) {
 						Timestamp:    l2A3.Time,
 						Transactions: nil,
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			Expected:    BatchDrop,
 			ExpectedLog: "overlapped block's L1 origin number does not match",
@@ -1352,7 +1353,7 @@ func TestValidBatch(t *testing.T) {
 						Timestamp:    l2A3.Time,
 						Transactions: nil,
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			Expected:    BatchDrop,
 			ExpectedLog: "overlapped block's tx count does not match",
@@ -1386,7 +1387,7 @@ func TestValidBatch(t *testing.T) {
 						Timestamp:    l2A2.Time,
 						Transactions: nil,
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			Expected:    BatchUndecided,
 			ExpectedLog: "failed to fetch L2 block",
@@ -1413,7 +1414,7 @@ func TestValidBatch(t *testing.T) {
 						Timestamp:    l2A1.Time + 1,
 						Transactions: nil,
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			Expected:    BatchDrop,
 			ExpectedLog: "batch has misaligned timestamp, block time is too short",
@@ -1440,7 +1441,7 @@ func TestValidBatch(t *testing.T) {
 						Timestamp:    l2A1.Time,
 						Transactions: nil,
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			Expected:    BatchDrop,
 			ExpectedLog: "batch has misaligned timestamp, not overlapped exactly",
@@ -1467,7 +1468,7 @@ func TestValidBatch(t *testing.T) {
 						Timestamp:    l2B0.Time,
 						Transactions: nil,
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			Expected:    BatchUndecided,
 			ExpectedLog: "failed to fetch L2 block payload",
@@ -1504,7 +1505,7 @@ func TestValidBatch(t *testing.T) {
 						Timestamp:    l2A1.Time,
 						Transactions: []hexutil.Bytes{randTxData},
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			ConfigMod:   deltaAt(&l1B.Time),
 			Expected:    BatchDrop,
@@ -1541,7 +1542,7 @@ func TestValidBatch(t *testing.T) {
 						Timestamp:    l2A1.Time,
 						Transactions: []hexutil.Bytes{randTxData},
 					},
-				}, uint64(0), big.NewInt(0)),
+				}, timeint.Seconds(0), big.NewInt(0)),
 			},
 			ConfigMod: deltaAt(&l1A.Time),
 			Expected:  BatchAccept,
@@ -1654,7 +1655,7 @@ func TestValidBatch(t *testing.T) {
 					Timestamp:    l2B2.Time,
 					Transactions: nil,
 				},
-			}, uint64(0), big.NewInt(0)),
+			}, timeint.Seconds(0), big.NewInt(0)),
 		},
 		Expected:    BatchDrop,
 		ExpectedLog: "overlapped block's transaction does not match",
@@ -1699,7 +1700,7 @@ func TestValidBatch(t *testing.T) {
 					Timestamp:    l2B2.Time,
 					Transactions: nil,
 				},
-			}, uint64(0), big.NewInt(0)),
+			}, timeint.Seconds(0), big.NewInt(0)),
 		},
 		Expected:    BatchDrop,
 		ExpectedLog: "failed to extract L2BlockRef from execution payload",
