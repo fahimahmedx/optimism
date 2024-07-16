@@ -7,6 +7,7 @@ import (
 	"math/rand"
 
 	"github.com/ethereum-optimism/optimism/op-service/eth"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -63,7 +64,7 @@ func RandomBlockRef(rng *rand.Rand) eth.L1BlockRef {
 		Hash:       RandomHash(rng),
 		Number:     rng.Uint64(),
 		ParentHash: RandomHash(rng),
-		Time:       rng.Uint64(),
+		Time:       timeint.FromUint64ToSec(rng.Uint64()),
 	}
 }
 
@@ -72,7 +73,7 @@ func NextRandomRef(rng *rand.Rand, parent eth.L1BlockRef) eth.L1BlockRef {
 		Hash:       RandomHash(rng),
 		Number:     parent.Number + 1,
 		ParentHash: parent.Hash,
-		Time:       parent.Time + uint64(rng.Intn(100)),
+		Time:       parent.Time + timeint.Seconds(rng.Intn(100)),
 	}
 }
 
@@ -81,13 +82,13 @@ func RandomL2BlockRef(rng *rand.Rand) eth.L2BlockRef {
 		Hash:           RandomHash(rng),
 		Number:         rng.Uint64(),
 		ParentHash:     RandomHash(rng),
-		Time:           rng.Uint64(),
+		Time:           timeint.Seconds(rng.Uint64()),
 		L1Origin:       RandomBlockID(rng),
 		SequenceNumber: rng.Uint64(),
 	}
 }
 
-func NextRandomL2Ref(rng *rand.Rand, l2BlockTime uint64, parent eth.L2BlockRef, origin eth.BlockID) eth.L2BlockRef {
+func NextRandomL2Ref(rng *rand.Rand, l2BlockTime timeint.Seconds, parent eth.L2BlockRef, origin eth.BlockID) eth.L2BlockRef {
 	seq := parent.SequenceNumber + 1
 	if parent.L1Origin != origin {
 		seq = 0
