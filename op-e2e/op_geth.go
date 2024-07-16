@@ -155,7 +155,7 @@ func (d *OpGeth) AddL2Block(ctx context.Context, txs ...*types.Transaction) (*et
 		return nil, err
 	}
 
-	envelope, err := d.l2Engine.GetPayload(ctx, eth.PayloadInfo{ID: *res.PayloadID, Timestamp: uint64(attrs.Timestamp)})
+	envelope, err := d.l2Engine.GetPayload(ctx, eth.PayloadInfo{ID: *res.PayloadID, Timestamp: timeint.FromUint64ToSec(uint64(attrs.Timestamp))})
 	payload := envelope.ExecutionPayload
 
 	if err != nil {
