@@ -16,6 +16,7 @@ import (
 	"github.com/ethereum/go-ethereum/trie"
 
 	"github.com/ethereum-optimism/optimism/op-service/eth"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 // Note: these types are used, instead of the geth types, to enable:
@@ -59,8 +60,8 @@ func (h headerInfo) NumberU64() uint64 {
 	return h.Header.Number.Uint64()
 }
 
-func (h headerInfo) Time() uint64 {
-	return h.Header.Time
+func (h headerInfo) Time() timeint.Seconds {
+	return timeint.FromUint64ToSec(h.Header.Time)
 }
 
 func (h headerInfo) MixDigest() common.Hash {

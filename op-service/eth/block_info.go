@@ -73,6 +73,11 @@ func (b blockInfo) ParentBeaconRoot() *common.Hash {
 	return b.Block.BeaconRoot()
 }
 
+// This is an adapter function
+func (b blockInfo) Time() timeint.Seconds {
+	return timeint.FromUint64ToSec((b.Block.Time()))
+}
+
 func BlockToInfo(b *types.Block) BlockInfo {
 	return blockInfo{b} // Need to use adapter to fix this
 }
@@ -99,8 +104,8 @@ func (h headerBlockInfo) NumberU64() uint64 {
 	return h.Header.Number.Uint64()
 }
 
-func (h headerBlockInfo) Time() uint64 {
-	return h.Header.Time
+func (h headerBlockInfo) Time() timeint.Seconds {
+	return timeint.FromUint64ToSec(h.Header.Time)
 }
 
 func (h headerBlockInfo) MixDigest() common.Hash {
