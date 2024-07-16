@@ -205,8 +205,8 @@ func (cl *L1BeaconClient) GetTimeToSlotFn(ctx context.Context) (TimeToSlotFn, er
 		return nil, err
 	}
 
-	genesisTime := timeint.FromUint64ToSec(uint64(genesis.Data.GenesisTime))
-	secondsPerSlot := timeint.FromUint64ToSec(uint64(config.Data.SecondsPerSlot))
+	genesisTime := timeint.FromUint64SecToSec(uint64(genesis.Data.GenesisTime))
+	secondsPerSlot := timeint.FromUint64SecToSec(uint64(config.Data.SecondsPerSlot))
 	if secondsPerSlot == 0 {
 		return nil, fmt.Errorf("got bad value for seconds per slot: %v", config.Data.SecondsPerSlot)
 	}

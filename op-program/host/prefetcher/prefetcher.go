@@ -153,7 +153,7 @@ func (p *Prefetcher) prefetch(ctx context.Context, hint string) error {
 			Index: blobHashIndex,
 		}
 		// We pass an `eth.L1BlockRef`, but `GetBlobSidecars` only uses the timestamp, which we received in the hint.
-		sidecars, err := p.l1BlobFetcher.GetBlobSidecars(ctx, eth.L1BlockRef{Time: timeint.FromUint64ToSec(refTimestamp)}, []eth.IndexedBlobHash{indexedBlobHash})
+		sidecars, err := p.l1BlobFetcher.GetBlobSidecars(ctx, eth.L1BlockRef{Time: timeint.FromUint64SecToSec(refTimestamp)}, []eth.IndexedBlobHash{indexedBlobHash})
 		if err != nil || len(sidecars) != 1 {
 			return fmt.Errorf("failed to fetch blob sidecars for %s %d: %w", blobVersionHash, blobHashIndex, err)
 		}

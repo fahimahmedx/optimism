@@ -64,7 +64,7 @@ func RandomBlockRef(rng *rand.Rand) eth.L1BlockRef {
 		Hash:       RandomHash(rng),
 		Number:     rng.Uint64(),
 		ParentHash: RandomHash(rng),
-		Time:       timeint.FromUint64ToSec(rng.Uint64()),
+		Time:       timeint.FromUint64SecToSec(rng.Uint64()),
 	}
 }
 

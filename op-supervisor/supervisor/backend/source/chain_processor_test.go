@@ -169,7 +169,7 @@ func makeBlockRef(number uint64) eth.L1BlockRef {
 		Number:     number,
 		Hash:       common.Hash{byte(number)},
 		ParentHash: common.Hash{byte(number - 1)},
-		Time:       timeint.FromUint64ToSec(number * 1000),
+		Time:       timeint.FromUint64SecToSec(number * 1000),
 	}
 }
 

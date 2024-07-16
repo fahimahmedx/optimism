@@ -36,7 +36,7 @@ func (t Seconds) ToSecondsPtr() *Seconds {
 	return &t
 }
 
-func FromUint64ToSec(t uint64) Seconds {
+func FromUint64SecToSec(t uint64) Seconds {
 	return Seconds(t)
 }
 

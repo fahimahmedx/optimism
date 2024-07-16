@@ -80,7 +80,7 @@ func (o *OracleEngine) ForkchoiceUpdate(ctx context.Context, state *eth.Forkchoi
 }
 
 func (o *OracleEngine) NewPayload(ctx context.Context, payload *eth.ExecutionPayload, parentBeaconBlockRoot *common.Hash) (*eth.PayloadStatusV1, error) {
-	switch method := o.rollupCfg.NewPayloadVersion(timeint.FromUint64ToSec(uint64(payload.Timestamp))); method {
+	switch method := o.rollupCfg.NewPayloadVersion(timeint.FromUint64SecToSec(uint64(payload.Timestamp))); method {
 	case eth.NewPayloadV3:
 		return o.api.NewPayloadV3(ctx, payload, []common.Hash{}, parentBeaconBlockRoot)
 	case eth.NewPayloadV2:

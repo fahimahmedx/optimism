@@ -177,7 +177,7 @@ func blockNum(num uint64) eth.BlockInfo {
 		InfoCoinbase:    common.Address{},
 		InfoRoot:        common.Hash{},
 		InfoNum:         num,
-		InfoTime:        timeint.FromUint64ToSec(num * 2),
+		InfoTime:        timeint.FromUint64SecToSec(num * 2),
 		InfoMixDigest:   [32]byte{},
 		InfoBaseFee:     nil,
 		InfoReceiptRoot: common.Hash{},

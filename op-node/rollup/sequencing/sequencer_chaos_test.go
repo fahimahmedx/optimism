@@ -63,7 +63,7 @@ func (c *ChaoticEngine) OnEvent(ev event.Event) bool {
 		// init new payload building ID
 		_, err := c.rng.Read(c.currentPayloadInfo.ID[:])
 		require.NoError(c.t, err)
-		c.currentPayloadInfo.Timestamp = timeint.FromUint64ToSec(uint64(x.Attributes.Attributes.Timestamp))
+		c.currentPayloadInfo.Timestamp = timeint.FromUint64SecToSec(uint64(x.Attributes.Attributes.Timestamp))
 		// Move forward time, to simulate time consumption
 		c.clockRandomIncrement(0, time.Millisecond*300)
 		if c.rng.Intn(10) == 0 { // 10% chance the block start is slow

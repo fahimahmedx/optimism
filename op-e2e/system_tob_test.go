@@ -451,7 +451,7 @@ func TestMixedWithdrawalValidity(t *testing.T) {
 
 			finalizationPeriod, err := l2OutputOracle.FINALIZATIONPERIODSECONDS(nil)
 			require.NoError(t, err)
-			require.Equal(t, cfg.DeployConfig.FinalizationPeriodSeconds, timeint.FromUint64ToSec(finalizationPeriod.Uint64()))
+			require.Equal(t, cfg.DeployConfig.FinalizationPeriodSeconds, timeint.FromUint64SecToSec(finalizationPeriod.Uint64()))
 
 			disputeGameFactory, err := bindings.NewDisputeGameFactoryCaller(cfg.L1Deployments.DisputeGameFactoryProxy, l1Client)
 			require.NoError(t, err)

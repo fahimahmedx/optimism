@@ -61,7 +61,7 @@ func (h headerInfo) NumberU64() uint64 {
 }
 
 func (h headerInfo) Time() timeint.Seconds {
-	return timeint.FromUint64ToSec(h.Header.Time)
+	return timeint.FromUint64SecToSec(h.Header.Time)
 }
 
 func (h headerInfo) MixDigest() common.Hash {

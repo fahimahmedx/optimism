@@ -246,19 +246,19 @@ Conflicting configuration is deprecated, and will stop the op-node from starting
 
 func applyOverrides(ctx *cli.Context, rollupConfig *rollup.Config) {
 	if ctx.IsSet(opflags.CanyonOverrideFlagName) {
-		canyon := timeint.FromUint64ToSec(ctx.Uint64(opflags.CanyonOverrideFlagName))
+		canyon := timeint.FromUint64SecToSec(ctx.Uint64(opflags.CanyonOverrideFlagName))
 		rollupConfig.CanyonTime = &canyon
 	}
 	if ctx.IsSet(opflags.DeltaOverrideFlagName) {
-		delta := timeint.FromUint64ToSec(ctx.Uint64(opflags.DeltaOverrideFlagName))
+		delta := timeint.FromUint64SecToSec(ctx.Uint64(opflags.DeltaOverrideFlagName))
 		rollupConfig.DeltaTime = &delta
 	}
 	if ctx.IsSet(opflags.EcotoneOverrideFlagName) {
-		ecotone := timeint.FromUint64ToSec(ctx.Uint64(opflags.EcotoneOverrideFlagName))
+		ecotone := timeint.FromUint64SecToSec(ctx.Uint64(opflags.EcotoneOverrideFlagName))
 		rollupConfig.EcotoneTime = &ecotone
 	}
 	if ctx.IsSet(opflags.FjordOverrideFlagName) {
-		fjord := timeint.FromUint64ToSec(ctx.Uint64(opflags.FjordOverrideFlagName))
+		fjord := timeint.FromUint64SecToSec(ctx.Uint64(opflags.FjordOverrideFlagName))
 		rollupConfig.FjordTime = &fjord
 	}
 }

@@ -123,7 +123,7 @@ func withEngineFlags(flags ...cli.Flag) []cli.Flag {
 
 func ParseBuildingArgs(ctx *cli.Context) *engine.BlockBuildingSettings {
 	return &engine.BlockBuildingSettings{
-		BlockTime:    timeint.FromUint64ToSec(ctx.Uint64(BlockTimeFlag.Name)),
+		BlockTime:    timeint.FromUint64SecToSec(ctx.Uint64(BlockTimeFlag.Name)),
 		AllowGaps:    ctx.Bool(AllowGaps.Name),
 		Random:       hashFlagValue(RandaoFlag.Name, ctx),
 		FeeRecipient: addrFlagValue(FeeRecipientFlag.Name, ctx),
