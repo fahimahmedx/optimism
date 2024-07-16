@@ -19,6 +19,15 @@ func (t Seconds) ToUint64Ptr() *uint64 {
 	return &t_uint64
 }
 
+func (t *Seconds) FromSecPtrToUint64Ptr() *uint64 {
+	if t == nil {
+		return nil
+	}
+
+	t_uint64 := uint64(*t)
+	return &t_uint64
+}
+
 func (t Seconds) ToUint64Sec() uint64 {
 	return uint64(t)
 }
