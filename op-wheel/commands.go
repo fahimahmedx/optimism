@@ -123,7 +123,7 @@ func withEngineFlags(flags ...cli.Flag) []cli.Flag {
 
 func ParseBuildingArgs(ctx *cli.Context) *engine.BlockBuildingSettings {
 	return &engine.BlockBuildingSettings{
-		BlockTime:    ctx.Uint64(BlockTimeFlag.Name),
+		BlockTime:    timeint.FromUint64ToSec(ctx.Uint64(BlockTimeFlag.Name)),
 		AllowGaps:    ctx.Bool(AllowGaps.Name),
 		Random:       hashFlagValue(RandaoFlag.Name, ctx),
 		FeeRecipient: addrFlagValue(FeeRecipientFlag.Name, ctx),
@@ -227,10 +227,10 @@ func rollupFromGethConfig(cfg *params.ChainConfig) *rollup.Config {
 	return &rollup.Config{
 		L2ChainID: cfg.ChainID,
 
-		RegolithTime: timeint.Seconds(cfg.RegolithTime),
-		CanyonTime:   timeint.Seconds(cfg.CanyonTime),
-		EcotoneTime:  timeint.Seconds(cfg.EcotoneTime),
-		InteropTime:  timeint.Seconds(cfg.InteropTime),
+		RegolithTime: timeint.FromUint64PtrToSecPtr(cfg.RegolithTime),
+		CanyonTime:   timeint.FromUint64PtrToSecPtr(cfg.CanyonTime),
+		EcotoneTime:  timeint.FromUint64PtrToSecPtr(cfg.EcotoneTime),
+		InteropTime:  timeint.FromUint64PtrToSecPtr(cfg.InteropTime),
 	}
 }
 
