@@ -126,7 +126,7 @@ func FuzzL1InfoBedrockAgainstContract(f *testing.F) {
 		tx, err := l1BlockInfoContract.SetL1BlockValues(
 			opts,
 			number,
-			time, // It seems like I should typecast this to uint64?
+			time.ToUint64Sec(),
 			BytesToBigInt(baseFee),
 			common.BytesToHash(hash),
 			seqNumber,

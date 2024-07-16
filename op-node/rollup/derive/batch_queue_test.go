@@ -74,8 +74,8 @@ func buildSpanBatches(t *testing.T, parent *eth.L2BlockRef, singularBatches []*S
 	return spanBatches
 }
 
-func getDeltaTime(batchType int) *uint64 {
-	minTs := uint64(0)
+func getDeltaTime(batchType int) *timeint.Seconds {
+	minTs := timeint.Seconds(0)
 	if batchType == SpanBatchType {
 		return &minTs
 	}
