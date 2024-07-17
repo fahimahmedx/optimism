@@ -154,9 +154,9 @@ func main() {
 			},
 			Action: func(cliCtx *cli.Context) error {
 				var (
-					L2GenesisTime     timeint.Seconds = timeint.FromUint64SecToSec(cliCtx.Uint64("l2-genesis-timestamp"))
-					L2BlockTime       timeint.Seconds = timeint.FromUint64SecToSec(cliCtx.Uint64("l2-block-time"))
-					BatchInboxAddress common.Address  = common.HexToAddress(cliCtx.String("inbox"))
+					L2GenesisTime     timeint.Milliseconds = timeint.FromUint64SecToSec(cliCtx.Uint64("l2-genesis-timestamp"))
+					L2BlockTime       timeint.Milliseconds = timeint.FromUint64SecToSec(cliCtx.Uint64("l2-block-time")) // HOW DO I KNOW THIS IS INITIALLY A UINT64 IN SECS?
+					BatchInboxAddress common.Address       = common.HexToAddress(cliCtx.String("inbox"))
 				)
 				L2ChainID := new(big.Int).SetUint64(cliCtx.Uint64("l2-chain-id"))
 				rollupCfg, err := rollup.LoadOPStackRollupConfig(L2ChainID.Uint64())

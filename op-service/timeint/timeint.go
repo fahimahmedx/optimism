@@ -1,6 +1,8 @@
 package timeint
 
-import "github.com/ethereum/go-ethereum/common/hexutil"
+import (
+	"github.com/ethereum/go-ethereum/common/hexutil"
+)
 
 type Seconds uint64
 
@@ -41,4 +43,28 @@ func FromUint64PtrToSecPtr(t *uint64) *Seconds {
 
 func FromHexUint64SecToSec(t hexutil.Uint64) Seconds {
 	return Seconds(t)
+}
+
+type Milliseconds uint64
+
+func (t Milliseconds) MultiplyInt(n uint64) Milliseconds {
+	return t * Milliseconds(n)
+}
+
+func (t Seconds) ToMilliseconds() Milliseconds {
+	return Milliseconds(t * 1000)
+}
+
+func (t Milliseconds) ToSeconds() Seconds {
+	return Seconds(t / 1000)
+}
+
+func FromUint64SecToMilli(t uint64) Milliseconds {
+	s := Milliseconds(t * 1000)
+	return s
+}
+
+func FromHexUint64SecToMilli(t hexutil.Uint64) Milliseconds {
+	s := Milliseconds(t * 1000)
+	return s
 }

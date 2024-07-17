@@ -69,7 +69,7 @@ func LoadOPStackRollupConfig(chainID uint64) (*Config, error) {
 				Hash:   common.Hash(chConfig.Genesis.L2.Hash),
 				Number: chConfig.Genesis.L2.Number,
 			},
-			L2Time:       timeint.FromUint64SecToSec(chConfig.Genesis.L2Time),
+			L2Time:       timeint.FromUint64SecToMilli(chConfig.Genesis.L2Time),
 			SystemConfig: genesisSysConfig,
 		},
 		// The below chain parameters can be different per OP-Stack chain,

@@ -43,7 +43,7 @@ type Genesis struct {
 	// The L2 block the rollup starts from (no transactions, pre-configured state)
 	L2 eth.BlockID `json:"l2"`
 	// Timestamp of L2 block
-	L2Time timeint.Seconds `json:"l2_time"`
+	L2Time timeint.Milliseconds `json:"l2_time"`
 	// Initial system configuration values.
 	// The L2 genesis block may not include transactions, and thus cannot encode the config values,
 	// unlike later L2 blocks.
@@ -66,8 +66,8 @@ type PlasmaConfig struct {
 type Config struct {
 	// Genesis anchor point of the rollup
 	Genesis Genesis `json:"genesis"`
-	// Seconds per L2 block
-	BlockTime timeint.Seconds `json:"block_time"`
+	// Milliseconds per L2 block
+	BlockTime timeint.Milliseconds `json:"block_time"`
 	// Sequencer batches may not be more than MaxSequencerDrift seconds after
 	// the L1 timestamp of the sequencing window end.
 	//
@@ -178,11 +178,11 @@ func (cfg *Config) ValidateL2Config(ctx context.Context, client L2Client, skipL2
 	return nil
 }
 
-func (cfg *Config) TimestampForBlock(blockNumber uint64) timeint.Seconds {
+func (cfg *Config) TimestampForBlock(blockNumber uint64) timeint.Milliseconds {
 	return cfg.Genesis.L2Time + cfg.BlockTime.MultiplyInt(blockNumber-cfg.Genesis.L2.Number)
 }
 
-func (cfg *Config) TargetBlockNumber(timestamp timeint.Seconds) (num uint64, err error) {
+func (cfg *Config) TargetBlockNumber(timestamp timeint.Milliseconds) (num uint64, err error) {
 	// subtract genesis time from timestamp to get the time elapsed since genesis, and then divide that
 	// difference by the block time to get the expected L2 block number at the current time. If the
 	// unsafe head does not have this block number, then there is a gap in the queue.
@@ -387,56 +387,56 @@ func (c *Config) L1Signer() types.Signer {
 }
 
 // IsRegolith returns true if the Regolith hardfork is active at or past the given timestamp.
-func (c *Config) IsRegolith(timestamp timeint.Seconds) bool {
-	return c.RegolithTime != nil && timestamp >= *c.RegolithTime
+func (c *Config) IsRegolith(timestamp timeint.Milliseconds) bool {
+	return c.RegolithTime != nil && timestamp >= (*c.RegolithTime).ToMilliseconds()
 }
 
 // IsCanyon returns true if the Canyon hardfork is active at or past the given timestamp.
-func (c *Config) IsCanyon(timestamp timeint.Seconds) bool {
-	return c.CanyonTime != nil && timestamp >= *c.CanyonTime
+func (c *Config) IsCanyon(timestamp timeint.Milliseconds) bool {
+	return c.CanyonTime != nil && timestamp >= (*c.CanyonTime).ToMilliseconds()
 }
 
 // IsDelta returns true if the Delta hardfork is active at or past the given timestamp.
-func (c *Config) IsDelta(timestamp timeint.Seconds) bool {
-	return c.DeltaTime != nil && timestamp >= *c.DeltaTime
+func (c *Config) IsDelta(timestamp timeint.Milliseconds) bool {
+	return c.DeltaTime != nil && timestamp >= (*c.DeltaTime).ToMilliseconds()
 }
 
 // IsEcotone returns true if the Ecotone hardfork is active at or past the given timestamp.
-func (c *Config) IsEcotone(timestamp timeint.Seconds) bool {
-	return c.EcotoneTime != nil && timestamp >= *c.EcotoneTime
+func (c *Config) IsEcotone(timestamp timeint.Milliseconds) bool {
+	return c.EcotoneTime != nil && timestamp >= (*c.EcotoneTime).ToMilliseconds()
 }
 
 // IsFjord returns true if the Fjord hardfork is active at or past the given timestamp.
-func (c *Config) IsFjord(timestamp timeint.Seconds) bool {
-	return c.FjordTime != nil && timestamp >= *c.FjordTime
+func (c *Config) IsFjord(timestamp timeint.Milliseconds) bool {
+	return c.FjordTime != nil && timestamp >= (*c.FjordTime).ToMilliseconds()
 }
 
 // IsFjordActivationBlock returns whether the specified block is the first block subject to the
 // Fjord upgrade.
-func (c *Config) IsFjordActivationBlock(l2BlockTime timeint.Seconds) bool {
+func (c *Config) IsFjordActivationBlock(l2BlockTime timeint.Milliseconds) bool {
 	return c.IsFjord(l2BlockTime) &&
 		l2BlockTime >= c.BlockTime &&
 		!c.IsFjord(l2BlockTime-c.BlockTime)
 }
 
 // IsInterop returns true if the Interop hardfork is active at or past the given timestamp.
-func (c *Config) IsInterop(timestamp timeint.Seconds) bool {
-	return c.InteropTime != nil && timestamp >= *c.InteropTime
+func (c *Config) IsInterop(timestamp timeint.Milliseconds) bool {
+	return c.InteropTime != nil && timestamp >= (*c.InteropTime).ToMilliseconds()
 }
 
-func (c *Config) IsRegolithActivationBlock(l2BlockTime timeint.Seconds) bool {
+func (c *Config) IsRegolithActivationBlock(l2BlockTime timeint.Milliseconds) bool {
 	return c.IsRegolith(l2BlockTime) &&
 		l2BlockTime >= c.BlockTime &&
 		!c.IsRegolith(l2BlockTime-c.BlockTime)
 }
 
-func (c *Config) IsCanyonActivationBlock(l2BlockTime timeint.Seconds) bool {
+func (c *Config) IsCanyonActivationBlock(l2BlockTime timeint.Milliseconds) bool {
 	return c.IsCanyon(l2BlockTime) &&
 		l2BlockTime >= c.BlockTime &&
 		!c.IsCanyon(l2BlockTime-c.BlockTime)
 }
 
-func (c *Config) IsDeltaActivationBlock(l2BlockTime timeint.Seconds) bool {
+func (c *Config) IsDeltaActivationBlock(l2BlockTime timeint.Milliseconds) bool {
 	return c.IsDelta(l2BlockTime) &&
 		l2BlockTime >= c.BlockTime &&
 		!c.IsDelta(l2BlockTime-c.BlockTime)
@@ -444,13 +444,13 @@ func (c *Config) IsDeltaActivationBlock(l2BlockTime timeint.Seconds) bool {
 
 // IsEcotoneActivationBlock returns whether the specified block is the first block subject to the
 // Ecotone upgrade. Ecotone activation at genesis does not count.
-func (c *Config) IsEcotoneActivationBlock(l2BlockTime timeint.Seconds) bool {
+func (c *Config) IsEcotoneActivationBlock(l2BlockTime timeint.Milliseconds) bool {
 	return c.IsEcotone(l2BlockTime) &&
 		l2BlockTime >= c.BlockTime &&
 		!c.IsEcotone(l2BlockTime-c.BlockTime)
 }
 
-func (c *Config) IsInteropActivationBlock(l2BlockTime timeint.Seconds) bool {
+func (c *Config) IsInteropActivationBlock(l2BlockTime timeint.Milliseconds) bool {
 	return c.IsInterop(l2BlockTime) &&
 		l2BlockTime >= c.BlockTime &&
 		!c.IsInterop(l2BlockTime-c.BlockTime)
@@ -462,7 +462,7 @@ func (c *Config) ForkchoiceUpdatedVersion(attr *eth.PayloadAttributes) eth.Engin
 		// Don't begin payload build process.
 		return eth.FCUV3
 	}
-	ts := timeint.FromHexUint64SecToSec(attr.Timestamp)
+	ts := timeint.FromHexUint64SecToSec(attr.Timestamp).ToMilliseconds() // Assumes attr.Timestamp is in seconds.
 	if c.IsEcotone(ts) {
 		// Cancun
 		return eth.FCUV3
@@ -477,7 +477,7 @@ func (c *Config) ForkchoiceUpdatedVersion(attr *eth.PayloadAttributes) eth.Engin
 }
 
 // NewPayloadVersion returns the EngineAPIMethod suitable for the chain hard fork version.
-func (c *Config) NewPayloadVersion(timestamp timeint.Seconds) eth.EngineAPIMethod {
+func (c *Config) NewPayloadVersion(timestamp timeint.Milliseconds) eth.EngineAPIMethod {
 	if c.IsEcotone(timestamp) {
 		// Cancun
 		return eth.NewPayloadV3
@@ -487,7 +487,7 @@ func (c *Config) NewPayloadVersion(timestamp timeint.Seconds) eth.EngineAPIMetho
 }
 
 // GetPayloadVersion returns the EngineAPIMethod suitable for the chain hard fork version.
-func (c *Config) GetPayloadVersion(timestamp timeint.Seconds) eth.EngineAPIMethod {
+func (c *Config) GetPayloadVersion(timestamp timeint.Milliseconds) eth.EngineAPIMethod {
 	if c.IsEcotone(timestamp) {
 		// Cancun
 		return eth.GetPayloadV3

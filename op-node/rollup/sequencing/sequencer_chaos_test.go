@@ -247,7 +247,7 @@ func testSequencerChaosWithSeed(t *testing.T, seed int64) {
 	logger := testlog.Logger(t, log.LevelCrit)
 	seq, deps := createSequencer(logger)
 	testClock := clock.NewSimpleClock()
-	testClock.SetTime(uint64(deps.cfg.Genesis.L2Time))
+	testClock.SetTime(deps.cfg.Genesis.L2Time.ToSeconds())
 	seq.timeNow = testClock.Now
 	emitter := &testutils.MockEmitter{}
 	seq.AttachEmitter(emitter)

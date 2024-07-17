@@ -389,7 +389,7 @@ func createSequencer(log log.Logger) (*Sequencer, *sequencerTestDeps) {
 				Hash:   testutils.RandomHash(rng),
 				Number: 0,
 			},
-			L2Time:       10000000,
+			L2Time:       timeint.FromUint64SecToMilli(10000000),
 			SystemConfig: eth.SystemConfig{},
 		},
 		BlockTime:         2,

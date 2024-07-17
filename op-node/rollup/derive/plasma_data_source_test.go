@@ -73,7 +73,7 @@ func TestPlasmaDataSource(t *testing.T) {
 		Hash:           testutils.RandomHash(rng),
 		Number:         0,
 		ParentHash:     common.Hash{},
-		Time:           refA.Time,
+		Time:           refA.Time.ToMilliseconds(),
 		L1Origin:       refA.ID(),
 		SequenceNumber: 0,
 	}
@@ -316,7 +316,7 @@ func TestPlasmaDataSourceStall(t *testing.T) {
 		Hash:           testutils.RandomHash(rng),
 		Number:         0,
 		ParentHash:     common.Hash{},
-		Time:           refA.Time,
+		Time:           refA.Time.ToMilliseconds(),
 		L1Origin:       refA.ID(),
 		SequenceNumber: 0,
 	}
@@ -438,7 +438,7 @@ func TestPlasmaDataSourceInvalidData(t *testing.T) {
 		Hash:           testutils.RandomHash(rng),
 		Number:         0,
 		ParentHash:     common.Hash{},
-		Time:           refA.Time,
+		Time:           refA.Time.ToMilliseconds(),
 		L1Origin:       refA.ID(),
 		SequenceNumber: 0,
 	}

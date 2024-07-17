@@ -122,7 +122,7 @@ func TestL2OutputSubmitter(t *testing.T) {
 	// for that block and subsequently reorgs to match what the verifier derives when running the
 	// reconcillation process.
 	l2Verif := sys.Clients["verifier"]
-	_, err = geth.WaitForBlock(big.NewInt(6), l2Verif, 10*time.Duration(cfg.DeployConfig.L2BlockTime)*time.Second)
+	_, err = geth.WaitForBlock(big.NewInt(6), l2Verif, 10*time.Duration(cfg.DeployConfig.L2BlockTime)*time.Millisecond)
 	require.Nil(t, err)
 
 	// Wait for batch submitter to update L2 output oracle.
@@ -185,7 +185,7 @@ func TestL2OutputSubmitterFaultProofs(t *testing.T) {
 	require.Nil(t, err)
 
 	l2Verif := sys.Clients["verifier"]
-	_, err = geth.WaitForBlock(big.NewInt(6), l2Verif, 10*time.Duration(cfg.DeployConfig.L2BlockTime)*time.Second)
+	_, err = geth.WaitForBlock(big.NewInt(6), l2Verif, 10*time.Duration(cfg.DeployConfig.L2BlockTime)*time.Millisecond)
 	require.Nil(t, err)
 
 	timeoutCh := time.After(15 * time.Second)
@@ -1512,7 +1512,7 @@ func TestBatcherMultiTx(t *testing.T) {
 	l1Client := sys.Clients["l1"]
 	l2Seq := sys.Clients["sequencer"]
 
-	_, err = geth.WaitForBlock(big.NewInt(10), l2Seq, time.Duration(cfg.DeployConfig.L2BlockTime*15)*time.Second)
+	_, err = geth.WaitForBlock(big.NewInt(10), l2Seq, time.Duration(cfg.DeployConfig.L2BlockTime*15)*time.Millisecond)
 	require.NoError(t, err, "Waiting for L2 blocks")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)

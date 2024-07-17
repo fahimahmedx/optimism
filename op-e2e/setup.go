@@ -522,7 +522,7 @@ func (cfg SystemConfig) Start(t *testing.T, _opts ...SystemConfigOption) (*Syste
 					Hash:   l2Genesis.ToBlock().Hash(),
 					Number: 0,
 				},
-				L2Time:       timeint.FromHexUint64SecToSec(cfg.DeployConfig.L1GenesisBlockTimestamp),
+				L2Time:       timeint.FromHexUint64SecToMilli(cfg.DeployConfig.L1GenesisBlockTimestamp),
 				SystemConfig: e2eutils.SystemConfigFromDeployConfig(cfg.DeployConfig),
 			},
 			BlockTime:               cfg.DeployConfig.L2BlockTime,

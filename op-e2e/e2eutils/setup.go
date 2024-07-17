@@ -165,7 +165,7 @@ func Setup(t require.TestingT, deployParams *DeployParams, alloc *AllocParams) *
 				Hash:   l2Genesis.ToBlock().Hash(),
 				Number: 0,
 			},
-			L2Time:       timeint.FromHexUint64SecToSec(deployConf.L1GenesisBlockTimestamp),
+			L2Time:       timeint.FromHexUint64SecToMilli(deployConf.L1GenesisBlockTimestamp),
 			SystemConfig: SystemConfigFromDeployConfig(deployConf),
 		},
 		BlockTime:              deployConf.L2BlockTime,

@@ -58,8 +58,8 @@ type DeployConfig struct {
 	L1ChainID uint64 `json:"l1ChainID"`
 	// L2ChainID is the chain ID of the L2 chain.
 	L2ChainID uint64 `json:"l2ChainID"`
-	// L2BlockTime is the number of seconds between each L2 block.
-	L2BlockTime timeint.Seconds `json:"l2BlockTime"`
+	// L2BlockTime is the number of milliseconds between each L2 block.
+	L2BlockTime timeint.Milliseconds `json:"l2BlockTime"`
 	// FinalizationPeriodSeconds represents the number of seconds before an output is considered
 	// finalized. This impacts the amount of time that withdrawals take to finalize and is
 	// generally set to 1 week.
@@ -422,7 +422,7 @@ func (d *DeployConfig) Check() error {
 		}
 	}
 	// L2 block time must always be smaller than L1 block time
-	if d.L1BlockTime < d.L2BlockTime {
+	if d.L1BlockTime.ToMilliseconds() < d.L2BlockTime {
 		return fmt.Errorf("L2 block time (%d) is larger than L1 block time (%d)", d.L2BlockTime, d.L1BlockTime)
 	}
 	if d.RequiredProtocolVersion == (params.ProtocolVersion{}) {
@@ -634,7 +634,7 @@ func (d *DeployConfig) RollupConfig(l1StartBlock *types.Block, l2GenesisBlockHas
 				Hash:   l2GenesisBlockHash,
 				Number: l2GenesisBlockNumber,
 			},
-			L2Time: timeint.FromUint64SecToSec(l1StartBlock.Time()),
+			L2Time: timeint.FromUint64SecToMilli(l1StartBlock.Time()),
 			SystemConfig: eth.SystemConfig{
 				BatcherAddr: d.BatchSenderAddress,
 				Overhead:    eth.Bytes32(common.BigToHash(new(big.Int).SetUint64(d.GasPriceOracleOverhead))),

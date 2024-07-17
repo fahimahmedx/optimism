@@ -10,6 +10,7 @@ import (
 	l2test "github.com/ethereum-optimism/optimism/op-program/client/l2/test"
 	"github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum-optimism/optimism/op-service/testlog"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/consensus/beacon"
@@ -275,7 +276,7 @@ func setupOracle(t *testing.T, blockCount int, headBlockNumber int, enableEcoton
 	deployConfig := &genesis.DeployConfig{
 		L1ChainID:              900,
 		L2ChainID:              901,
-		L2BlockTime:            2,
+		L2BlockTime:            timeint.FromUint64SecToMilli(2),
 		FundDevAccounts:        true,
 		L2GenesisBlockGasLimit: 30_000_000,
 		// Arbitrary non-zero difficulty in genesis.

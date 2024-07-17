@@ -28,7 +28,7 @@ import (
 )
 
 func mockConfig(t *testing.T) Config {
-	now := timeint.FromUint64SecToSec(uint64(time.Now().Unix()))
+	now := timeint.FromUint64SecToMilli(uint64(time.Now().Unix()))
 	return Config{
 		ConsensusAddr:  "127.0.0.1",
 		ConsensusPort:  50050,

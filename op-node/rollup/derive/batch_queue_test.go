@@ -174,15 +174,15 @@ func BatchQueueNewOrigin(t *testing.T, batchType int) {
 		Hash:           mockHash(10, 2),
 		Number:         0,
 		ParentHash:     common.Hash{},
-		Time:           20,
+		Time:           timeint.FromUint64SecToMilli(20),
 		L1Origin:       l1[2].ID(),
 		SequenceNumber: 0,
 	}
 	cfg := &rollup.Config{
 		Genesis: rollup.Genesis{
-			L2Time: 10,
+			L2Time: timeint.FromUint64SecToMilli(10),
 		},
-		BlockTime:         2,
+		BlockTime:         timeint.FromUint64SecToMilli(2),
 		MaxSequencerDrift: 600,
 		SeqWindowSize:     2,
 		DeltaTime:         getDeltaTime(batchType),
@@ -235,15 +235,15 @@ func BatchQueueEager(t *testing.T, batchType int) {
 		Hash:           mockHash(10, 2),
 		Number:         0,
 		ParentHash:     common.Hash{},
-		Time:           10,
+		Time:           timeint.FromUint64SecToMilli(10),
 		L1Origin:       l1[0].ID(),
 		SequenceNumber: 0,
 	}
 	cfg := &rollup.Config{
 		Genesis: rollup.Genesis{
-			L2Time: 10,
+			L2Time: timeint.FromUint64SecToMilli(10),
 		},
-		BlockTime:         2,
+		BlockTime:         timeint.FromUint64SecToMilli(2),
 		MaxSequencerDrift: 600,
 		SeqWindowSize:     30,
 		DeltaTime:         getDeltaTime(batchType),
@@ -313,15 +313,15 @@ func BatchQueueInvalidInternalAdvance(t *testing.T, batchType int) {
 		Hash:           mockHash(10, 2),
 		Number:         0,
 		ParentHash:     common.Hash{},
-		Time:           10,
+		Time:           timeint.FromUint64SecToMilli(10),
 		L1Origin:       l1[0].ID(),
 		SequenceNumber: 0,
 	}
 	cfg := &rollup.Config{
 		Genesis: rollup.Genesis{
-			L2Time: 10,
+			L2Time: timeint.FromUint64SecToMilli(10),
 		},
-		BlockTime:         2,
+		BlockTime:         timeint.FromUint64SecToMilli(2),
 		MaxSequencerDrift: 600,
 		SeqWindowSize:     2,
 		DeltaTime:         getDeltaTime(batchType),
@@ -432,15 +432,15 @@ func BatchQueueMissing(t *testing.T, batchType int) {
 		Hash:           mockHash(10, 2),
 		Number:         0,
 		ParentHash:     common.Hash{},
-		Time:           10,
+		Time:           timeint.FromUint64SecToMilli(10),
 		L1Origin:       l1[0].ID(),
 		SequenceNumber: 0,
 	}
 	cfg := &rollup.Config{
 		Genesis: rollup.Genesis{
-			L2Time: 10,
+			L2Time: timeint.FromUint64SecToMilli(10),
 		},
-		BlockTime:         2,
+		BlockTime:         timeint.FromUint64SecToMilli(2),
 		MaxSequencerDrift: 600,
 		SeqWindowSize:     2,
 		DeltaTime:         getDeltaTime(batchType),
@@ -549,15 +549,15 @@ func BatchQueueAdvancedEpoch(t *testing.T, batchType int) {
 		Hash:           mockHash(4, 2),
 		Number:         0,
 		ParentHash:     common.Hash{},
-		Time:           4,
+		Time:           timeint.FromUint64SecToMilli(4),
 		L1Origin:       l1[0].ID(),
 		SequenceNumber: 0,
 	}
 	cfg := &rollup.Config{
 		Genesis: rollup.Genesis{
-			L2Time: 10,
+			L2Time: timeint.FromUint64SecToMilli(10),
 		},
-		BlockTime:         2,
+		BlockTime:         timeint.FromUint64SecToMilli(2),
 		MaxSequencerDrift: 600,
 		SeqWindowSize:     30,
 		DeltaTime:         getDeltaTime(batchType),
@@ -636,15 +636,15 @@ func BatchQueueShuffle(t *testing.T, batchType int) {
 		Hash:           mockHash(4, 2),
 		Number:         0,
 		ParentHash:     common.Hash{},
-		Time:           4,
+		Time:           timeint.FromUint64SecToMilli(4),
 		L1Origin:       l1[0].ID(),
 		SequenceNumber: 0,
 	}
 	cfg := &rollup.Config{
 		Genesis: rollup.Genesis{
-			L2Time: 10,
+			L2Time: timeint.FromUint64SecToMilli(10),
 		},
-		BlockTime:         2,
+		BlockTime:         timeint.FromUint64SecToMilli(2),
 		MaxSequencerDrift: 600,
 		SeqWindowSize:     30,
 		DeltaTime:         getDeltaTime(batchType),
@@ -734,15 +734,15 @@ func TestBatchQueueOverlappingSpanBatch(t *testing.T) {
 		Hash:           mockHash(10, 2),
 		Number:         0,
 		ParentHash:     common.Hash{},
-		Time:           10,
+		Time:           timeint.FromUint64SecToMilli(10),
 		L1Origin:       l1[0].ID(),
 		SequenceNumber: 0,
 	}
 	cfg := &rollup.Config{
 		Genesis: rollup.Genesis{
-			L2Time: 10,
+			L2Time: timeint.FromUint64SecToMilli(10),
 		},
-		BlockTime:         2,
+		BlockTime:         timeint.FromUint64SecToMilli(2),
 		MaxSequencerDrift: 600,
 		SeqWindowSize:     30,
 		DeltaTime:         getDeltaTime(SpanBatchType),
@@ -839,15 +839,15 @@ func TestBatchQueueComplex(t *testing.T) {
 		Hash:           mockHash(4, 2),
 		Number:         0,
 		ParentHash:     common.Hash{},
-		Time:           4,
+		Time:           timeint.FromUint64SecToMilli(4),
 		L1Origin:       l1[0].ID(),
 		SequenceNumber: 0,
 	}
 	cfg := &rollup.Config{
 		Genesis: rollup.Genesis{
-			L2Time: 10,
+			L2Time: timeint.FromUint64SecToMilli(10),
 		},
-		BlockTime:         2,
+		BlockTime:         timeint.FromUint64SecToMilli(2),
 		MaxSequencerDrift: 600,
 		SeqWindowSize:     30,
 		DeltaTime:         getDeltaTime(SpanBatchType),
@@ -963,9 +963,9 @@ func TestBatchQueueResetSpan(t *testing.T) {
 	}
 	cfg := &rollup.Config{
 		Genesis: rollup.Genesis{
-			L2Time: 10,
+			L2Time: timeint.FromUint64SecToMilli(10),
 		},
-		BlockTime:         2,
+		BlockTime:         timeint.FromUint64SecToMilli(2),
 		MaxSequencerDrift: 600,
 		SeqWindowSize:     30,
 		DeltaTime:         getDeltaTime(SpanBatchType),

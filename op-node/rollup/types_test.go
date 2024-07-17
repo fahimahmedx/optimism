@@ -32,7 +32,7 @@ func randConfig() *Config {
 		Genesis: Genesis{
 			L1:     eth.BlockID{Hash: randHash(), Number: 424242},
 			L2:     eth.BlockID{Hash: randHash(), Number: 1337},
-			L2Time: timeint.FromUint64SecToSec(uint64(time.Now().Unix())),
+			L2Time: timeint.FromUint64SecToMilli(uint64(time.Now().Unix())),
 			SystemConfig: eth.SystemConfig{
 				BatcherAddr: randAddr(),
 				Overhead:    randHash(),
@@ -525,35 +525,35 @@ func TestTimestampForBlock(t *testing.T) {
 
 	tests := []struct {
 		name              string
-		genesisTime       timeint.Seconds
+		genesisTime       timeint.Milliseconds
 		genesisBlock      uint64
-		blockTime         timeint.Seconds
+		blockTime         timeint.Milliseconds
 		blockNum          uint64
-		expectedBlockTime timeint.Seconds
+		expectedBlockTime timeint.Milliseconds
 	}{
 		{
 			name:              "FirstBlock",
-			genesisTime:       100,
+			genesisTime:       timeint.FromUint64SecToMilli(100),
 			genesisBlock:      0,
-			blockTime:         2,
+			blockTime:         timeint.FromUint64SecToMilli(2),
 			blockNum:          0,
-			expectedBlockTime: 100,
+			expectedBlockTime: timeint.FromUint64SecToMilli(100),
 		},
 		{
 			name:              "SecondBlock",
-			genesisTime:       100,
+			genesisTime:       timeint.FromUint64SecToMilli(100),
 			genesisBlock:      0,
-			blockTime:         2,
+			blockTime:         timeint.FromUint64SecToMilli(2),
 			blockNum:          1,
-			expectedBlockTime: 102,
+			expectedBlockTime: timeint.FromUint64SecToMilli(102),
 		},
 		{
 			name:              "NBlock",
-			genesisTime:       100,
+			genesisTime:       timeint.FromUint64SecToMilli(100),
 			genesisBlock:      0,
-			blockTime:         2,
+			blockTime:         timeint.FromUint64SecToMilli(2),
 			blockNum:          25,
-			expectedBlockTime: 150,
+			expectedBlockTime: timeint.FromUint64SecToMilli(150),
 		},
 	}
 

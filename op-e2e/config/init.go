@@ -20,6 +20,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-e2e/external"
 	op_service "github.com/ethereum-optimism/optimism/op-service"
 	oplog "github.com/ethereum-optimism/optimism/op-service/log"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 // legacy geth log levels - the geth command line --verbosity flag wasn't
@@ -141,7 +142,7 @@ func init() {
 	DeployConfig.FundDevAccounts = true
 	// Speed up the in memory tests
 	DeployConfig.L1BlockTime = 2
-	DeployConfig.L2BlockTime = 1
+	DeployConfig.L2BlockTime = timeint.FromUint64SecToMilli(1)
 
 	if L1Deployments != nil {
 		DeployConfig.SetDeployments(L1Deployments)

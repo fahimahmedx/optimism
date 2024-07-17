@@ -76,15 +76,15 @@ func setupSyncTestData(length uint64) (*rollup.Config, *syncTestData) {
 		Genesis: rollup.Genesis{
 			L1:     eth.BlockID{Hash: common.Hash{0xaa}},
 			L2:     eth.BlockID{Hash: common.Hash{0xbb}},
-			L2Time: 9000,
+			L2Time: timeint.FromUint64SecToMilli(9000),
 		},
-		BlockTime: 2,
+		BlockTime: timeint.FromUint64SecToMilli(2),
 		L2ChainID: big.NewInt(1234),
 	}
 
 	ecotoneBlock := length / 2
 	ecotoneTime := cfg.Genesis.L2Time + cfg.BlockTime.MultiplyInt(ecotoneBlock)
-	cfg.EcotoneTime = &ecotoneTime
+	cfg.EcotoneTime = ecotoneTime.ToSeconds().ToSecondsPtr()
 
 	// create some simple fake test blocks
 	payloads := make(map[uint64]*eth.ExecutionPayloadEnvelope)

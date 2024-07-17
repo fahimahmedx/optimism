@@ -15,6 +15,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-service/client"
 	"github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum-optimism/optimism/op-service/sources"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 func TestStopStartSequencer(t *testing.T) {
@@ -56,7 +57,7 @@ func TestStopStartSequencer(t *testing.T) {
 	require.False(t, active, "sequencer should be inactive")
 
 	blockBefore := latestBlock(t, l2Seq)
-	time.Sleep(time.Duration(cfg.DeployConfig.L2BlockTime+1) * time.Second)
+	time.Sleep(time.Duration(cfg.DeployConfig.L2BlockTime+timeint.FromUint64SecToMilli(1)) * time.Millisecond)
 	blockAfter := latestBlock(t, l2Seq)
 	require.Equal(t, blockAfter, blockBefore, "Chain advanced after stopping sequencer")
 

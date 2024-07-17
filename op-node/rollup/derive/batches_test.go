@@ -56,13 +56,13 @@ func multiMod[T any](mods ...func(T)) func(T) {
 	}
 }
 
-const defaultBlockTime = 2
+var defaultBlockTime = timeint.FromUint64SecToMilli(2)
 
 func TestValidBatch(t *testing.T) {
 	defaultConf := func() *rollup.Config {
 		return &rollup.Config{
 			Genesis: rollup.Genesis{
-				L2Time: 31, // a genesis time that itself does not align to make it more interesting
+				L2Time: timeint.FromUint64SecToMilli(31), // a genesis time that itself does not align to make it more interesting
 			},
 			BlockTime:         defaultBlockTime,
 			SeqWindowSize:     4,

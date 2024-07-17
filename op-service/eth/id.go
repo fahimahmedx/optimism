@@ -32,12 +32,12 @@ func HeaderBlockID(h *types.Header) BlockID {
 }
 
 type L2BlockRef struct {
-	Hash           common.Hash     `json:"hash"`
-	Number         uint64          `json:"number"`
-	ParentHash     common.Hash     `json:"parentHash"`
-	Time           timeint.Seconds `json:"timestamp"`
-	L1Origin       BlockID         `json:"l1origin"`
-	SequenceNumber uint64          `json:"sequenceNumber"` // distance to first block of epoch
+	Hash           common.Hash          `json:"hash"`
+	Number         uint64               `json:"number"`
+	ParentHash     common.Hash          `json:"parentHash"`
+	Time           timeint.Milliseconds `json:"timestamp"`
+	L1Origin       BlockID              `json:"l1origin"`
+	SequenceNumber uint64               `json:"sequenceNumber"` // distance to first block of epoch
 }
 
 func (id L2BlockRef) String() string {

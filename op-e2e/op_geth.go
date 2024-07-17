@@ -80,7 +80,7 @@ func NewOpGeth(t testing.TB, ctx context.Context, cfg *SystemConfig) (*OpGeth, e
 			Hash:   l2GenesisBlock.Hash(),
 			Number: l2GenesisBlock.NumberU64(),
 		},
-		L2Time:       timeint.FromUint64SecToSec(l2GenesisBlock.Time()),
+		L2Time:       timeint.FromUint64SecToMilli(l2GenesisBlock.Time()),
 		SystemConfig: e2eutils.SystemConfigFromDeployConfig(cfg.DeployConfig),
 	}
 
