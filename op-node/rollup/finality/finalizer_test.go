@@ -89,7 +89,7 @@ func TestEngineQueue_Finalize(t *testing.T) {
 			L2:     refA0.ID(),
 			L2Time: refA0.Time,
 		},
-		BlockTime:     1,
+		BlockTime:     timeint.FromUint64SecToMilli(1),
 		SeqWindowSize: 2,
 	}
 	refA1 := eth.L2BlockRef{

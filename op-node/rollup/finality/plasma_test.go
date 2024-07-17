@@ -18,6 +18,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum-optimism/optimism/op-service/testlog"
 	"github.com/ethereum-optimism/optimism/op-service/testutils"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 type fakePlasmaBackend struct {
@@ -63,7 +64,7 @@ func TestPlasmaFinalityData(t *testing.T) {
 				GasLimit:    20_000_000,
 			},
 		},
-		BlockTime:     1,
+		BlockTime:     timeint.FromUint64SecToMilli(1),
 		SeqWindowSize: 2,
 	}
 	plasmaCfg := &rollup.PlasmaConfig{

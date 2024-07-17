@@ -49,7 +49,7 @@ func (los *L1OriginSelector) FindL1Origin(ctx context.Context, l2Head eth.L2Bloc
 	log := los.log.New("current", currentOrigin, "current_time", currentOrigin.Time,
 		"l2_head", l2Head, "l2_head_time", l2Head.Time, "max_seq_drift", msd)
 
-	seqDrift := l2Head.Time + los.cfg.BlockTime - currentOrigin.Time
+	seqDrift := l2Head.Time + los.cfg.BlockTime - currentOrigin.Time.ToMilliseconds()
 
 	// If we are past the sequencer depth, we may want to advance the origin, but need to still
 	// check the time of the next origin.
@@ -89,7 +89,7 @@ func (los *L1OriginSelector) FindL1Origin(ctx context.Context, l2Head eth.L2Bloc
 	// could decide to continue to build on top of the previous origin until the Sequencer runs out
 	// of slack. For simplicity, we implement our Sequencer to always start building on the latest
 	// L1 block when we can.
-	if l2Head.Time+los.cfg.BlockTime >= nextOrigin.Time {
+	if l2Head.Time+los.cfg.BlockTime >= nextOrigin.Time.ToMilliseconds() {
 		return nextOrigin, nil
 	}
 

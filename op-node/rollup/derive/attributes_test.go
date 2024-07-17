@@ -23,7 +23,7 @@ import (
 func TestPreparePayloadAttributes(t *testing.T) {
 	// test sysCfg, only init the necessary fields
 	cfg := &rollup.Config{
-		BlockTime:              2,
+		BlockTime:              timeint.FromUint64SecToMilli(2),
 		L1ChainID:              big.NewInt(101),
 		L2ChainID:              big.NewInt(102),
 		DepositContractAddress: common.Address{0xbb},
@@ -121,7 +121,7 @@ func TestPreparePayloadAttributes(t *testing.T) {
 		attrs, err := attrBuilder.PreparePayloadAttributes(context.Background(), l2Parent, epoch)
 		require.NoError(t, err)
 		require.NotNil(t, attrs)
-		require.Equal(t, l2Parent.Time+cfg.BlockTime, timeint.FromHexUint64SecToSec(attrs.Timestamp))
+		require.Equal(t, l2Parent.Time+cfg.BlockTime, timeint.FromHexUint64SecToMilli(attrs.Timestamp))
 		require.Equal(t, eth.Bytes32(l1Info.InfoMixDigest), attrs.PrevRandao)
 		require.Equal(t, predeploys.SequencerFeeVaultAddr, attrs.SuggestedFeeRecipient)
 		require.Equal(t, 1, len(attrs.Transactions))
@@ -161,7 +161,7 @@ func TestPreparePayloadAttributes(t *testing.T) {
 		attrs, err := attrBuilder.PreparePayloadAttributes(context.Background(), l2Parent, epoch)
 		require.NoError(t, err)
 		require.NotNil(t, attrs)
-		require.Equal(t, l2Parent.Time+cfg.BlockTime, timeint.FromHexUint64SecToSec(attrs.Timestamp))
+		require.Equal(t, l2Parent.Time+cfg.BlockTime, timeint.FromHexUint64SecToMilli(attrs.Timestamp))
 		require.Equal(t, eth.Bytes32(l1Info.InfoMixDigest), attrs.PrevRandao)
 		require.Equal(t, predeploys.SequencerFeeVaultAddr, attrs.SuggestedFeeRecipient)
 		require.Equal(t, len(l2Txs), len(attrs.Transactions), "Expected txs to equal l1 info tx + user deposit txs")
@@ -189,7 +189,7 @@ func TestPreparePayloadAttributes(t *testing.T) {
 		attrs, err := attrBuilder.PreparePayloadAttributes(context.Background(), l2Parent, epoch)
 		require.NoError(t, err)
 		require.NotNil(t, attrs)
-		require.Equal(t, l2Parent.Time+cfg.BlockTime, timeint.FromHexUint64SecToSec(attrs.Timestamp))
+		require.Equal(t, l2Parent.Time+cfg.BlockTime, timeint.FromHexUint64SecToMilli(attrs.Timestamp))
 		require.Equal(t, eth.Bytes32(l1Info.InfoMixDigest), attrs.PrevRandao)
 		require.Equal(t, predeploys.SequencerFeeVaultAddr, attrs.SuggestedFeeRecipient)
 		require.Equal(t, 1, len(attrs.Transactions))
@@ -201,16 +201,16 @@ func TestPreparePayloadAttributes(t *testing.T) {
 		testCases := []struct {
 			name         string
 			l1Time       timeint.Seconds
-			l2ParentTime timeint.Seconds
+			l2ParentTime timeint.Milliseconds
 			regolithTime timeint.Seconds
 			regolith     bool
 		}{
-			{"exactly", 900, 1000 - cfg.BlockTime, 1000, true},
-			{"almost", 900, 1000 - cfg.BlockTime - 1, 1000, false},
-			{"inactive", 700, 700, 1000, false},
-			{"l1 time before regolith", 1000, 1001, 1001, true},
-			{"l1 time way before regolith", 1000, 2000, 2000, true},
-			{"l1 time before regoltih and l2 after", 1000, 3000, 2000, true},
+			{"exactly", 900, timeint.FromUint64SecToMilli(1000) - cfg.BlockTime, 1000, true},
+			{"almost", 900, timeint.FromUint64SecToMilli(1000) - cfg.BlockTime - timeint.FromUint64SecToMilli(1), 1000, false},
+			{"inactive", 700, timeint.FromUint64SecToMilli(700), 1000, false},
+			{"l1 time before regolith", 1000, timeint.FromUint64SecToMilli(1001), 1001, true},
+			{"l1 time way before regolith", 1000, timeint.FromUint64SecToMilli(2000), 2000, true},
+			{"l1 time before regoltih and l2 after", 1000, timeint.FromUint64SecToMilli(3000), 2000, true},
 		}
 		for _, tc := range testCases {
 			t.Run(tc.name, func(t *testing.T) {

@@ -222,7 +222,7 @@ func (d *Sequencer) onBuildStarted(x engine.BuildStartedEvent) {
 
 	// schedule sealing
 	now := d.timeNow()
-	payloadTime := time.Unix(int64(x.Parent.Time+d.rollupCfg.BlockTime), 0)
+	payloadTime := time.UnixMilli(int64(x.Parent.Time + d.rollupCfg.BlockTime))
 	remainingTime := payloadTime.Sub(now)
 	if remainingTime < sealingDuration {
 		d.nextAction = now // if there's not enough time for sealing, don't wait.
@@ -237,7 +237,7 @@ func (d *Sequencer) handleInvalid() {
 	d.latest = BuildingState{}
 	d.asyncGossip.Clear()
 	// upon error, retry after one block worth of time
-	blockTime := time.Duration(d.rollupCfg.BlockTime) * time.Second
+	blockTime := time.Duration(d.rollupCfg.BlockTime) * time.Millisecond
 	d.nextAction = d.timeNow().Add(blockTime)
 	d.nextActionOK = d.active.Load()
 }
@@ -415,7 +415,7 @@ func (d *Sequencer) onEngineResetConfirmedEvent(x engine.EngineResetConfirmedEve
 	// Before sequencing we can wait a block,
 	// assuming the execution-engine just churned through some work for the reset.
 	// This will also prevent any potential reset-loop from running too hot.
-	d.nextAction = d.timeNow().Add(time.Second * time.Duration(d.rollupCfg.BlockTime))
+	d.nextAction = d.timeNow().Add(time.Millisecond * time.Duration(d.rollupCfg.BlockTime))
 	d.log.Info("Engine reset confirmed, sequencer may continue", "next", d.nextActionOK)
 }
 
@@ -443,8 +443,8 @@ func (d *Sequencer) onForkchoiceUpdate(x engine.ForkchoiceUpdateEvent) {
 	if x.UnsafeL2Head.Number > d.latestHead.Number {
 		d.nextActionOK = true
 		now := d.timeNow()
-		blockTime := time.Duration(d.rollupCfg.BlockTime) * time.Second
-		payloadTime := time.Unix(int64(x.UnsafeL2Head.Time+d.rollupCfg.BlockTime), 0)
+		blockTime := time.Duration(d.rollupCfg.BlockTime) * time.Millisecond
+		payloadTime := time.UnixMilli(int64(x.UnsafeL2Head.Time + d.rollupCfg.BlockTime))
 		remainingTime := payloadTime.Sub(now)
 		if remainingTime > blockTime {
 			// if we have too much time, then wait before starting the build

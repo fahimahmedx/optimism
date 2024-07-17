@@ -344,7 +344,7 @@ func checkConsolidation(cliCtx *cli.Context) error {
 		return fmt.Errorf("tx count %d is too low. requires minimum 4 txs to test all tx types", txCount)
 	}
 	l2ChainID := new(big.Int).SetUint64(cliCtx.Uint64("l2-chain-id"))
-	l2BlockTime := timeint.FromUint64SecToSec(2)
+	l2BlockTime := timeint.FromUint64SecToMilli(2)
 	rollupCfg, err := rollup.LoadOPStackRollupConfig(l2ChainID.Uint64())
 	if err == nil {
 		l2BlockTime = rollupCfg.BlockTime

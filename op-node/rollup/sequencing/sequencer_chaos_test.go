@@ -296,10 +296,10 @@ func testSequencerChaosWithSeed(t *testing.T, seed int64) {
 			Hash:       l2Head.L1Origin.Hash,
 			Number:     l2Head.L1Origin.Number,
 			ParentHash: l1BlockHash(l2Head.L1Origin.Number - 1),
-			Time:       genesisRef.Time + timeint.FromUint64SecToSec(12).MultiplyInt(l2Head.L1Origin.Number-genesisRef.L1Origin.Number),
+			Time:       genesisRef.Time.ToSeconds() + timeint.FromUint64SecToSec(12).MultiplyInt(l2Head.L1Origin.Number-genesisRef.L1Origin.Number),
 		}
 		// Handle sequencer time drift, by proceeding to the next L1 origin when we run out of valid time
-		if l2Head.Time+deps.cfg.BlockTime > origin.Time+deps.cfg.MaxSequencerDrift {
+		if l2Head.Time+deps.cfg.BlockTime > (origin.Time + deps.cfg.MaxSequencerDrift).ToMilliseconds() {
 			origin.Number += 1
 			origin.ParentHash = origin.Hash
 			origin.Hash = l1BlockHash(origin.Number)
@@ -378,7 +378,7 @@ func testSequencerChaosWithSeed(t *testing.T, seed int64) {
 
 	now := testClock.Now()
 	timeSinceGenesis := now.Sub(genesisTime)
-	idealTimeSinceGenesis := time.Duration(deps.cfg.BlockTime.MultiplyInt(blocksSinceGenesis)) * time.Second
+	idealTimeSinceGenesis := time.Duration(deps.cfg.BlockTime.MultiplyInt(blocksSinceGenesis)) * time.Millisecond
 	diff := timeSinceGenesis - idealTimeSinceGenesis
 	// If timing keeps adjusting, even with many errors over time, it should stay close to target.
 	if diff.Abs() > time.Second*20 {

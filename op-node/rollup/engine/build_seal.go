@@ -103,7 +103,7 @@ func (eq *EngDeriver) onBuildSeal(ev BuildSealEvent) {
 	sealTime := now.Sub(sealingStart)
 	buildTime := now.Sub(ev.BuildStarted)
 	eq.metrics.RecordSequencerSealingTime(sealTime)
-	eq.metrics.RecordSequencerBuildingDiffTime(buildTime - time.Duration(eq.cfg.BlockTime)*time.Second)
+	eq.metrics.RecordSequencerBuildingDiffTime(buildTime - time.Duration(eq.cfg.BlockTime)*time.Millisecond)
 
 	txnCount := len(envelope.ExecutionPayload.Transactions)
 	eq.metrics.CountSequencedTxs(txnCount)

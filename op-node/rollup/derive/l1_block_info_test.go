@@ -140,7 +140,7 @@ func TestParseL1InfoDepositTxData(t *testing.T) {
 		rollupCfg := rollup.Config{
 			RegolithTime: &two,
 			EcotoneTime:  &two,
-			BlockTime:    2,
+			BlockTime:    timeint.FromUint64SecToMilli(2),
 		}
 		depTx, err := L1InfoDeposit(&rollupCfg, randomL1Cfg(rng, info), randomSeqNr(rng), info, 2)
 		require.NoError(t, err)
@@ -155,7 +155,7 @@ func TestParseL1InfoDepositTxData(t *testing.T) {
 		rollupCfg := rollup.Config{
 			RegolithTime: &zero,
 			EcotoneTime:  &zero,
-			BlockTime:    2,
+			BlockTime:    timeint.FromUint64SecToMilli(2),
 		}
 		depTx, err := L1InfoDeposit(&rollupCfg, randomL1Cfg(rng, info), randomSeqNr(rng), info, 0)
 		require.NoError(t, err)

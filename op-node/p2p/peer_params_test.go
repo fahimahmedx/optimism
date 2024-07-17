@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/ethereum-optimism/optimism/op-node/chaincfg"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 	pubsub "github.com/libp2p/go-libp2p-pubsub"
 	"github.com/stretchr/testify/suite"
 )
@@ -51,8 +52,8 @@ func (testSuite *PeerParamsTestSuite) TestGetPeerScoreParams_None() {
 // TestLightPeerScoreParams validates the light peer score params.
 func (testSuite *PeerParamsTestSuite) TestGetPeerScoreParams_Light() {
 	cfg := chaincfg.Sepolia
-	cfg.BlockTime = 1
-	slot := time.Duration(cfg.BlockTime) * time.Second
+	cfg.BlockTime = timeint.FromUint64SecToMilli(1)
+	slot := time.Duration(cfg.BlockTime) * time.Millisecond
 	epoch := 6 * slot
 	oneHundredEpochs := 100 * epoch
 

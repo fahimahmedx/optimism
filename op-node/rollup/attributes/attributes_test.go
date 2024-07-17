@@ -78,7 +78,7 @@ func TestAttributesHandler(t *testing.T) {
 				GasLimit:    20_000_000,
 			},
 		},
-		BlockTime:     1,
+		BlockTime:     timeint.FromUint64SecToMilli(1),
 		SeqWindowSize: 2,
 		RegolithTime:  new(timeint.Seconds),
 		CanyonTime:    new(timeint.Seconds),

@@ -194,7 +194,7 @@ func (s *Driver) eventLoop() {
 
 	// Create a ticker to check if there is a gap in the engine queue. Whenever
 	// there is, we send requests to sync source to retrieve the missing payloads.
-	syncCheckInterval := time.Duration(s.Config.BlockTime) * time.Second * 2
+	syncCheckInterval := time.Duration(s.Config.BlockTime) * time.Millisecond * 2
 	altSyncTicker := time.NewTicker(syncCheckInterval)
 	defer altSyncTicker.Stop()
 	lastUnsafeL2 := s.Engine.UnsafeL2Head()
@@ -430,7 +430,7 @@ func (s *SyncDeriver) onStepEvent() {
 		s.Emitter.Emit(StepReqEvent{})
 	} else {
 		// Revisit SyncStep in 1/2 of a L2 block.
-		s.Emitter.Emit(StepDelayedReqEvent{Delay: (time.Duration(s.Config.BlockTime) * time.Second) / 2})
+		s.Emitter.Emit(StepDelayedReqEvent{Delay: (time.Duration(s.Config.BlockTime) * time.Millisecond) / 2})
 	}
 }
 

@@ -50,7 +50,7 @@ func (m *FakeAttributesBuilder) PreparePayloadAttributes(ctx context.Context,
 	l2Parent eth.L2BlockRef, epoch eth.BlockID) (attrs *eth.PayloadAttributes, err error) {
 	gasLimit := eth.Uint64Quantity(30_000_000)
 	attrs = &eth.PayloadAttributes{
-		Timestamp:             eth.Uint64Quantity(l2Parent.Time + m.cfg.BlockTime),
+		Timestamp:             eth.Uint64Quantity((l2Parent.Time + m.cfg.BlockTime).ToSeconds()),
 		PrevRandao:            eth.Bytes32(testutils.RandomHash(m.rng)),
 		SuggestedFeeRecipient: predeploys.SequencerFeeVaultAddr,
 		Withdrawals:           nil,
@@ -259,7 +259,7 @@ func TestSequencerBuild(t *testing.T) {
 		x, ok := ev.(engine.BuildStartEvent)
 		require.True(t, ok)
 		require.Equal(t, head, x.Attributes.Parent)
-		require.Equal(t, head.Time+deps.cfg.BlockTime, timeint.FromHexUint64SecToSec(x.Attributes.Attributes.Timestamp))
+		require.Equal(t, head.Time+deps.cfg.BlockTime, timeint.FromHexUint64SecToMilli(x.Attributes.Attributes.Timestamp))
 		require.Equal(t, eth.L1BlockRef{}, x.Attributes.DerivedFrom)
 		sentAttributes = x.Attributes
 	})
@@ -271,7 +271,7 @@ func TestSequencerBuild(t *testing.T) {
 	testClock.Set(startedTime)
 	payloadInfo := eth.PayloadInfo{
 		ID:        eth.PayloadID{0x42},
-		Timestamp: head.Time + deps.cfg.BlockTime,
+		Timestamp: (head.Time + deps.cfg.BlockTime).ToSeconds(),
 	}
 	seq.OnEvent(engine.BuildStartedEvent{
 		Info:         payloadInfo,
@@ -284,8 +284,8 @@ func TestSequencerBuild(t *testing.T) {
 	// We expect to seal just before the block-time boundary, leaving enough time for the sealing itself.
 	sealTargetTime, ok := seq.NextAction()
 	require.True(t, ok)
-	buildDuration := sealTargetTime.Sub(time.Unix(int64(head.Time), 0))
-	require.Equal(t, (time.Duration(deps.cfg.BlockTime)*time.Second)-sealingDuration, buildDuration)
+	buildDuration := sealTargetTime.Sub(time.UnixMilli(int64(head.Time)))
+	require.Equal(t, (time.Duration(deps.cfg.BlockTime)*time.Millisecond)-sealingDuration, buildDuration)
 
 	// Now trigger the sequencer to start sealing
 	emitter.ExpectOnce(engine.BuildSealEvent{
@@ -392,7 +392,7 @@ func createSequencer(log log.Logger) (*Sequencer, *sequencerTestDeps) {
 			L2Time:       timeint.FromUint64SecToMilli(10000000),
 			SystemConfig: eth.SystemConfig{},
 		},
-		BlockTime:         2,
+		BlockTime:         timeint.FromUint64SecToMilli(2)
 		MaxSequencerDrift: 15 * 60,
 		RegolithTime:      new(timeint.Seconds),
 		CanyonTime:        new(timeint.Seconds),

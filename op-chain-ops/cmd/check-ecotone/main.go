@@ -342,10 +342,10 @@ func check4788Contract(ctx context.Context, env *actionEnv) error {
 	if err != nil {
 		return fmt.Errorf("config retrieval failed: %w", err)
 	}
-	t := timeint.FromUint64SecToSec(head.Time)
-	alignment := timeint.FromUint64SecToSec(head.Time) % conf.BlockTime
+	t := timeint.FromUint64SecToMilli(head.Time)
+	alignment := timeint.FromUint64SecToMilli(head.Time) % conf.BlockTime
 	for i := 0; i < 20; i++ {
-		ti := t - timeint.FromUint64SecToSec(uint64(i))
+		ti := t - timeint.FromUint64SecToMilli(uint64(i))
 		if !conf.IsEcotone(ti) {
 			continue
 		}
@@ -660,7 +660,7 @@ func checkUpgradeTxs(ctx context.Context, env *actionEnv) error {
 	}
 
 	activationBlockNum := rollupCfg.Genesis.L2.Number +
-		uint64((*rollupCfg.EcotoneTime-rollupCfg.Genesis.L2Time)/rollupCfg.BlockTime)
+		uint64(((*rollupCfg.EcotoneTime).ToMilliseconds()-rollupCfg.Genesis.L2Time)/rollupCfg.BlockTime)
 	env.log.Info("upgrade block num", "num", activationBlockNum)
 	l2RPC := client.NewBaseRPCClient(env.l2.Client())
 	l2EthCl, err := sources.NewL2Client(l2RPC, env.log, nil,

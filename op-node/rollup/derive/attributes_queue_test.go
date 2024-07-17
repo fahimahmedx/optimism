@@ -16,6 +16,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-service/predeploys"
 	"github.com/ethereum-optimism/optimism/op-service/testlog"
 	"github.com/ethereum-optimism/optimism/op-service/testutils"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 // TestAttributesQueue checks that it properly uses the PreparePayloadAttributes function
@@ -24,7 +25,7 @@ import (
 func TestAttributesQueue(t *testing.T) {
 	// test config, only init the necessary fields
 	cfg := &rollup.Config{
-		BlockTime:              2,
+		BlockTime:              timeint.FromUint64SecToMilli(2),
 		L1ChainID:              big.NewInt(101),
 		L2ChainID:              big.NewInt(102),
 		DepositContractAddress: common.Address{0xbb},
@@ -40,13 +41,13 @@ func TestAttributesQueue(t *testing.T) {
 
 	safeHead := testutils.RandomL2BlockRef(rng)
 	safeHead.L1Origin = l1Info.ID()
-	safeHead.Time = l1Info.InfoTime
+	safeHead.Time = l1Info.InfoTime.ToMilliseconds()
 
 	batch := SingularBatch{
 		ParentHash:   safeHead.Hash,
 		EpochNum:     rollup.Epoch(l1Info.InfoNum),
 		EpochHash:    l1Info.InfoHash,
-		Timestamp:    safeHead.Time + cfg.BlockTime,
+		Timestamp:    (safeHead.Time + cfg.BlockTime).ToSeconds(),
 		Transactions: []eth.Data{eth.Data("foobar"), eth.Data("example")},
 	}
 
@@ -70,7 +71,7 @@ func TestAttributesQueue(t *testing.T) {
 	l1InfoTx, err := L1InfoDepositBytes(&rollupCfg, expectedL1Cfg, safeHead.SequenceNumber+1, l1Info, 0)
 	require.NoError(t, err)
 	attrs := eth.PayloadAttributes{
-		Timestamp:             eth.Uint64Quantity(safeHead.Time + cfg.BlockTime),
+		Timestamp:             eth.Uint64Quantity((safeHead.Time + cfg.BlockTime).ToSeconds()),
 		PrevRandao:            eth.Bytes32(l1Info.InfoMixDigest),
 		SuggestedFeeRecipient: predeploys.SequencerFeeVaultAddr,
 		Transactions:          []eth.Data{l1InfoTx, eth.Data("foobar"), eth.Data("example")},

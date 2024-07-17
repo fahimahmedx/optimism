@@ -62,7 +62,7 @@ func mockConfig(t *testing.T) Config {
 					GasLimit:    30000000,
 				},
 			},
-			BlockTime:               2,
+			BlockTime:               timeint.FromUint64SecToMilli(2),
 			MaxSequencerDrift:       600,
 			SeqWindowSize:           3600,
 			ChannelTimeout:          300,

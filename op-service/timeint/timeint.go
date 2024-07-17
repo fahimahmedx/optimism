@@ -68,3 +68,7 @@ func FromHexUint64SecToMilli(t hexutil.Uint64) Milliseconds {
 	s := Milliseconds(t * 1000)
 	return s
 }
+
+func (t Milliseconds) ToUint64Milli() uint64 {
+	return uint64(t)
+}

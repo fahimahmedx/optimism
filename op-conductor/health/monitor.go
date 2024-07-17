@@ -151,7 +151,7 @@ func (hm *SequencerHealthMonitor) healthCheck(ctx context.Context) error {
 		blockDiff = status.UnsafeL2.Number - hm.lastSeenUnsafeNum
 		// how many blocks do we expect to see, minus 1 to account for edge case with respect to time.
 		// for example, if diff = 2.001s and block time = 2s, expecting to see 1 block could potentially cause sequencer to be considered unhealthy.
-		expectedBlocks = uint64(timeint.FromUint64SecToSec(timeDiff) / hm.rollupCfg.BlockTime)
+		expectedBlocks = uint64(timeint.FromUint64SecToMilli(timeDiff) / hm.rollupCfg.BlockTime)
 		if expectedBlocks > 0 {
 			expectedBlocks--
 		}
@@ -161,7 +161,7 @@ func (hm *SequencerHealthMonitor) healthCheck(ctx context.Context) error {
 		hm.lastSeenUnsafeTime = now
 	}
 
-	if timeint.FromUint64SecToSec(timeDiff) > hm.rollupCfg.BlockTime && expectedBlocks > blockDiff {
+	if timeint.FromUint64SecToMilli(timeDiff) > hm.rollupCfg.BlockTime && expectedBlocks > blockDiff {
 		hm.log.Error(
 			"unsafe head is not progressing as expected",
 			"now", now,
