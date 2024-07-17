@@ -73,7 +73,7 @@ func NextRandomRef(rng *rand.Rand, parent eth.L1BlockRef) eth.L1BlockRef {
 		Hash:       RandomHash(rng),
 		Number:     parent.Number + 1,
 		ParentHash: parent.Hash,
-		Time:       parent.Time + timeint.Seconds(rng.Intn(100)),
+		Time:       parent.Time + timeint.FromUint64SecToSec(uint64(rng.Intn(100))),
 	}
 }
 
@@ -82,7 +82,7 @@ func RandomL2BlockRef(rng *rand.Rand) eth.L2BlockRef {
 		Hash:           RandomHash(rng),
 		Number:         rng.Uint64(),
 		ParentHash:     RandomHash(rng),
-		Time:           timeint.Seconds(rng.Uint64()),
+		Time:           timeint.FromUint64SecToSec(rng.Uint64()),
 		L1Origin:       RandomBlockID(rng),
 		SequenceNumber: rng.Uint64(),
 	}

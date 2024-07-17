@@ -342,10 +342,10 @@ func check4788Contract(ctx context.Context, env *actionEnv) error {
 	if err != nil {
 		return fmt.Errorf("config retrieval failed: %w", err)
 	}
-	t := timeint.Seconds(head.Time)
-	alignment := timeint.Seconds(head.Time) % conf.BlockTime
+	t := timeint.FromUint64SecToSec(head.Time)
+	alignment := timeint.FromUint64SecToSec(head.Time) % conf.BlockTime
 	for i := 0; i < 20; i++ {
-		ti := t - timeint.Seconds(i)
+		ti := t - timeint.FromUint64SecToSec(uint64(i))
 		if !conf.IsEcotone(ti) {
 			continue
 		}

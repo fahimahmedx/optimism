@@ -51,7 +51,7 @@ func TestSpanBatchForBatchInterface(t *testing.T) {
 	safeL2Head := testutils.RandomL2BlockRef(rng)
 	safeL2Head.Hash = common.BytesToHash(singularBatches[0].ParentHash[:])
 
-	spanBatch := initializedSpanBatch(singularBatches, timeint.Seconds(0), chainID)
+	spanBatch := initializedSpanBatch(singularBatches, timeint.FromUint64SecToSec(0), chainID)
 
 	// check interface method implementations except logging
 	require.Equal(t, SpanBatchType, spanBatch.GetBatchType())
@@ -69,7 +69,7 @@ func TestEmptySpanBatch(t *testing.T) {
 
 	rawSpanBatch := RawSpanBatch{
 		spanBatchPrefix: spanBatchPrefix{
-			relTimestamp:  timeint.Seconds((rng.Uint32())),
+			relTimestamp:  timeint.FromUint64SecToSec(uint64(rng.Uint32())),
 			l1OriginNum:   rng.Uint64(),
 			parentCheck:   *(*[20]byte)(testutils.RandomData(rng, 20)),
 			l1OriginCheck: *(*[20]byte)(testutils.RandomData(rng, 20)),
@@ -338,7 +338,7 @@ func TestSpanBatchDerive(t *testing.T) {
 	rng := rand.New(rand.NewSource(0xbab0bab0))
 
 	chainID := new(big.Int).SetUint64(rng.Uint64())
-	l2BlockTime := timeint.Seconds(2)
+	l2BlockTime := timeint.FromUint64SecToSec(2)
 
 	for originChangedBit := 0; originChangedBit < 2; originChangedBit++ {
 		singularBatches := RandomValidConsecutiveSingularBatches(rng, chainID)
@@ -379,7 +379,7 @@ func TestSpanBatchAppend(t *testing.T) {
 
 	singularBatches := RandomValidConsecutiveSingularBatches(rng, chainID)
 	// initialize empty span batch
-	spanBatch := initializedSpanBatch([]*SingularBatch{}, timeint.Seconds(0), chainID)
+	spanBatch := initializedSpanBatch([]*SingularBatch{}, timeint.FromUint64SecToSec(0), chainID)
 
 	L := 2
 	for i := 0; i < L; i++ {
@@ -387,7 +387,7 @@ func TestSpanBatchAppend(t *testing.T) {
 		require.NoError(t, err)
 	}
 	// initialize with two singular batches
-	spanBatch2 := initializedSpanBatch(singularBatches[:L], timeint.Seconds(0), chainID)
+	spanBatch2 := initializedSpanBatch(singularBatches[:L], timeint.FromUint64SecToSec(0), chainID)
 
 	require.Equal(t, spanBatch, spanBatch2)
 }
@@ -395,7 +395,7 @@ func TestSpanBatchAppend(t *testing.T) {
 func TestSpanBatchMerge(t *testing.T) {
 	rng := rand.New(rand.NewSource(0x73314433))
 
-	genesisTimeStamp := timeint.Seconds(rng.Uint64())
+	genesisTimeStamp := timeint.FromUint64SecToSec(rng.Uint64())
 	chainID := new(big.Int).SetUint64(rng.Uint64())
 
 	for originChangedBit := 0; originChangedBit < 2; originChangedBit++ {

@@ -127,7 +127,7 @@ func fetchBatchesPerBlock(ctx context.Context, client *ethclient.Client, beacon 
 					Hash:       block.Hash(),
 					Number:     block.Number().Uint64(),
 					ParentHash: block.ParentHash(),
-					Time:       timeint.Seconds(block.Time()),
+					Time:       timeint.FromUint64SecToSec(block.Time()),
 				}, hashes)
 				if err != nil {
 					log.Fatal(fmt.Errorf("failed to fetch blobs: %w", err))
@@ -171,7 +171,7 @@ func fetchBatchesPerBlock(ctx context.Context, client *ethclient.Client, beacon 
 				TxIndex:     uint64(i),
 				BlockNumber: block.NumberU64(),
 				BlockHash:   block.Hash(),
-				BlockTime:   timeint.Seconds(block.Time()),
+				BlockTime:   timeint.FromUint64SecToSec(block.Time()),
 				ChainId:     config.ChainID.Uint64(),
 				InboxAddr:   config.BatchInbox,
 				Frames:      frames,

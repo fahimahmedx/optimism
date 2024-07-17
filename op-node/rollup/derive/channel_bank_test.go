@@ -209,7 +209,7 @@ func TestChannelBankInterleaved(t *testing.T) {
 	input.AddFrames("a:1:second")
 	input.AddFrame(Frame{}, io.EOF)
 
-	ct := timeint.Seconds(0)
+	ct := timeint.FromUint64SecToSec(0)
 	cfg := &rollup.Config{ChannelTimeout: 10, CanyonTime: &ct}
 
 	cb := NewChannelBank(testlog.Logger(t, log.LevelCrit), cfg, input, nil, metrics.NoopMetrics)

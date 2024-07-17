@@ -209,11 +209,11 @@ func (s *HealthMonitorTestSuite) TestHealthyWithUnsafeLag() {
 func mockSyncStatus(unsafeTime, unsafeNum, safeTime, safeNum uint64) *eth.SyncStatus {
 	return &eth.SyncStatus{
 		UnsafeL2: eth.L2BlockRef{
-			Time:   timeint.Seconds(unsafeTime),
+			Time:   timeint.FromUint64SecToSec(unsafeTime),
 			Number: unsafeNum,
 		},
 		SafeL2: eth.L2BlockRef{
-			Time:   timeint.Seconds(safeTime),
+			Time:   timeint.FromUint64SecToSec(safeTime),
 			Number: safeNum,
 		},
 	}

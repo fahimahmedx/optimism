@@ -192,7 +192,7 @@ func TestOriginSelector_FjordSeqDrift(t *testing.T) {
 	cfg := &rollup.Config{
 		MaxSequencerDrift: 8,
 		BlockTime:         2,
-		FjordTime:         timeint.Seconds(20).ToSecondsPtr(), // a's timestamp
+		FjordTime:         timeint.FromUint64SecToSec(20).ToSecondsPtr(), // a's timestamp
 	}
 	l1 := &testutils.MockL1Source{}
 	defer l1.AssertExpectations(t)

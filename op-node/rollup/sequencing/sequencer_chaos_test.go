@@ -173,7 +173,7 @@ func (c *ChaoticEngine) OnEvent(ev event.Event) bool {
 				Hash:           payloadEnvelope.ExecutionPayload.BlockHash,
 				Number:         uint64(payloadEnvelope.ExecutionPayload.BlockNumber),
 				ParentHash:     payloadEnvelope.ExecutionPayload.ParentHash,
-				Time:           timeint.Seconds((payloadEnvelope.ExecutionPayload.Timestamp)),
+				Time:           timeint.FromHexUint64SecToSec(payloadEnvelope.ExecutionPayload.Timestamp),
 				L1Origin:       l1Origin,
 				SequenceNumber: 0, // ignored
 			}
@@ -296,7 +296,7 @@ func testSequencerChaosWithSeed(t *testing.T, seed int64) {
 			Hash:       l2Head.L1Origin.Hash,
 			Number:     l2Head.L1Origin.Number,
 			ParentHash: l1BlockHash(l2Head.L1Origin.Number - 1),
-			Time:       genesisRef.Time + timeint.Seconds(12).MultiplyInt(l2Head.L1Origin.Number-genesisRef.L1Origin.Number),
+			Time:       genesisRef.Time + timeint.FromUint64SecToSec(12).MultiplyInt(l2Head.L1Origin.Number-genesisRef.L1Origin.Number),
 		}
 		// Handle sequencer time drift, by proceeding to the next L1 origin when we run out of valid time
 		if l2Head.Time+deps.cfg.BlockTime > origin.Time+deps.cfg.MaxSequencerDrift {

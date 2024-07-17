@@ -48,7 +48,7 @@ func WatchHeadChanges(ctx context.Context, src NewHeadSource, fn HeadSignalFn) (
 					Hash:       header.Hash(),
 					Number:     header.Number.Uint64(),
 					ParentHash: header.ParentHash,
-					Time:       timeint.Seconds(header.Time),
+					Time:       timeint.FromUint64SecToSec(header.Time),
 				})
 			case <-eventsCtx.Done():
 				return nil

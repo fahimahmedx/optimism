@@ -32,7 +32,7 @@ func randConfig() *Config {
 		Genesis: Genesis{
 			L1:     eth.BlockID{Hash: randHash(), Number: 424242},
 			L2:     eth.BlockID{Hash: randHash(), Number: 1337},
-			L2Time: timeint.Seconds(time.Now().Unix()),
+			L2Time: timeint.FromUint64SecToSec(uint64(time.Now().Unix())),
 			SystemConfig: eth.SystemConfig{
 				BatcherAddr: randAddr(),
 				Overhead:    randHash(),
@@ -172,7 +172,7 @@ func TestRandomConfigDescription(t *testing.T) {
 	})
 	t.Run("regolith date", func(t *testing.T) {
 		config := randConfig()
-		x := timeint.Seconds(1677119335)
+		x := timeint.FromUint64SecToSec(1677119335)
 		config.RegolithTime = &x
 		out := config.Description(nil)
 		// Don't check human-readable part of the date, it's timezone-dependent.
@@ -254,7 +254,7 @@ func TestActivations(t *testing.T) {
 			require.True(t, tt.checkEnabled(0, config), "true at zero")
 			require.True(t, tt.checkEnabled(123456, config), "true for any")
 
-			x := timeint.Seconds(123)
+			x := timeint.FromUint64SecToSec(123)
 			test.setUpgradeTime(&x, config)
 			require.False(t, tt.checkEnabled(0, config))
 			require.False(t, tt.checkEnabled(122, config))
@@ -479,7 +479,7 @@ func TestConfig_Check(t *testing.T) {
 		{
 			name: "PriorForkMissing",
 			modifier: func(cfg *Config) {
-				ecotoneTime := timeint.Seconds(1)
+				ecotoneTime := timeint.FromUint64SecToSec(1)
 				cfg.EcotoneTime = &ecotoneTime
 			},
 			expectedErr: fmt.Errorf("fork ecotone set (to 1), but prior fork delta missing"),
@@ -487,8 +487,8 @@ func TestConfig_Check(t *testing.T) {
 		{
 			name: "PriorForkHasHigherOffset",
 			modifier: func(cfg *Config) {
-				regolithTime := timeint.Seconds(2)
-				canyonTime := timeint.Seconds(1)
+				regolithTime := timeint.FromUint64SecToSec(2)
+				canyonTime := timeint.FromUint64SecToSec(1)
 				cfg.RegolithTime = &regolithTime
 				cfg.CanyonTime = &canyonTime
 			},
@@ -497,10 +497,10 @@ func TestConfig_Check(t *testing.T) {
 		{
 			name: "PriorForkOK",
 			modifier: func(cfg *Config) {
-				regolithTime := timeint.Seconds(1)
-				canyonTime := timeint.Seconds(2)
-				deltaTime := timeint.Seconds(3)
-				ecotoneTime := timeint.Seconds(4)
+				regolithTime := timeint.FromUint64SecToSec(1)
+				canyonTime := timeint.FromUint64SecToSec(2)
+				deltaTime := timeint.FromUint64SecToSec(3)
+				ecotoneTime := timeint.FromUint64SecToSec(4)
 				cfg.RegolithTime = &regolithTime
 				cfg.CanyonTime = &canyonTime
 				cfg.DeltaTime = &deltaTime
@@ -621,7 +621,7 @@ func TestForkchoiceUpdatedVersion(t *testing.T) {
 
 func TestNewPayloadVersion(t *testing.T) {
 	config := randConfig()
-	canyonTime := timeint.Seconds(0)
+	canyonTime := timeint.FromUint64SecToSec(0)
 	config.CanyonTime = &canyonTime
 	tests := []struct {
 		name           string
@@ -654,7 +654,7 @@ func TestNewPayloadVersion(t *testing.T) {
 
 func TestGetPayloadVersion(t *testing.T) {
 	config := randConfig()
-	canyonTime := timeint.Seconds(0)
+	canyonTime := timeint.FromUint64SecToSec(0)
 	config.CanyonTime = &canyonTime
 	tests := []struct {
 		name           string

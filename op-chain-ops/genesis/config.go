@@ -543,9 +543,9 @@ func (d *DeployConfig) RegolithTime(genesisTime timeint.Seconds) *timeint.Second
 	if d.L2GenesisRegolithTimeOffset == nil {
 		return nil
 	}
-	v := timeint.Seconds(0)
+	v := timeint.FromUint64SecToSec(0)
 	if offset := *d.L2GenesisRegolithTimeOffset; offset > 0 {
-		v = genesisTime + timeint.Seconds(offset)
+		v = genesisTime + timeint.FromHexUint64SecToSec(offset)
 	}
 	return &v
 }
@@ -554,9 +554,9 @@ func (d *DeployConfig) CanyonTime(genesisTime timeint.Seconds) *timeint.Seconds 
 	if d.L2GenesisCanyonTimeOffset == nil {
 		return nil
 	}
-	v := timeint.Seconds(0)
+	v := timeint.FromUint64SecToSec(0)
 	if offset := *d.L2GenesisCanyonTimeOffset; offset > 0 {
-		v = genesisTime + timeint.Seconds(offset)
+		v = genesisTime + timeint.FromHexUint64SecToSec(offset)
 	}
 	return &v
 }
@@ -565,9 +565,9 @@ func (d *DeployConfig) DeltaTime(genesisTime timeint.Seconds) *timeint.Seconds {
 	if d.L2GenesisDeltaTimeOffset == nil {
 		return nil
 	}
-	v := timeint.Seconds(0)
+	v := timeint.FromUint64SecToSec(0)
 	if offset := *d.L2GenesisDeltaTimeOffset; offset > 0 {
-		v = genesisTime + timeint.Seconds(offset)
+		v = genesisTime + timeint.FromHexUint64SecToSec(offset)
 	}
 	return &v
 }
@@ -576,9 +576,9 @@ func (d *DeployConfig) EcotoneTime(genesisTime timeint.Seconds) *timeint.Seconds
 	if d.L2GenesisEcotoneTimeOffset == nil {
 		return nil
 	}
-	v := timeint.Seconds(0)
+	v := timeint.FromUint64SecToSec(0)
 	if offset := *d.L2GenesisEcotoneTimeOffset; offset > 0 {
-		v = genesisTime + timeint.Seconds(offset)
+		v = genesisTime + timeint.FromHexUint64SecToSec(offset)
 	}
 	return &v
 }
@@ -587,9 +587,9 @@ func (d *DeployConfig) FjordTime(genesisTime timeint.Seconds) *timeint.Seconds {
 	if d.L2GenesisFjordTimeOffset == nil {
 		return nil
 	}
-	v := timeint.Seconds(0)
+	v := timeint.FromUint64SecToSec(0)
 	if offset := *d.L2GenesisFjordTimeOffset; offset > 0 {
-		v = genesisTime + timeint.Seconds(offset)
+		v = genesisTime + timeint.FromHexUint64SecToSec(offset)
 	}
 	return &v
 }
@@ -598,9 +598,9 @@ func (d *DeployConfig) InteropTime(genesisTime timeint.Seconds) *timeint.Seconds
 	if d.L2GenesisInteropTimeOffset == nil {
 		return nil
 	}
-	v := timeint.Seconds(0)
+	v := timeint.FromUint64SecToSec(0)
 	if offset := *d.L2GenesisInteropTimeOffset; offset > 0 {
-		v = genesisTime + timeint.Seconds(offset)
+		v = genesisTime + timeint.FromHexUint64SecToSec(offset)
 	}
 	return &v
 }
@@ -634,7 +634,7 @@ func (d *DeployConfig) RollupConfig(l1StartBlock *types.Block, l2GenesisBlockHas
 				Hash:   l2GenesisBlockHash,
 				Number: l2GenesisBlockNumber,
 			},
-			L2Time: timeint.Seconds(l1StartBlock.Time()),
+			L2Time: timeint.FromUint64SecToSec(l1StartBlock.Time()),
 			SystemConfig: eth.SystemConfig{
 				BatcherAddr: d.BatchSenderAddress,
 				Overhead:    eth.Bytes32(common.BigToHash(new(big.Int).SetUint64(d.GasPriceOracleOverhead))),
@@ -651,12 +651,12 @@ func (d *DeployConfig) RollupConfig(l1StartBlock *types.Block, l2GenesisBlockHas
 		BatchInboxAddress:      d.BatchInboxAddress,
 		DepositContractAddress: d.OptimismPortalProxy,
 		L1SystemConfigAddress:  d.SystemConfigProxy,
-		RegolithTime:           d.RegolithTime(timeint.Seconds(l1StartBlock.Time())),
-		CanyonTime:             d.CanyonTime(timeint.Seconds(l1StartBlock.Time())),
-		DeltaTime:              d.DeltaTime(timeint.Seconds(l1StartBlock.Time())),
-		EcotoneTime:            d.EcotoneTime(timeint.Seconds(l1StartBlock.Time())),
-		FjordTime:              d.FjordTime(timeint.Seconds(l1StartBlock.Time())),
-		InteropTime:            d.InteropTime(timeint.Seconds(l1StartBlock.Time())),
+		RegolithTime:           d.RegolithTime(timeint.FromUint64SecToSec(l1StartBlock.Time())),
+		CanyonTime:             d.CanyonTime(timeint.FromUint64SecToSec(l1StartBlock.Time())),
+		DeltaTime:              d.DeltaTime(timeint.FromUint64SecToSec(l1StartBlock.Time())),
+		EcotoneTime:            d.EcotoneTime(timeint.FromUint64SecToSec(l1StartBlock.Time())),
+		FjordTime:              d.FjordTime(timeint.FromUint64SecToSec(l1StartBlock.Time())),
+		InteropTime:            d.InteropTime(timeint.FromUint64SecToSec(l1StartBlock.Time())),
 		PlasmaConfig:           plasma,
 	}, nil
 }

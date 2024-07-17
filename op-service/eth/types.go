@@ -291,7 +291,7 @@ func BlockAsPayload(bl *types.Block, canyonForkTime *timeint.Seconds) (*Executio
 		BlobGasUsed:   (*Uint64Quantity)(bl.BlobGasUsed()),
 	}
 
-	if canyonForkTime != nil && timeint.Seconds(payload.Timestamp) >= *canyonForkTime {
+	if canyonForkTime != nil && timeint.FromHexUint64SecToSec(payload.Timestamp) >= *canyonForkTime {
 		payload.Withdrawals = &types.Withdrawals{}
 	}
 

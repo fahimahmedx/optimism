@@ -65,7 +65,7 @@ func TestPlasmaDataSource(t *testing.T) {
 	da.OnFinalizedHeadSignal(finalitySignal.OnFinalized)
 
 	// Create rollup genesis and config
-	l1Time := timeint.Seconds(2)
+	l1Time := timeint.FromUint64SecToSec(2)
 	refA := testutils.RandomBlockRef(rng)
 	refA.Number = 1
 	l1Refs := []eth.L1BlockRef{refA}
@@ -308,7 +308,7 @@ func TestPlasmaDataSourceStall(t *testing.T) {
 	da.OnFinalizedHeadSignal(finalitySignal.OnFinalized)
 
 	// Create rollup genesis and config
-	l1Time := timeint.Seconds(2)
+	l1Time := timeint.FromUint64SecToSec(2)
 	refA := testutils.RandomBlockRef(rng)
 	refA.Number = 1
 	l1Refs := []eth.L1BlockRef{refA}
@@ -430,7 +430,7 @@ func TestPlasmaDataSourceInvalidData(t *testing.T) {
 	da := plasma.NewPlasmaDAWithStorage(logger, pcfg, storage, &plasma.NoopMetrics{})
 
 	// Create rollup genesis and config
-	l1Time := timeint.Seconds(2)
+	l1Time := timeint.FromUint64SecToSec(2)
 	refA := testutils.RandomBlockRef(rng)
 	refA.Number = 1
 	l1Refs := []eth.L1BlockRef{refA}

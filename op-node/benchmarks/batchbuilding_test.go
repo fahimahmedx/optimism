@@ -162,7 +162,7 @@ func BenchmarkFinalBatchChannelOut(b *testing.B) {
 			batches[i] = derive.RandomSingularBatch(rng, tc.txPerBatch, chainID)
 			// set the timestamp to increase with each batch
 			// to leverage optimizations in the Batch Linked List
-			batches[i].Timestamp = timeint.Seconds(t.Add(time.Duration(i) * time.Second).Unix())
+			batches[i].Timestamp = timeint.FromUint64SecToSec(uint64(t.Add(time.Duration(i) * time.Second).Unix()))
 		}
 		b.Run(tc.String(), func(b *testing.B) {
 			// reset the compressor used in the test case
@@ -230,7 +230,7 @@ func BenchmarkIncremental(b *testing.B) {
 					batches[i] = derive.RandomSingularBatch(rng, tc.txPerBatch, chainID)
 					// set the timestamp to increase with each batch
 					// to leverage optimizations in the Batch Linked List
-					batches[i].Timestamp = timeint.Seconds(t.Unix())
+					batches[i].Timestamp = timeint.FromUint64SecToSec(uint64(t.Unix()))
 				}
 				b.StartTimer()
 				for i := 0; i < tc.BatchCount; i++ {
@@ -287,7 +287,7 @@ func BenchmarkAllBatchesChannelOut(b *testing.B) {
 			batches[i] = derive.RandomSingularBatch(rng, tc.txPerBatch, chainID)
 			// set the timestamp to increase with each batch
 			// to leverage optimizations in the Batch Linked List
-			batches[i].Timestamp = timeint.Seconds(t.Add(time.Duration(i) * time.Second).Unix())
+			batches[i].Timestamp = timeint.FromUint64SecToSec(uint64(t.Add(time.Duration(i) * time.Second).Unix()))
 		}
 		b.Run(tc.String(), func(b *testing.B) {
 			// reset the compressor used in the test case
@@ -336,13 +336,13 @@ func BenchmarkGetRawSpanBatch(b *testing.B) {
 		t := time.Now()
 		for i := 0; i < tc.BatchCount; i++ {
 			batches[i] = derive.RandomSingularBatch(rng, tc.txPerBatch, chainID)
-			batches[i].Timestamp = timeint.Seconds(t.Add(time.Duration(i) * time.Second).Unix())
+			batches[i].Timestamp = timeint.FromUint64SecToSec(uint64(t.Add(time.Duration(i) * time.Second).Unix()))
 		}
 		b.Run(tc.String(), func(b *testing.B) {
 			for bn := 0; bn < b.N; bn++ {
 				// don't measure the setup time
 				b.StopTimer()
-				spanBatch := derive.NewSpanBatch(timeint.Seconds(0), chainID)
+				spanBatch := derive.NewSpanBatch(timeint.FromUint64SecToSec(0), chainID)
 				for i := 0; i < tc.BatchCount; i++ {
 					err := spanBatch.AppendSingularBatch(batches[i], 0)
 					require.NoError(b, err)

@@ -121,7 +121,7 @@ func (info *L1BlockInfo) unmarshalBinaryBedrock(data []byte) error {
 	if err != nil {
 		return err
 	}
-	info.Time = timeint.Seconds(time)
+	info.Time = timeint.FromUint64SecToSec(time)
 	if info.BaseFee, err = solabi.ReadUint256(reader); err != nil {
 		return err
 	}

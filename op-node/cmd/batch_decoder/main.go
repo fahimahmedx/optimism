@@ -154,8 +154,8 @@ func main() {
 			},
 			Action: func(cliCtx *cli.Context) error {
 				var (
-					L2GenesisTime     timeint.Seconds = timeint.Seconds(cliCtx.Uint64("l2-genesis-timestamp"))
-					L2BlockTime       timeint.Seconds = timeint.Seconds(cliCtx.Uint64("l2-block-time"))
+					L2GenesisTime     timeint.Seconds = timeint.FromUint64SecToSec(cliCtx.Uint64("l2-genesis-timestamp"))
+					L2BlockTime       timeint.Seconds = timeint.FromUint64SecToSec(cliCtx.Uint64("l2-block-time"))
 					BatchInboxAddress common.Address  = common.HexToAddress(cliCtx.String("inbox"))
 				)
 				L2ChainID := new(big.Int).SetUint64(cliCtx.Uint64("l2-chain-id"))

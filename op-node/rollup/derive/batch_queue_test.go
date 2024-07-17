@@ -67,7 +67,7 @@ func buildSpanBatches(t *testing.T, parent *eth.L2BlockRef, singularBatches []*S
 	var spanBatches []Batch
 	idx := 0
 	for _, count := range blockCounts {
-		span := initializedSpanBatch(singularBatches[idx:idx+count], timeint.Seconds(0), chainId)
+		span := initializedSpanBatch(singularBatches[idx:idx+count], timeint.FromUint64SecToSec(0), chainId)
 		spanBatches = append(spanBatches, span)
 		idx += count
 	}
@@ -75,7 +75,7 @@ func buildSpanBatches(t *testing.T, parent *eth.L2BlockRef, singularBatches []*S
 }
 
 func getDeltaTime(batchType int) *timeint.Seconds {
-	minTs := timeint.Seconds(0)
+	minTs := timeint.FromUint64SecToSec(0)
 	if batchType == SpanBatchType {
 		return &minTs
 	}
@@ -498,7 +498,7 @@ func BatchQueueMissing(t *testing.T, batchType int) {
 	// Check for a generated batch at t = 12
 	b, _, e = bq.NextBatch(context.Background(), safeHead)
 	require.Nil(t, e)
-	require.Equal(t, b.Timestamp, timeint.Seconds(12))
+	require.Equal(t, b.Timestamp, timeint.FromUint64SecToSec(12))
 	require.Empty(t, b.Transactions)
 	require.Equal(t, rollup.Epoch(0), b.EpochNum)
 	safeHead.Number += 1
@@ -508,7 +508,7 @@ func BatchQueueMissing(t *testing.T, batchType int) {
 	// Check for generated batch at t = 14
 	b, _, e = bq.NextBatch(context.Background(), safeHead)
 	require.Nil(t, e)
-	require.Equal(t, b.Timestamp, timeint.Seconds(14))
+	require.Equal(t, b.Timestamp, timeint.FromUint64SecToSec(14))
 	require.Empty(t, b.Transactions)
 	require.Equal(t, rollup.Epoch(0), b.EpochNum)
 	safeHead.Number += 1
@@ -534,7 +534,7 @@ func BatchQueueMissing(t *testing.T, batchType int) {
 	require.Equal(t, e, io.EOF)
 	b, _, e = bq.NextBatch(context.Background(), safeHead)
 	require.Nil(t, e)
-	require.Equal(t, b.Timestamp, timeint.Seconds(18))
+	require.Equal(t, b.Timestamp, timeint.FromUint64SecToSec(18))
 	require.Empty(t, b.Transactions)
 	require.Equal(t, rollup.Epoch(1), b.EpochNum)
 }
@@ -768,7 +768,7 @@ func TestBatchQueueOverlappingSpanBatch(t *testing.T) {
 	var inputBatches []Batch
 	batchSize := 3
 	for i := 0; i < len(expectedOutputBatches)-batchSize; i++ {
-		inputBatches = append(inputBatches, initializedSpanBatch(expectedOutputBatches[i:i+batchSize], timeint.Seconds(0), chainId))
+		inputBatches = append(inputBatches, initializedSpanBatch(expectedOutputBatches[i:i+batchSize], timeint.FromUint64SecToSec(0), chainId))
 	}
 	inputBatches = append(inputBatches, nil)
 	// inputBatches:
@@ -873,12 +873,12 @@ func TestBatchQueueComplex(t *testing.T) {
 	inputErrors := []error{nil, nil, nil, nil, nil, nil, io.EOF}
 	// batches will be returned by fakeBatchQueueInput
 	inputBatches := []Batch{
-		initializedSpanBatch(expectedOutputBatches[0:2], timeint.Seconds(0), chainId), // [6, 8] - no overlap
+		initializedSpanBatch(expectedOutputBatches[0:2], timeint.FromUint64SecToSec(0), chainId), // [6, 8] - no overlap
 		expectedOutputBatches[2], // [10] - no overlap
-		initializedSpanBatch(expectedOutputBatches[1:4], timeint.Seconds(0), chainId), // [8, 10, 12] - overlapped blocks: 8 or 8, 10
+		initializedSpanBatch(expectedOutputBatches[1:4], timeint.FromUint64SecToSec(0), chainId), // [8, 10, 12] - overlapped blocks: 8 or 8, 10
 		expectedOutputBatches[4], // [14] - no overlap
-		initializedSpanBatch(expectedOutputBatches[4:6], timeint.Seconds(0), chainId), // [14, 16] - overlapped blocks: nothing or 14
-		initializedSpanBatch(expectedOutputBatches[6:9], timeint.Seconds(0), chainId), // [18, 20, 22] - no overlap
+		initializedSpanBatch(expectedOutputBatches[4:6], timeint.FromUint64SecToSec(0), chainId), // [14, 16] - overlapped blocks: nothing or 14
+		initializedSpanBatch(expectedOutputBatches[6:9], timeint.FromUint64SecToSec(0), chainId), // [18, 20, 22] - no overlap
 	}
 
 	// Shuffle the order of input batches
@@ -980,7 +980,7 @@ func TestBatchQueueResetSpan(t *testing.T) {
 	}
 
 	input := &fakeBatchQueueInput{
-		batches: []Batch{initializedSpanBatch(singularBatches, timeint.Seconds(0), chainId)},
+		batches: []Batch{initializedSpanBatch(singularBatches, timeint.FromUint64SecToSec(0), chainId)},
 		errors:  []error{nil},
 		origin:  l1[2],
 	}

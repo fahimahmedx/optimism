@@ -62,7 +62,7 @@ func newMiniL2BlockWithNumberParentAndL1Information(numTx int, l2Number *big.Int
 		BaseFee:    big.NewInt(10),
 		Difficulty: common.Big0,
 		Number:     big.NewInt(l1Number),
-		Time:       uint64(blockTime), // This is because the Header struct in op-geth has a uint64 for Time
+		Time:       blockTime.ToUint64Sec(),
 	}, nil, nil, nil, trie.NewStackTrie(nil))
 	l1InfoTx, err := derive.L1InfoDeposit(&defaultTestRollupConfig, eth.SystemConfig{}, 0, eth.BlockToInfo(l1Block), blockTime)
 	if err != nil {
@@ -831,7 +831,7 @@ func ChannelBuilder_InputBytes(t *testing.T, batchType uint) {
 	var spanBatch *derive.SpanBatch
 	if batchType == derive.SpanBatchType {
 		chainId := big.NewInt(1234)
-		spanBatch = derive.NewSpanBatch(timeint.Seconds(0), chainId)
+		spanBatch = derive.NewSpanBatch(timeint.FromUint64SecToSec(0), chainId)
 	}
 	cb, err := NewChannelBuilder(cfg, defaultTestRollupConfig, latestL1BlockOrigin)
 	require.NoError(err)

@@ -235,7 +235,7 @@ func BlockToSingularBatch(rollupCfg *rollup.Config, block *types.Block) (*Singul
 	if l1InfoTx.Type() != types.DepositTxType {
 		return nil, nil, ErrNotDepositTx
 	}
-	l1Info, err := L1BlockInfoFromBytes(rollupCfg, timeint.Seconds(block.Time()), l1InfoTx.Data())
+	l1Info, err := L1BlockInfoFromBytes(rollupCfg, timeint.FromUint64SecToSec(block.Time()), l1InfoTx.Data())
 	if err != nil {
 		return nil, l1Info, fmt.Errorf("could not parse the L1 Info deposit: %w", err)
 	}
@@ -244,7 +244,7 @@ func BlockToSingularBatch(rollupCfg *rollup.Config, block *types.Block) (*Singul
 		ParentHash:   block.ParentHash(),
 		EpochNum:     rollup.Epoch(l1Info.Number),
 		EpochHash:    l1Info.BlockHash,
-		Timestamp:    timeint.Seconds(block.Time()),
+		Timestamp:    timeint.FromUint64SecToSec(block.Time()),
 		Transactions: opaqueTxs,
 	}, l1Info, nil
 }

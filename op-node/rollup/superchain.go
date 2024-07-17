@@ -58,7 +58,7 @@ func LoadOPStackRollupConfig(chainID uint64) (*Config, error) {
 		}
 	}
 
-	regolithTime := timeint.Seconds(0)
+	regolithTime := timeint.FromUint64SecToSec(0)
 	cfg := &Config{
 		Genesis: Genesis{
 			L1: eth.BlockID{
@@ -69,7 +69,7 @@ func LoadOPStackRollupConfig(chainID uint64) (*Config, error) {
 				Hash:   common.Hash(chConfig.Genesis.L2.Hash),
 				Number: chConfig.Genesis.L2.Number,
 			},
-			L2Time:       timeint.Seconds(chConfig.Genesis.L2Time),
+			L2Time:       timeint.FromUint64SecToSec(chConfig.Genesis.L2Time),
 			SystemConfig: genesisSysConfig,
 		},
 		// The below chain parameters can be different per OP-Stack chain,

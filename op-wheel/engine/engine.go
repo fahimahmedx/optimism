@@ -130,7 +130,7 @@ type BlockBuildingSettings struct {
 func BuildBlock(ctx context.Context, client *sources.EngineAPIClient, status *StatusData, settings *BlockBuildingSettings) (*eth.ExecutionPayloadEnvelope, error) {
 	timestamp := status.Head.Time + settings.BlockTime
 	if settings.AllowGaps {
-		now := timeint.Seconds(time.Now().Unix())
+		now := timeint.FromUint64SecToSec(uint64(time.Now().Unix()))
 		if now > timestamp {
 			timestamp = now - ((now - timestamp) % settings.BlockTime)
 		}
@@ -240,7 +240,7 @@ func Auto(ctx context.Context, metrics Metricer, client *sources.EngineAPIClient
 							log.Error("failed to find block for new safe block progress", "err", err)
 							continue
 						}
-						status.Safe = eth.L1BlockRef{Hash: safe.Hash(), Number: safe.Number.Uint64(), Time: timeint.Seconds(safe.Time), ParentHash: safe.ParentHash}
+						status.Safe = eth.L1BlockRef{Hash: safe.Hash(), Number: safe.Number.Uint64(), Time: timeint.FromUint64SecToSec(safe.Time), ParentHash: safe.ParentHash}
 					}
 					if status.Finalized.Number+32 <= status.Safe.Number {
 						finalized, err := getHeader(ctx, client.RPC, methodEthGetBlockByNumber, hexutil.Uint64(status.Safe.Number-32).String())
@@ -249,7 +249,7 @@ func Auto(ctx context.Context, metrics Metricer, client *sources.EngineAPIClient
 							log.Error("failed to find block for new finalized block progress", "err", err)
 							continue
 						}
-						status.Finalized = eth.L1BlockRef{Hash: finalized.Hash(), Number: finalized.Number.Uint64(), Time: timeint.Seconds(finalized.Time), ParentHash: finalized.ParentHash}
+						status.Finalized = eth.L1BlockRef{Hash: finalized.Hash(), Number: finalized.Number.Uint64(), Time: timeint.FromUint64SecToSec(finalized.Time), ParentHash: finalized.ParentHash}
 					}
 				}
 
@@ -297,9 +297,9 @@ func Status(ctx context.Context, client client.RPC) (*StatusData, error) {
 		return nil, err
 	}
 	return &StatusData{
-		Head:      eth.L1BlockRef{Hash: head.Hash(), Number: head.NumberU64(), Time: timeint.Seconds(head.Time()), ParentHash: head.ParentHash()},
-		Safe:      eth.L1BlockRef{Hash: safe.Hash(), Number: safe.Number.Uint64(), Time: timeint.Seconds(safe.Time), ParentHash: safe.ParentHash},
-		Finalized: eth.L1BlockRef{Hash: finalized.Hash(), Number: finalized.Number.Uint64(), Time: timeint.Seconds(finalized.Time), ParentHash: finalized.ParentHash},
+		Head:      eth.L1BlockRef{Hash: head.Hash(), Number: head.NumberU64(), Time: timeint.FromUint64SecToSec(head.Time()), ParentHash: head.ParentHash()},
+		Safe:      eth.L1BlockRef{Hash: safe.Hash(), Number: safe.Number.Uint64(), Time: timeint.FromUint64SecToSec(safe.Time), ParentHash: safe.ParentHash},
+		Finalized: eth.L1BlockRef{Hash: finalized.Hash(), Number: finalized.Number.Uint64(), Time: timeint.FromUint64SecToSec(finalized.Time), ParentHash: finalized.ParentHash},
 		Txs:       uint64(len(head.Transactions())),
 		Gas:       head.GasUsed(),
 		StateRoot: head.Root(),

@@ -513,16 +513,16 @@ func (d *Sequencer) startBuildingBlock() {
 	// empty blocks (other than the L1 info deposit and any user deposits). We handle this by
 	// setting NoTxPool to true, which will cause the Sequencer to not include any transactions
 	// from the transaction pool.
-	attrs.NoTxPool = timeint.Seconds(attrs.Timestamp) > l1Origin.Time+d.spec.MaxSequencerDrift(l1Origin.Time)
+	attrs.NoTxPool = timeint.FromHexUint64SecToSec(attrs.Timestamp) > l1Origin.Time+d.spec.MaxSequencerDrift(l1Origin.Time)
 
 	// For the Ecotone activation block we shouldn't include any sequencer transactions.
-	if d.rollupCfg.IsEcotoneActivationBlock(timeint.Seconds(attrs.Timestamp)) {
+	if d.rollupCfg.IsEcotoneActivationBlock(timeint.FromHexUint64SecToSec(attrs.Timestamp)) {
 		attrs.NoTxPool = true
 		d.log.Info("Sequencing Ecotone upgrade block")
 	}
 
 	// For the Fjord activation block we shouldn't include any sequencer transactions.
-	if d.rollupCfg.IsFjordActivationBlock(timeint.Seconds(attrs.Timestamp)) {
+	if d.rollupCfg.IsFjordActivationBlock(timeint.FromHexUint64SecToSec(attrs.Timestamp)) {
 		attrs.NoTxPool = true
 		d.log.Info("Sequencing Fjord upgrade block")
 	}

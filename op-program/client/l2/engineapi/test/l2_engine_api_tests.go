@@ -28,7 +28,7 @@ func RunEngineAPITests(t *testing.T, createBackend func(t *testing.T) engineapi.
 		api.assert.Equal(block.BlockHash, api.headHash(), "should create and import new block")
 	})
 
-	zero := timeint.Seconds(0)
+	zero := timeint.FromUint64SecToSec(0)
 	rollupCfg := &rollup.Config{
 		RegolithTime: &zero, // activate Regolith upgrade
 	}

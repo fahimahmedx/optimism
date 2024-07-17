@@ -20,7 +20,7 @@ func TestGetVersion(t *testing.T) {
 
 	l := testlog.Logger(t, log.LevelInfo)
 
-	beaconApi := fakebeacon.NewBeacon(l, t.TempDir(), timeint.Seconds(0), timeint.Seconds(0))
+	beaconApi := fakebeacon.NewBeacon(l, t.TempDir(), timeint.FromUint64SecToSec(0), timeint.FromUint64SecToSec(0))
 	t.Cleanup(func() {
 		_ = beaconApi.Close()
 	})
@@ -39,7 +39,7 @@ func Test404NotFound(t *testing.T) {
 
 	l := testlog.Logger(t, log.LevelInfo)
 
-	beaconApi := fakebeacon.NewBeacon(l, t.TempDir(), timeint.Seconds(0), timeint.Seconds(12))
+	beaconApi := fakebeacon.NewBeacon(l, t.TempDir(), timeint.FromUint64SecToSec(0), timeint.FromUint64SecToSec(12))
 	t.Cleanup(func() {
 		_ = beaconApi.Close()
 	})

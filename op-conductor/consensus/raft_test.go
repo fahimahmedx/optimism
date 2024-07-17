@@ -22,7 +22,7 @@ func TestCommitAndRead(t *testing.T) {
 	serverID := "SequencerA"
 	serverAddr := "127.0.0.1:0"
 	bootstrap := true
-	now := timeint.Seconds(time.Now().Unix())
+	now := timeint.FromUint64SecToSec(uint64(time.Now().Unix()))
 	rollupCfg := &rollup.Config{
 		CanyonTime: &now,
 	}

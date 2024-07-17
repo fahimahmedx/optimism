@@ -45,7 +45,7 @@ func AttributesMatchBlock(rollupCfg *rollup.Config, attrs *eth.PayloadAttributes
 	for i, otx := range attrs.Transactions {
 		if expect := block.Transactions[i]; !bytes.Equal(otx, expect) {
 			if i == 0 {
-				logL1InfoTxns(rollupCfg, l, uint64(block.BlockNumber), timeint.Seconds(block.Timestamp), otx, block.Transactions[i])
+				logL1InfoTxns(rollupCfg, l, uint64(block.BlockNumber), timeint.FromHexUint64SecToSec(block.Timestamp), otx, block.Transactions[i])
 			}
 			return fmt.Errorf("transaction %d does not match. expected: %v. got: %v", i, expect, otx)
 		}

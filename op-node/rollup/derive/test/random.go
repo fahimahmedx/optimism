@@ -20,7 +20,7 @@ func RandomL2Block(rng *rand.Rand, txCount int, t time.Time) (*types.Block, []*t
 	l1Block := types.NewBlock(testutils.RandomHeader(rng), nil, nil, nil, trie.NewStackTrie(nil))
 	rollupCfg := rollup.Config{}
 	if testutils.RandomBool(rng) {
-		t := timeint.Seconds(0)
+		t := timeint.FromUint64SecToSec(0)
 		rollupCfg.RegolithTime = &t
 	}
 	l1InfoTx, err := derive.L1InfoDeposit(&rollupCfg, eth.SystemConfig{}, 0, eth.BlockToInfo(l1Block), 0)

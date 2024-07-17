@@ -82,10 +82,10 @@ func (f *fakePoS) Start() error {
 				if head.Time >= uint64(now.Unix()) {
 					continue
 				}
-				newBlockTime := timeint.Seconds(head.Time) + f.blockTime
+				newBlockTime := timeint.FromUint64SecToSec(head.Time) + f.blockTime
 				if time.Unix(int64(newBlockTime), 0).Add(5 * time.Minute).Before(f.clock.Now()) {
 					// We're a long way behind, let's skip some blocks...
-					newBlockTime = timeint.Seconds(f.clock.Now().Unix())
+					newBlockTime = timeint.FromUint64SecToSec(uint64(f.clock.Now().Unix()))
 				}
 				// create some random withdrawals
 				withdrawals := make([]*types.Withdrawal, withdrawalsRNG.Intn(4))
@@ -169,7 +169,7 @@ func (f *fakePoS) Start() error {
 					}
 				}
 				if envelope.BlobsBundle != nil {
-					slot := uint64(timeint.Seconds(envelope.ExecutionPayload.Timestamp-f.eth.BlockChain().Genesis().Time()) / f.blockTime)
+					slot := uint64(timeint.FromUint64SecToSec(envelope.ExecutionPayload.Timestamp-f.eth.BlockChain().Genesis().Time()) / f.blockTime)
 					if f.beacon == nil {
 						f.log.Error("no blobs storage available")
 						continue

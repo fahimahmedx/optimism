@@ -47,7 +47,7 @@ func L2BlockToBlockRef(rollupCfg *rollup.Config, block L2BlockRefSource) (eth.L2
 		if tx.Type() != types.DepositTxType {
 			return eth.L2BlockRef{}, fmt.Errorf("first payload tx has unexpected tx type: %d", tx.Type())
 		}
-		info, err := L1BlockInfoFromBytes(rollupCfg, timeint.Seconds(block.Time()), tx.Data())
+		info, err := L1BlockInfoFromBytes(rollupCfg, timeint.FromUint64SecToSec(block.Time()), tx.Data())
 		if err != nil {
 			return eth.L2BlockRef{}, fmt.Errorf("failed to parse L1 info deposit tx from L2 block: %w", err)
 		}
@@ -59,7 +59,7 @@ func L2BlockToBlockRef(rollupCfg *rollup.Config, block L2BlockRefSource) (eth.L2
 		Hash:           hash,
 		Number:         number,
 		ParentHash:     block.ParentHash(),
-		Time:           timeint.Seconds(block.Time()),
+		Time:           timeint.FromUint64SecToSec(block.Time()),
 		L1Origin:       l1Origin,
 		SequenceNumber: sequenceNumber,
 	}, nil

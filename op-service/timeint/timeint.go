@@ -1,14 +1,8 @@
 package timeint
 
+import "github.com/ethereum/go-ethereum/common/hexutil"
+
 type Seconds uint64
-
-// func Seconds(n uint64) Seconds {
-// 	return seconds(n)
-// }
-
-// func Seconds(n hexutil.Uint64) seconds {
-// 	return seconds(n)
-// }
 
 func (t Seconds) MultiplyInt(n uint64) Seconds {
 	return t * Seconds(n)
@@ -45,10 +39,6 @@ func FromUint64PtrToSecPtr(t *uint64) *Seconds {
 	return &s
 }
 
-// can't seem to call the function above in other packages?
-
-// type Milliseconds uint64
-
-// func (t Milliseconds) ToUint64Sec() uint64 {
-// 	return uint64(t) / 1000
-// }
+func FromHexUint64SecToSec(t hexutil.Uint64) Seconds {
+	return Seconds(t)
+}

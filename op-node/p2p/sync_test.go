@@ -66,7 +66,7 @@ func (s *syncTestData) getBlockRef(i uint64) eth.L2BlockRef {
 		Hash:       s.payloads[i].ExecutionPayload.BlockHash,
 		Number:     uint64(s.payloads[i].ExecutionPayload.BlockNumber),
 		ParentHash: s.payloads[i].ExecutionPayload.ParentHash,
-		Time:       timeint.Seconds(s.payloads[i].ExecutionPayload.Timestamp),
+		Time:       timeint.FromHexUint64SecToSec(s.payloads[i].ExecutionPayload.Timestamp),
 	}
 }
 
@@ -184,7 +184,7 @@ func TestSinglePeerSync(t *testing.T) {
 		require.Equal(t, exp.ExecutionPayload.BlockHash, p.ExecutionPayload.BlockHash, "expecting the correct payload")
 
 		require.Equal(t, exp.ParentBeaconBlockRoot, p.ParentBeaconBlockRoot)
-		if cfg.IsEcotone(timeint.Seconds(uint64(p.ExecutionPayload.Timestamp))) {
+		if cfg.IsEcotone(timeint.FromUint64SecToSec(uint64(p.ExecutionPayload.Timestamp))) {
 			require.NotNil(t, p.ParentBeaconBlockRoot)
 		} else {
 			require.Nil(t, p.ParentBeaconBlockRoot)
@@ -334,7 +334,7 @@ func TestMultiPeerSync(t *testing.T) {
 		require.True(t, ok, "expecting known payload")
 		require.Equal(t, exp.ExecutionPayload.BlockHash, p.ExecutionPayload.BlockHash, "expecting the correct payload")
 		require.Equal(t, exp.ParentBeaconBlockRoot, p.ParentBeaconBlockRoot)
-		if cfg.IsEcotone(timeint.Seconds(uint64(p.ExecutionPayload.Timestamp))) {
+		if cfg.IsEcotone(timeint.FromUint64SecToSec(uint64(p.ExecutionPayload.Timestamp))) {
 			require.NotNil(t, p.ParentBeaconBlockRoot)
 		} else {
 			require.Nil(t, p.ParentBeaconBlockRoot)

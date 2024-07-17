@@ -60,7 +60,7 @@ func (m *FakeAttributesBuilder) PreparePayloadAttributes(ctx context.Context,
 		GasLimit:              &gasLimit,
 	}
 
-	if m.cfg.IsEcotone(timeint.Seconds(attrs.Timestamp)) {
+	if m.cfg.IsEcotone(timeint.FromHexUint64SecToSec(attrs.Timestamp)) {
 		r := testutils.RandomHash(m.rng)
 		attrs.ParentBeaconBlockRoot = &r
 	}
@@ -239,7 +239,7 @@ func TestSequencerBuild(t *testing.T) {
 			Hash:   common.Hash{0x11, 0xa},
 			Number: 1000,
 		},
-		Time: timeint.Seconds(testClock.Now().Unix()),
+		Time: timeint.FromUint64SecToSec(uint64(testClock.Now().Unix())),
 	}
 	seq.OnEvent(engine.ForkchoiceUpdateEvent{UnsafeL2Head: head})
 	emitter.AssertExpectations(t)
@@ -259,7 +259,7 @@ func TestSequencerBuild(t *testing.T) {
 		x, ok := ev.(engine.BuildStartEvent)
 		require.True(t, ok)
 		require.Equal(t, head, x.Attributes.Parent)
-		require.Equal(t, head.Time+deps.cfg.BlockTime, timeint.Seconds(x.Attributes.Attributes.Timestamp))
+		require.Equal(t, head.Time+deps.cfg.BlockTime, timeint.FromHexUint64SecToSec(x.Attributes.Attributes.Timestamp))
 		require.Equal(t, eth.L1BlockRef{}, x.Attributes.DerivedFrom)
 		sentAttributes = x.Attributes
 	})
@@ -315,7 +315,7 @@ func TestSequencerBuild(t *testing.T) {
 		Hash:           payloadEnvelope.ExecutionPayload.BlockHash,
 		Number:         uint64(payloadEnvelope.ExecutionPayload.BlockNumber),
 		ParentHash:     payloadEnvelope.ExecutionPayload.ParentHash,
-		Time:           timeint.Seconds(payloadEnvelope.ExecutionPayload.Timestamp),
+		Time:           timeint.FromHexUint64SecToSec(payloadEnvelope.ExecutionPayload.Timestamp),
 		L1Origin:       l1Origin.ID(),
 		SequenceNumber: 0,
 	}
@@ -421,7 +421,7 @@ func createSequencer(log log.Logger) (*Sequencer, *sequencerTestDeps) {
 			Hash:           payload.BlockHash,
 			Number:         uint64(payload.BlockNumber),
 			ParentHash:     payload.ParentHash,
-			Time:           timeint.Seconds(payload.Timestamp),
+			Time:           timeint.FromHexUint64SecToSec(payload.Timestamp),
 			L1Origin:       decodeID(payload.Transactions[0]),
 			SequenceNumber: 0,
 		}, nil

@@ -42,7 +42,7 @@ func WaitForL1OriginOnL2(rollupCfg *rollup.Config, l1BlockNum uint64, client *et
 			if err != nil {
 				return nil, err
 			}
-			l1Info, err := derive.L1BlockInfoFromBytes(rollupCfg, timeint.Seconds(block.Time()), block.Transactions()[0].Data())
+			l1Info, err := derive.L1BlockInfoFromBytes(rollupCfg, timeint.FromUint64SecToSec(block.Time()), block.Transactions()[0].Data())
 			if err != nil {
 				return nil, err
 			}

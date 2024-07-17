@@ -87,7 +87,7 @@ func TestOutputAtBlock(t *testing.T) {
 		Hash:           header.Hash(),
 		Number:         header.Number.Uint64(),
 		ParentHash:     header.ParentHash,
-		Time:           timeint.Seconds(header.Time),
+		Time:           timeint.FromUint64SecToSec(header.Time),
 		L1Origin:       eth.BlockID{},
 		SequenceNumber: 0,
 	}

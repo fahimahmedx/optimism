@@ -109,7 +109,7 @@ func RandomBlockInfo(rng *rand.Rand) *MockBlockInfo {
 	return &MockBlockInfo{
 		InfoParentHash:  RandomHash(rng),
 		InfoNum:         rng.Uint64(),
-		InfoTime:        timeint.Seconds(rng.Uint64()),
+		InfoTime:        timeint.FromUint64SecToSec(rng.Uint64()),
 		InfoHash:        RandomHash(rng),
 		InfoBaseFee:     big.NewInt(rng.Int63n(1000_000 * 1e9)), // a million GWEI
 		InfoBlobBaseFee: big.NewInt(rng.Int63n(2000_000 * 1e9)), // two million GWEI
