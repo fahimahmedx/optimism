@@ -555,7 +555,7 @@ func (c *Config) Description(l2Chains map[string]string) string {
 	banner += fmt.Sprintf("L1 Chain ID: %v (%s)\n", c.L1ChainID, networkL1)
 	// Report the genesis configuration
 	banner += "Bedrock starting point:\n"
-	banner += fmt.Sprintf("  L2 starting time: %d ~ %s\n", c.Genesis.L2Time, fmtTime(c.Genesis.L2Time))
+	banner += fmt.Sprintf("  L2 starting time: %d ~ %s s\n", c.Genesis.L2Time, fmtTime(c.Genesis.L2Time.ToSeconds()))
 	banner += fmt.Sprintf("  L2 block: %s %d\n", c.Genesis.L2.Hash, c.Genesis.L2.Number)
 	banner += fmt.Sprintf("  L1 block: %s %d\n", c.Genesis.L1.Hash, c.Genesis.L1.Number)
 	// Report the upgrade configuration

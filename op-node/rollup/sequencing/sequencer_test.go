@@ -267,7 +267,7 @@ func TestSequencerBuild(t *testing.T) {
 	emitter.AssertExpectations(t)
 
 	// pretend we are already 150ms into the block-window when starting building
-	startedTime := time.UnixMilli(int64(head.Time), 0).Add(time.Millisecond * 150)
+	startedTime := time.UnixMilli(int64(head.Time.ToUint64Milli())).Add(time.Millisecond * 150)
 	testClock.Set(startedTime)
 	payloadInfo := eth.PayloadInfo{
 		ID:        eth.PayloadID{0x42},
@@ -392,7 +392,7 @@ func createSequencer(log log.Logger) (*Sequencer, *sequencerTestDeps) {
 			L2Time:       timeint.FromUint64SecToMilli(10000000),
 			SystemConfig: eth.SystemConfig{},
 		},
-		BlockTime:         timeint.FromUint64SecToMilli(2)
+		BlockTime:         timeint.FromUint64SecToMilli(2),
 		MaxSequencerDrift: 15 * 60,
 		RegolithTime:      new(timeint.Seconds),
 		CanyonTime:        new(timeint.Seconds),

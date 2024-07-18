@@ -299,7 +299,7 @@ func getRandomSignedTransaction(ctx context.Context, ethClient *ethclient.Client
 }
 
 // confirmTransaction polls receipts to confirm transaction is included in the block.
-func confirmTransaction(ctx context.Context, ethClient *ethclient.Client, l2BlockTime timeint.Seconds, txHash common.Hash) (eth.BlockID, error) {
+func confirmTransaction(ctx context.Context, ethClient *ethclient.Client, l2BlockTime timeint.Milliseconds, txHash common.Hash) (eth.BlockID, error) {
 	var retryCount uint64
 	for {
 		receipt, _ := ethClient.TransactionReceipt(ctx, txHash)
@@ -310,7 +310,7 @@ func confirmTransaction(ctx context.Context, ethClient *ethclient.Client, l2Bloc
 			log.Info("Waiting for transaction receipt", "txHash", txHash.String())
 			retryCount++
 			// wait at least l2 block time
-			time.Sleep(time.Duration(l2BlockTime) * time.Second)
+			time.Sleep(time.Duration(l2BlockTime) * time.Millisecond)
 			continue
 		}
 		block := eth.BlockID{

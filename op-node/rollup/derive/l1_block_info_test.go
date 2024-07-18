@@ -72,7 +72,7 @@ func TestParseL1InfoDepositTxData(t *testing.T) {
 			seqNr := testCase.seqNr(rng)
 			depTx, err := L1InfoDeposit(&rollupCfg, l1Cfg, seqNr, info, 0)
 			require.NoError(t, err)
-			res, err := L1BlockInfoFromBytes(&rollupCfg, info.Time(), depTx.Data)
+			res, err := L1BlockInfoFromBytes(&rollupCfg, info.Time().ToMilliseconds(), depTx.Data)
 			require.NoError(t, err, "expected valid deposit info")
 			assert.Equal(t, res.Number, info.NumberU64())
 			assert.Equal(t, res.Time, info.Time())
@@ -104,7 +104,7 @@ func TestParseL1InfoDepositTxData(t *testing.T) {
 		require.NoError(t, err)
 		_, err = crand.Read(depTx.Data[0:4])
 		require.NoError(t, err)
-		_, err = L1BlockInfoFromBytes(&rollupCfg, info.Time(), depTx.Data)
+		_, err = L1BlockInfoFromBytes(&rollupCfg, info.Time().ToMilliseconds(), depTx.Data)
 		require.ErrorContains(t, err, "function signature")
 	})
 	t.Run("regolith", func(t *testing.T) {

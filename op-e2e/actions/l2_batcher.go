@@ -202,7 +202,7 @@ func (s *L2Batcher) Buffer(t Testing) error {
 			} else {
 				// use span batch if we're forcing it or if we're at/beyond delta
 				if s.l2BatcherCfg.ForceSubmitSpanBatch || s.rollupCfg.IsDelta(timeint.FromUint64SecToMilli(block.Time())) {
-					ch, err = derive.NewSpanChannelOut(s.rollupCfg.Genesis.L2Time, s.rollupCfg.L2ChainID, target, derive.Zlib)
+					ch, err = derive.NewSpanChannelOut(s.rollupCfg.Genesis.L2Time.ToSeconds(), s.rollupCfg.L2ChainID, target, derive.Zlib)
 					// use singular batches in all other cases
 				} else {
 					ch, err = derive.NewSingularChannelOut(c)

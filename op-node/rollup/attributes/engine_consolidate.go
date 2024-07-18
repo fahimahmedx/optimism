@@ -45,7 +45,7 @@ func AttributesMatchBlock(rollupCfg *rollup.Config, attrs *eth.PayloadAttributes
 	for i, otx := range attrs.Transactions {
 		if expect := block.Transactions[i]; !bytes.Equal(otx, expect) {
 			if i == 0 {
-				logL1InfoTxns(rollupCfg, l, uint64(block.BlockNumber), timeint.FromHexUint64SecToSec(block.Timestamp), otx, block.Transactions[i])
+				logL1InfoTxns(rollupCfg, l, uint64(block.BlockNumber), timeint.FromHexUint64SecToMilli(block.Timestamp), otx, block.Transactions[i])
 			}
 			return fmt.Errorf("transaction %d does not match. expected: %v. got: %v", i, expect, otx)
 		}
@@ -113,7 +113,7 @@ func checkWithdrawalsMatch(attrWithdrawals *types.Withdrawals, blockWithdrawals 
 
 // logL1InfoTxns reports the values from the L1 info tx when they differ to aid
 // debugging. This check is the one that has been most frequently triggered.
-func logL1InfoTxns(rollupCfg *rollup.Config, l log.Logger, l2Number uint64, l2Timestamp timeint.Seconds, safeTx, unsafeTx hexutil.Bytes) {
+func logL1InfoTxns(rollupCfg *rollup.Config, l log.Logger, l2Number uint64, l2Timestamp timeint.Milliseconds, safeTx, unsafeTx hexutil.Bytes) {
 	// First decode into *types.Transaction to get the tx data.
 	var safeTxValue, unsafeTxValue types.Transaction
 	errSafe := (&safeTxValue).UnmarshalBinary(safeTx)

@@ -64,7 +64,7 @@ func newMiniL2BlockWithNumberParentAndL1Information(numTx int, l2Number *big.Int
 		Number:     big.NewInt(l1Number),
 		Time:       blockTime.ToUint64Sec(),
 	}, nil, nil, nil, trie.NewStackTrie(nil))
-	l1InfoTx, err := derive.L1InfoDeposit(&defaultTestRollupConfig, eth.SystemConfig{}, 0, eth.BlockToInfo(l1Block), blockTime)
+	l1InfoTx, err := derive.L1InfoDeposit(&defaultTestRollupConfig, eth.SystemConfig{}, 0, eth.BlockToInfo(l1Block), blockTime.ToMilliseconds())
 	if err != nil {
 		panic(err)
 	}

@@ -11,6 +11,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-challenger/game/types"
 	"github.com/ethereum-optimism/optimism/op-service/clock"
 	"github.com/ethereum-optimism/optimism/op-service/eth"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
@@ -25,7 +26,7 @@ type gameSource interface {
 }
 
 type RWClock interface {
-	SetTime(uint64)
+	SetTime(timeint.Seconds)
 	Now() time.Time
 }
 
@@ -129,7 +130,7 @@ func (m *gameMonitor) progressGames(ctx context.Context, blockHash common.Hash, 
 }
 
 func (m *gameMonitor) onNewL1Head(ctx context.Context, sig eth.L1BlockRef) {
-	m.clock.SetTime(uint64(sig.Time))
+	m.clock.SetTime(sig.Time)
 	if err := m.progressGames(ctx, sig.Hash, sig.Number); err != nil {
 		m.logger.Error("Failed to progress games", "err", err)
 	}

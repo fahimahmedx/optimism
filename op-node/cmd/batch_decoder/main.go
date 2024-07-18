@@ -135,13 +135,13 @@ func main() {
 				},
 				&cli.Uint64Flag{
 					Name:  "l2-genesis-timestamp",
-					Value: 1686068903,
+					Value: 1686068903, // turn into Milliseconds
 					Usage: "L2 genesis time for span batch derivation. Default value from op-mainnet. " +
 						"Superchain-registry prioritized when given value is inconsistent.",
 				},
 				&cli.Uint64Flag{
 					Name:  "l2-block-time",
-					Value: 2,
+					Value: 2, // turn into Milliseconds
 					Usage: "L2 block time for span batch derivation. Default value from op-mainnet. " +
 						"Superchain-registry prioritized when given value is inconsistent.",
 				},
@@ -154,8 +154,8 @@ func main() {
 			},
 			Action: func(cliCtx *cli.Context) error {
 				var (
-					L2GenesisTime     timeint.Milliseconds = timeint.FromUint64SecToSec(cliCtx.Uint64("l2-genesis-timestamp"))
-					L2BlockTime       timeint.Milliseconds = timeint.FromUint64SecToSec(cliCtx.Uint64("l2-block-time")) // HOW DO I KNOW THIS IS INITIALLY A UINT64 IN SECS?
+					L2GenesisTime     timeint.Milliseconds = timeint.FromUint64SecToMilli(cliCtx.Uint64("l2-genesis-timestamp"))
+					L2BlockTime       timeint.Milliseconds = timeint.FromUint64SecToMilli(cliCtx.Uint64("l2-block-time")) // HOW DO I KNOW THIS IS INITIALLY A UINT64 IN SECS?
 					BatchInboxAddress common.Address       = common.HexToAddress(cliCtx.String("inbox"))
 				)
 				L2ChainID := new(big.Int).SetUint64(cliCtx.Uint64("l2-chain-id"))

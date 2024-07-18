@@ -58,8 +58,8 @@ type EngineAPIClient struct {
 
 type EngineVersionProvider interface {
 	ForkchoiceUpdatedVersion(attr *eth.PayloadAttributes) eth.EngineAPIMethod
-	NewPayloadVersion(timestamp timeint.Seconds) eth.EngineAPIMethod
-	GetPayloadVersion(timestamp timeint.Seconds) eth.EngineAPIMethod
+	NewPayloadVersion(timestamp timeint.Milliseconds) eth.EngineAPIMethod
+	GetPayloadVersion(timestamp timeint.Milliseconds) eth.EngineAPIMethod
 }
 
 func NewEngineAPIClient(rpc client.RPC, l log.Logger, evp EngineVersionProvider) *EngineAPIClient {
@@ -126,7 +126,7 @@ func (s *EngineAPIClient) NewPayload(ctx context.Context, payload *eth.Execution
 	var result eth.PayloadStatusV1
 
 	var err error
-	switch method := s.evp.NewPayloadVersion(timeint.FromHexUint64SecToSec(payload.Timestamp)); method {
+	switch method := s.evp.NewPayloadVersion(timeint.FromHexUint64SecToMilli(payload.Timestamp)); method {
 	case eth.NewPayloadV3:
 		err = s.RPC.CallContext(execCtx, &result, string(method), payload, []common.Hash{}, parentBeaconBlockRoot)
 	case eth.NewPayloadV2:
@@ -151,7 +151,7 @@ func (s *EngineAPIClient) GetPayload(ctx context.Context, payloadInfo eth.Payloa
 	e := s.log.New("payload_id", payloadInfo.ID)
 	e.Trace("getting payload")
 	var result eth.ExecutionPayloadEnvelope
-	method := s.evp.GetPayloadVersion(payloadInfo.Timestamp)
+	method := s.evp.GetPayloadVersion(payloadInfo.Timestamp.ToMilliseconds())
 	err := s.RPC.CallContext(ctx, &result, string(method), payloadInfo.ID)
 	if err != nil {
 		e.Warn("Failed to get payload", "payload_id", payloadInfo.ID, "err", err)

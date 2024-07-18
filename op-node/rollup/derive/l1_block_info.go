@@ -248,12 +248,12 @@ func (info *L1BlockInfo) unmarshalBinaryEcotone(data []byte) error {
 
 // isEcotoneButNotFirstBlock returns whether the specified block is subject to the Ecotone upgrade,
 // but is not the actiation block itself.
-func isEcotoneButNotFirstBlock(rollupCfg *rollup.Config, l2BlockTime timeint.Seconds) bool {
+func isEcotoneButNotFirstBlock(rollupCfg *rollup.Config, l2BlockTime timeint.Milliseconds) bool {
 	return rollupCfg.IsEcotone(l2BlockTime) && !rollupCfg.IsEcotoneActivationBlock(l2BlockTime)
 }
 
 // L1BlockInfoFromBytes is the inverse of L1InfoDeposit, to see where the L2 chain is derived from
-func L1BlockInfoFromBytes(rollupCfg *rollup.Config, l2BlockTime timeint.Seconds, data []byte) (*L1BlockInfo, error) {
+func L1BlockInfoFromBytes(rollupCfg *rollup.Config, l2BlockTime timeint.Milliseconds, data []byte) (*L1BlockInfo, error) {
 	var info L1BlockInfo
 	if isEcotoneButNotFirstBlock(rollupCfg, l2BlockTime) {
 		return &info, info.unmarshalBinaryEcotone(data)
@@ -263,7 +263,7 @@ func L1BlockInfoFromBytes(rollupCfg *rollup.Config, l2BlockTime timeint.Seconds,
 
 // L1InfoDeposit creates a L1 Info deposit transaction based on the L1 block,
 // and the L2 block-height difference with the start of the epoch.
-func L1InfoDeposit(rollupCfg *rollup.Config, sysCfg eth.SystemConfig, seqNumber uint64, block eth.BlockInfo, l2BlockTime timeint.Seconds) (*types.DepositTx, error) {
+func L1InfoDeposit(rollupCfg *rollup.Config, sysCfg eth.SystemConfig, seqNumber uint64, block eth.BlockInfo, l2BlockTime timeint.Milliseconds) (*types.DepositTx, error) {
 	l1BlockInfo := L1BlockInfo{
 		Number:         block.NumberU64(),
 		Time:           block.Time(),
@@ -325,7 +325,7 @@ func L1InfoDeposit(rollupCfg *rollup.Config, sysCfg eth.SystemConfig, seqNumber 
 }
 
 // L1InfoDepositBytes returns a serialized L1-info attributes transaction.
-func L1InfoDepositBytes(rollupCfg *rollup.Config, sysCfg eth.SystemConfig, seqNumber uint64, l1Info eth.BlockInfo, l2BlockTime timeint.Seconds) ([]byte, error) {
+func L1InfoDepositBytes(rollupCfg *rollup.Config, sysCfg eth.SystemConfig, seqNumber uint64, l1Info eth.BlockInfo, l2BlockTime timeint.Milliseconds) ([]byte, error) {
 	dep, err := L1InfoDeposit(rollupCfg, sysCfg, seqNumber, l1Info, l2BlockTime)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create L1 info tx: %w", err)

@@ -363,7 +363,7 @@ func check4788Contract(ctx context.Context, env *actionEnv) error {
 			}
 			revert = revert || len(code) == 0
 		}
-		input := new(uint256.Int).SetUint64(ti.ToUint64Sec()).Bytes32()
+		input := new(uint256.Int).SetUint64(ti.ToSeconds().ToUint64Sec()).Bytes32()
 		if err := execTx(ctx, &predeploys.EIP4788ContractAddr, input[:], revert, env); err != nil {
 			return fmt.Errorf("failed at t = %d", ti)
 		}

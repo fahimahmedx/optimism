@@ -42,8 +42,8 @@ type Config struct {
 	InDirectory   string
 	OutDirectory  string
 	L2ChainID     *big.Int
-	L2GenesisTime timeint.Seconds
-	L2BlockTime   timeint.Seconds
+	L2GenesisTime timeint.Milliseconds
+	L2BlockTime   timeint.Milliseconds
 }
 
 func LoadFrames(directory string, inbox common.Address) []FrameWithMetadata {
@@ -116,7 +116,7 @@ func processFrames(cfg Config, rollupCfg *rollup.Config, id derive.ChannelID, fr
 
 	invalidBatches := false
 	if ch.IsReady() {
-		br, err := derive.BatchReader(ch.Reader(), spec.MaxRLPBytesPerChannel(ch.HighestBlock().Time), rollupCfg.IsFjord(ch.HighestBlock().Time))
+		br, err := derive.BatchReader(ch.Reader(), spec.MaxRLPBytesPerChannel(ch.HighestBlock().Time), rollupCfg.IsFjord(ch.HighestBlock().Time.ToMilliseconds()))
 		if err == nil {
 			for batchData, err := br(); err != io.EOF; batchData, err = br() {
 				if err != nil {
@@ -136,7 +136,7 @@ func processFrames(cfg Config, rollupCfg *rollup.Config, id derive.ChannelID, fr
 						// singularBatch will be nil when errored
 						batches = append(batches, singularBatch)
 					case derive.SpanBatchType:
-						spanBatch, err := derive.DeriveSpanBatch(batchData, cfg.L2BlockTime, cfg.L2GenesisTime, cfg.L2ChainID)
+						spanBatch, err := derive.DeriveSpanBatch(batchData, cfg.L2BlockTime.ToSeconds(), cfg.L2GenesisTime.ToSeconds(), cfg.L2ChainID)
 						if err != nil {
 							invalidBatches = true
 							fmt.Printf("Error deriving spanBatch from batchData for channel %v. Err: %v\n", id.String(), err)

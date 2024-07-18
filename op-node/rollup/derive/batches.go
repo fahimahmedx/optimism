@@ -200,7 +200,7 @@ func checkSpanBatch(ctx context.Context, cfg *rollup.Config, log log.Logger, l1B
 		log.Trace("received out-of-order batch for future processing after next batch", "next_timestamp", nextTimestamp)
 		return BatchFuture
 	}
-	if batch.GetBlockTimestamp(batch.GetBlockCount()-1) < nextTimestamp {
+	if batch.GetBlockTimestamp(batch.GetBlockCount()-1).ToMilliseconds() < nextTimestamp {
 		log.Warn("span batch has no new blocks after safe head")
 		return BatchDrop
 	}
@@ -209,8 +209,8 @@ func checkSpanBatch(ctx context.Context, cfg *rollup.Config, log log.Logger, l1B
 	// if the span batch does not overlap the current safe chain, parentBLock should be l2SafeHead.
 	parentNum := l2SafeHead.Number
 	parentBlock := l2SafeHead
-	if batch.GetTimestamp() < nextTimestamp {
-		if batch.GetTimestamp() > l2SafeHead.Time {
+	if batch.GetTimestamp().ToMilliseconds() < nextTimestamp {
+		if batch.GetTimestamp().ToMilliseconds() > l2SafeHead.Time {
 			// batch timestamp cannot be between safe head and next timestamp
 			log.Warn("batch has misaligned timestamp, block time is too short")
 			return BatchDrop
@@ -272,7 +272,7 @@ func checkSpanBatch(ctx context.Context, cfg *rollup.Config, log log.Logger, l1B
 	originAdvanced := startEpochNum == parentBlock.L1Origin.Number+1
 
 	for i := 0; i < batch.GetBlockCount(); i++ {
-		if batch.GetBlockTimestamp(i) <= l2SafeHead.Time {
+		if batch.GetBlockTimestamp(i).ToMilliseconds() <= l2SafeHead.Time {
 			continue
 		}
 		var l1Origin eth.L1BlockRef
@@ -335,7 +335,7 @@ func checkSpanBatch(ctx context.Context, cfg *rollup.Config, log log.Logger, l1B
 	}
 
 	// Check overlapped blocks
-	if batch.GetTimestamp() < nextTimestamp {
+	if batch.GetTimestamp().ToMilliseconds() < nextTimestamp {
 		for i := uint64(0); i < l2SafeHead.Number-parentNum; i++ {
 			safeBlockNum := parentNum + i + 1
 			safeBlockPayload, err := l2Fetcher.PayloadByNumber(ctx, safeBlockNum)

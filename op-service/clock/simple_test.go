@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 	"github.com/stretchr/testify/require"
 )
 
@@ -43,7 +44,7 @@ func TestSimpleClock_SetTime(t *testing.T) {
 		test := test
 		t.Run(test.name, func(t *testing.T) {
 			c := NewSimpleClock()
-			c.SetTime(uint64(test.expectedTime))
+			c.SetTime(timeint.FromUint64SecToSec(uint64(test.expectedTime)))
 			require.Equal(t, time.Unix(test.expectedTime, 0), c.Now())
 		})
 	}

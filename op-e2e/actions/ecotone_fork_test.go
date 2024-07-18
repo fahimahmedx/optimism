@@ -97,7 +97,7 @@ func TestEcotoneNetworkUpgradeTransactions(gt *testing.T) {
 	// See [derive.EcotoneNetworkUpgradeTransactions]
 	require.Equal(t, 7, len(transactions))
 
-	l1Info, err := derive.L1BlockInfoFromBytes(sd.RollupCfg, timeint.FromUint64SecToSec(latestBlock.Time()), transactions[0].Data())
+	l1Info, err := derive.L1BlockInfoFromBytes(sd.RollupCfg, timeint.FromUint64SecToMilli(latestBlock.Time()), transactions[0].Data())
 	require.NoError(t, err)
 	require.Equal(t, derive.L1InfoBedrockLen, len(transactions[0].Data()))
 	require.Nil(t, l1Info.BlobBaseFee)

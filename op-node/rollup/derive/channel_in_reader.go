@@ -44,7 +44,7 @@ func (cr *ChannelInReader) Origin() eth.L1BlockRef {
 
 // TODO: Take full channel for better logging
 func (cr *ChannelInReader) WriteChannel(data []byte) error {
-	if f, err := BatchReader(bytes.NewBuffer(data), cr.spec.MaxRLPBytesPerChannel(cr.prev.Origin().Time), cr.cfg.IsFjord(cr.prev.Origin().Time)); err == nil {
+	if f, err := BatchReader(bytes.NewBuffer(data), cr.spec.MaxRLPBytesPerChannel(cr.prev.Origin().Time), cr.cfg.IsFjord(cr.prev.Origin().Time.ToMilliseconds())); err == nil {
 		cr.nextBatchFn = f
 		cr.metrics.RecordChannelInputBytes(len(data))
 		return nil
@@ -99,13 +99,13 @@ func (cr *ChannelInReader) NextBatch(ctx context.Context) (Batch, error) {
 		cr.metrics.RecordDerivedBatches("singular")
 		return batch, nil
 	case SpanBatchType:
-		if origin := cr.Origin(); !cr.cfg.IsDelta(origin.Time) {
+		if origin := cr.Origin(); !cr.cfg.IsDelta(origin.Time.ToMilliseconds()) {
 			// Check hard fork activation with the L1 inclusion block time instead of the L1 origin block time.
 			// Therefore, even if the batch passed this rule, it can be dropped in the batch queue.
 			// This is just for early dropping invalid batches as soon as possible.
 			return nil, NewTemporaryError(fmt.Errorf("cannot accept span batch in L1 block %s at time %d", origin, origin.Time))
 		}
-		batch.Batch, err = DeriveSpanBatch(batchData, cr.cfg.BlockTime, cr.cfg.Genesis.L2Time, cr.cfg.L2ChainID)
+		batch.Batch, err = DeriveSpanBatch(batchData, cr.cfg.BlockTime.ToSeconds(), cr.cfg.Genesis.L2Time.ToSeconds(), cr.cfg.L2ChainID)
 		if err != nil {
 			return nil, err
 		}

@@ -22,7 +22,7 @@ func (v StaticVersionProvider) ForkchoiceUpdatedVersion(*eth.PayloadAttributes) 
 	}
 }
 
-func (v StaticVersionProvider) NewPayloadVersion(timeint.Seconds) eth.EngineAPIMethod {
+func (v StaticVersionProvider) NewPayloadVersion(timeint.Milliseconds) eth.EngineAPIMethod {
 	switch int(v) {
 	case 1, 2:
 		return eth.NewPayloadV2
@@ -33,7 +33,7 @@ func (v StaticVersionProvider) NewPayloadVersion(timeint.Seconds) eth.EngineAPIM
 	}
 }
 
-func (v StaticVersionProvider) GetPayloadVersion(timeint.Seconds) eth.EngineAPIMethod {
+func (v StaticVersionProvider) GetPayloadVersion(timeint.Milliseconds) eth.EngineAPIMethod {
 	switch int(v) {
 	case 1, 2:
 		return eth.GetPayloadV2

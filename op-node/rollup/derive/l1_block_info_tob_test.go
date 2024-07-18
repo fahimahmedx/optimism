@@ -33,7 +33,7 @@ func FuzzParseL1InfoDepositTxDataValid(f *testing.F) {
 		require.NoError(t, err, "error creating deposit tx from L1 info")
 
 		// Get our info from out deposit tx
-		res, err := L1BlockInfoFromBytes(&rollupCfg, l1Info.InfoTime, depTx.Data)
+		res, err := L1BlockInfoFromBytes(&rollupCfg, l1Info.InfoTime.ToMilliseconds(), depTx.Data)
 		require.NoError(t, err, "expected valid deposit info")
 
 		// Verify all parameters match in our round trip deriving operations

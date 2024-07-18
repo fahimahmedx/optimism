@@ -85,7 +85,7 @@ func TestAttributesHandler(t *testing.T) {
 		EcotoneTime:   new(timeint.Seconds),
 	}
 
-	a1L1Info, err := derive.L1InfoDepositBytes(cfg, cfg.Genesis.SystemConfig, 1, aL1Info, refA0.Time+cfg.BlockTime)
+	a1L1Info, err := derive.L1InfoDepositBytes(cfg, cfg.Genesis.SystemConfig, 1, aL1Info, (refA0.Time + cfg.BlockTime))
 	require.NoError(t, err)
 	parentBeaconBlockRoot := testutils.RandomHash(rng)
 	payloadA1 := &eth.ExecutionPayloadEnvelope{ExecutionPayload: &eth.ExecutionPayload{

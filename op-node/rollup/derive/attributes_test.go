@@ -237,7 +237,7 @@ func TestPreparePayloadAttributes(t *testing.T) {
 				if !tc.regolith {
 					time--
 				}
-				l1InfoTx, err := L1InfoDepositBytes(cfg, testSysCfg, 0, l1Info, time)
+				l1InfoTx, err := L1InfoDepositBytes(cfg, testSysCfg, 0, l1Info, time.ToMilliseconds())
 				require.NoError(t, err)
 				l1Fetcher.ExpectFetchReceipts(epoch.Hash, l1Info, nil, nil)
 				attrBuilder := NewFetchingAttributesBuilder(cfg, l1Fetcher, l1CfgFetcher)

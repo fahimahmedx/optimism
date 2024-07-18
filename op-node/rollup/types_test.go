@@ -186,14 +186,14 @@ func TestActivations(t *testing.T) {
 	for _, test := range []struct {
 		name           string
 		setUpgradeTime func(t *timeint.Seconds, c *Config)
-		checkEnabled   func(t timeint.Seconds, c *Config) bool
+		checkEnabled   func(t timeint.Milliseconds, c *Config) bool
 	}{
 		{
 			name: "Regolith",
 			setUpgradeTime: func(t *timeint.Seconds, c *Config) {
 				c.RegolithTime = t
 			},
-			checkEnabled: func(t timeint.Seconds, c *Config) bool {
+			checkEnabled: func(t timeint.Milliseconds, c *Config) bool {
 				return c.IsRegolith(t)
 			},
 		},
@@ -202,7 +202,7 @@ func TestActivations(t *testing.T) {
 			setUpgradeTime: func(t *timeint.Seconds, c *Config) {
 				c.CanyonTime = t
 			},
-			checkEnabled: func(t timeint.Seconds, c *Config) bool {
+			checkEnabled: func(t timeint.Milliseconds, c *Config) bool {
 				return c.IsCanyon(t)
 			},
 		},
@@ -211,7 +211,7 @@ func TestActivations(t *testing.T) {
 			setUpgradeTime: func(t *timeint.Seconds, c *Config) {
 				c.DeltaTime = t
 			},
-			checkEnabled: func(t timeint.Seconds, c *Config) bool {
+			checkEnabled: func(t timeint.Milliseconds, c *Config) bool {
 				return c.IsDelta(t)
 			},
 		},
@@ -220,7 +220,7 @@ func TestActivations(t *testing.T) {
 			setUpgradeTime: func(t *timeint.Seconds, c *Config) {
 				c.EcotoneTime = t
 			},
-			checkEnabled: func(t timeint.Seconds, c *Config) bool {
+			checkEnabled: func(t timeint.Milliseconds, c *Config) bool {
 				return c.IsEcotone(t)
 			},
 		},
@@ -229,7 +229,7 @@ func TestActivations(t *testing.T) {
 			setUpgradeTime: func(t *timeint.Seconds, c *Config) {
 				c.FjordTime = t
 			},
-			checkEnabled: func(t timeint.Seconds, c *Config) bool {
+			checkEnabled: func(t timeint.Milliseconds, c *Config) bool {
 				return c.IsFjord(t)
 			},
 		},
@@ -238,7 +238,7 @@ func TestActivations(t *testing.T) {
 			setUpgradeTime: func(t *timeint.Seconds, c *Config) {
 				c.InteropTime = t
 			},
-			checkEnabled: func(t timeint.Seconds, c *Config) bool {
+			checkEnabled: func(t timeint.Milliseconds, c *Config) bool {
 				return c.IsInterop(t)
 			},
 		},
@@ -248,18 +248,18 @@ func TestActivations(t *testing.T) {
 			config := randConfig()
 			test.setUpgradeTime(nil, config)
 			require.False(t, tt.checkEnabled(0, config), "false if nil time, even if checking 0")
-			require.False(t, tt.checkEnabled(123456, config), "false if nil time")
+			require.False(t, tt.checkEnabled(timeint.FromUint64SecToMilli(123456), config), "false if nil time")
 
 			test.setUpgradeTime(new(timeint.Seconds), config)
 			require.True(t, tt.checkEnabled(0, config), "true at zero")
-			require.True(t, tt.checkEnabled(123456, config), "true for any")
+			require.True(t, tt.checkEnabled(timeint.FromUint64SecToMilli(123456), config), "true for any")
 
 			x := timeint.FromUint64SecToSec(123)
 			test.setUpgradeTime(&x, config)
 			require.False(t, tt.checkEnabled(0, config))
-			require.False(t, tt.checkEnabled(122, config))
-			require.True(t, tt.checkEnabled(123, config))
-			require.True(t, tt.checkEnabled(124, config))
+			require.False(t, tt.checkEnabled(timeint.FromUint64SecToMilli(122), config))
+			require.True(t, tt.checkEnabled(timeint.FromUint64SecToMilli(123), config))
+			require.True(t, tt.checkEnabled(timeint.FromUint64SecToMilli(124), config))
 		})
 	}
 }
@@ -647,7 +647,7 @@ func TestNewPayloadVersion(t *testing.T) {
 		test := test
 		t.Run(fmt.Sprintf("TestNewPayloadVersion_%s", test.name), func(t *testing.T) {
 			config.EcotoneTime = &test.ecotoneTime
-			assert.Equal(t, config.NewPayloadVersion(test.payloadTime), test.expectedMethod)
+			assert.Equal(t, config.NewPayloadVersion(test.payloadTime.ToMilliseconds()), test.expectedMethod)
 		})
 	}
 }
@@ -680,7 +680,7 @@ func TestGetPayloadVersion(t *testing.T) {
 		test := test
 		t.Run(fmt.Sprintf("TestGetPayloadVersion_%s", test.name), func(t *testing.T) {
 			config.EcotoneTime = &test.ecotoneTime
-			assert.Equal(t, config.GetPayloadVersion(test.payloadTime), test.expectedMethod)
+			assert.Equal(t, config.GetPayloadVersion(test.payloadTime.ToMilliseconds()), test.expectedMethod)
 		})
 	}
 }
