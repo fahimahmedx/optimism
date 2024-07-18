@@ -66,7 +66,7 @@ func (s *syncTestData) getBlockRef(i uint64) eth.L2BlockRef {
 		Hash:       s.payloads[i].ExecutionPayload.BlockHash,
 		Number:     uint64(s.payloads[i].ExecutionPayload.BlockNumber),
 		ParentHash: s.payloads[i].ExecutionPayload.ParentHash,
-		Time:       timeint.FromHexUint64SecToSec(s.payloads[i].ExecutionPayload.Timestamp),
+		Time:       timeint.FromHexUint64SecToMilli(s.payloads[i].ExecutionPayload.Timestamp),
 	}
 }
 

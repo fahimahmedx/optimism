@@ -445,7 +445,7 @@ func TestSpanBatchToSingularBatch(t *testing.T) {
 		singularBatches := RandomValidConsecutiveSingularBatches(rng, chainID)
 		safeL2Head := testutils.RandomL2BlockRef(rng)
 		safeL2Head.Hash = common.BytesToHash(singularBatches[0].ParentHash[:])
-		safeL2Head.Time = singularBatches[0].Timestamp - 2
+		safeL2Head.Time = singularBatches[0].Timestamp.ToMilliseconds() - timeint.FromUint64SecToMilli(2)
 		genesisTimeStamp := 1 + singularBatches[0].Timestamp - 128
 
 		spanBatch := initializedSpanBatch(singularBatches, genesisTimeStamp, chainID)

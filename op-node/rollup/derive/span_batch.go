@@ -588,7 +588,7 @@ func (b *SpanBatch) GetSingularBatches(l1Origins []eth.L1BlockRef, l2SafeHead et
 	var singularBatches []*SingularBatch
 	originIdx := 0
 	for _, batch := range b.Batches {
-		if batch.Timestamp <= l2SafeHead.Time {
+		if batch.Timestamp.ToMilliseconds() <= l2SafeHead.Time {
 			continue
 		}
 		singularBatch := SingularBatch{

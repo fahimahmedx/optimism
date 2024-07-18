@@ -104,7 +104,7 @@ func (m *RefMetrics) RecordL1Ref(name string, ref eth.L1BlockRef) {
 }
 
 func (m *RefMetrics) RecordL2Ref(name string, ref eth.L2BlockRef) {
-	m.RecordRef("l2", name, ref.Number, ref.Time.ToUint64Sec(), ref.Hash)
+	m.RecordRef("l2", name, ref.Number, ref.Time.ToSeconds().ToUint64Sec(), ref.Hash)
 	m.RecordRef("l1_origin", name, ref.L1Origin.Number, 0, ref.L1Origin.Hash)
 	m.RefsSeqNr.WithLabelValues(name).Set(float64(ref.SequenceNumber))
 }

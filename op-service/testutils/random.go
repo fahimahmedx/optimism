@@ -82,13 +82,13 @@ func RandomL2BlockRef(rng *rand.Rand) eth.L2BlockRef {
 		Hash:           RandomHash(rng),
 		Number:         rng.Uint64(),
 		ParentHash:     RandomHash(rng),
-		Time:           timeint.FromUint64SecToSec(rng.Uint64()),
+		Time:           timeint.FromUint64SecToMilli(rng.Uint64()),
 		L1Origin:       RandomBlockID(rng),
 		SequenceNumber: rng.Uint64(),
 	}
 }
 
-func NextRandomL2Ref(rng *rand.Rand, l2BlockTime timeint.Seconds, parent eth.L2BlockRef, origin eth.BlockID) eth.L2BlockRef {
+func NextRandomL2Ref(rng *rand.Rand, l2BlockTime timeint.Milliseconds, parent eth.L2BlockRef, origin eth.BlockID) eth.L2BlockRef {
 	seq := parent.SequenceNumber + 1
 	if parent.L1Origin != origin {
 		seq = 0

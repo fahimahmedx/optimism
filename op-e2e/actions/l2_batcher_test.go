@@ -19,6 +19,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-node/rollup/sync"
 	"github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum-optimism/optimism/op-service/testlog"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 // TestL2BatcherBatchType run each batcher-related test case in singular batch mode and span batch mode.
@@ -473,7 +474,7 @@ func BigL2Txs(gt *testing.T, deltaTimeOffset *hexutil.Uint64) {
 		aliceNonce, err := cl.PendingNonceAt(t.Ctx(), dp.Addresses.Alice)
 		status := sequencer.SyncStatus()
 		// build empty L1 blocks as necessary, so the L2 sequencer can continue to include txs while not drifting too far out
-		if status.UnsafeL2.Time >= status.HeadL1.Time+12 {
+		if status.UnsafeL2.Time >= (status.HeadL1.Time + timeint.FromHexUint64SecToSec(12)).ToMilliseconds() {
 			miner.ActEmptyBlock(t)
 		}
 		sequencer.ActL1HeadSignal(t)

@@ -239,7 +239,7 @@ func TestSequencerBuild(t *testing.T) {
 			Hash:   common.Hash{0x11, 0xa},
 			Number: 1000,
 		},
-		Time: timeint.FromUint64SecToSec(uint64(testClock.Now().Unix())),
+		Time: timeint.FromUint64SecToMilli(uint64(testClock.Now().Unix())),
 	}
 	seq.OnEvent(engine.ForkchoiceUpdateEvent{UnsafeL2Head: head})
 	emitter.AssertExpectations(t)
@@ -267,7 +267,7 @@ func TestSequencerBuild(t *testing.T) {
 	emitter.AssertExpectations(t)
 
 	// pretend we are already 150ms into the block-window when starting building
-	startedTime := time.Unix(int64(head.Time), 0).Add(time.Millisecond * 150)
+	startedTime := time.UnixMilli(int64(head.Time), 0).Add(time.Millisecond * 150)
 	testClock.Set(startedTime)
 	payloadInfo := eth.PayloadInfo{
 		ID:        eth.PayloadID{0x42},
@@ -315,7 +315,7 @@ func TestSequencerBuild(t *testing.T) {
 		Hash:           payloadEnvelope.ExecutionPayload.BlockHash,
 		Number:         uint64(payloadEnvelope.ExecutionPayload.BlockNumber),
 		ParentHash:     payloadEnvelope.ExecutionPayload.ParentHash,
-		Time:           timeint.FromHexUint64SecToSec(payloadEnvelope.ExecutionPayload.Timestamp),
+		Time:           timeint.FromHexUint64SecToMilli(payloadEnvelope.ExecutionPayload.Timestamp),
 		L1Origin:       l1Origin.ID(),
 		SequenceNumber: 0,
 	}
@@ -357,7 +357,7 @@ func TestSequencerBuild(t *testing.T) {
 	// as canonical we can proceed to the next sequencer cycle iteration.
 	// Pretend we only completed processing the block 120 ms into the next block time window.
 	// (This is why we publish optimistically)
-	testClock.Set(time.Unix(int64(payloadRef.Time), 0).Add(time.Millisecond * 120))
+	testClock.Set(time.UnixMilli(int64(payloadRef.Time)).Add(time.Millisecond * 120))
 	seq.OnEvent(engine.ForkchoiceUpdateEvent{
 		UnsafeL2Head:    payloadRef,
 		SafeL2Head:      eth.L2BlockRef{},
@@ -421,7 +421,7 @@ func createSequencer(log log.Logger) (*Sequencer, *sequencerTestDeps) {
 			Hash:           payload.BlockHash,
 			Number:         uint64(payload.BlockNumber),
 			ParentHash:     payload.ParentHash,
-			Time:           timeint.FromHexUint64SecToSec(payload.Timestamp),
+			Time:           timeint.FromHexUint64SecToMilli(payload.Timestamp),
 			L1Origin:       decodeID(payload.Transactions[0]),
 			SequenceNumber: 0,
 		}, nil

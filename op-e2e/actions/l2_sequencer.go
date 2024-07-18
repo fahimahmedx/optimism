@@ -183,7 +183,7 @@ func (s *L2Sequencer) ActBuildToL1HeadExclUnsafe(t Testing) {
 }
 
 func (s *L2Sequencer) ActBuildL2ToTime(t Testing, target timeint.Seconds) {
-	for s.L2Unsafe().Time < target {
+	for s.L2Unsafe().Time < target.ToMilliseconds() {
 		s.ActL2StartBlock(t)
 		s.ActL2EndBlock(t)
 	}
@@ -191,14 +191,14 @@ func (s *L2Sequencer) ActBuildL2ToTime(t Testing, target timeint.Seconds) {
 
 func (s *L2Sequencer) ActBuildL2ToEcotone(t Testing) {
 	require.NotNil(t, s.rollupCfg.EcotoneTime, "cannot activate Ecotone when it is not scheduled")
-	for s.L2Unsafe().Time < *s.rollupCfg.EcotoneTime {
+	for s.L2Unsafe().Time < (*s.rollupCfg.EcotoneTime).ToMilliseconds() {
 		s.ActL2StartBlock(t)
 		s.ActL2EndBlock(t)
 	}
 }
 func (s *L2Sequencer) ActBuildL2ToFjord(t Testing) {
 	require.NotNil(t, s.rollupCfg.FjordTime, "cannot activate FjordTime when it is not scheduled")
-	for s.L2Unsafe().Time < *s.rollupCfg.FjordTime {
+	for s.L2Unsafe().Time < (*s.rollupCfg.FjordTime).ToMilliseconds() {
 		s.ActL2StartBlock(t)
 		s.ActL2EndBlock(t)
 	}

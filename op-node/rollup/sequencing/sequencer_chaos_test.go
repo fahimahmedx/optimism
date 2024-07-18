@@ -173,7 +173,7 @@ func (c *ChaoticEngine) OnEvent(ev event.Event) bool {
 				Hash:           payloadEnvelope.ExecutionPayload.BlockHash,
 				Number:         uint64(payloadEnvelope.ExecutionPayload.BlockNumber),
 				ParentHash:     payloadEnvelope.ExecutionPayload.ParentHash,
-				Time:           timeint.FromHexUint64SecToSec(payloadEnvelope.ExecutionPayload.Timestamp),
+				Time:           timeint.FromHexUint64SecToMilli(payloadEnvelope.ExecutionPayload.Timestamp),
 				L1Origin:       l1Origin,
 				SequenceNumber: 0, // ignored
 			}
@@ -288,7 +288,7 @@ func testSequencerChaosWithSeed(t *testing.T, seed int64) {
 			return eth.L1BlockRef{
 				Hash:       genesisRef.L1Origin.Hash,
 				Number:     genesisRef.L1Origin.Number,
-				Time:       genesisRef.Time,
+				Time:       genesisRef.Time.ToSeconds(),
 				ParentHash: common.Hash{},
 			}, nil
 		}
@@ -323,7 +323,7 @@ func testSequencerChaosWithSeed(t *testing.T, seed int64) {
 	require.NoError(t, seq.Init(context.Background(), true))
 	require.NoError(t, ex.Drain(), "initial forkchoice update etc. completes")
 
-	genesisTime := time.Unix(int64(deps.cfg.Genesis.L2Time), 0)
+	genesisTime := time.UnixMilli(int64(deps.cfg.Genesis.L2Time))
 
 	i := 0
 	// If we can't sequence 100 blocks in 1k simulation steps, something is wrong.
@@ -332,7 +332,7 @@ func testSequencerChaosWithSeed(t *testing.T, seed int64) {
 	// sequence a lot of blocks, against the chaos engine
 	for eng.unsafe.Number < deps.cfg.Genesis.L2.Number+targetBlocks && i < sanityCap {
 		simPast := eng.clock.Now().Sub(genesisTime)
-		onchainPast := time.Unix(int64(eng.unsafe.Time), 0).Sub(genesisTime)
+		onchainPast := time.UnixMilli(int64(eng.unsafe.Time)).Sub(genesisTime)
 		logger.Info("Simulation step", "i", i, "sim_time", simPast,
 			"onchain_time", onchainPast,
 			"relative", simPast-onchainPast, "blocks", eng.unsafe.Number-deps.cfg.Genesis.L2.Number)

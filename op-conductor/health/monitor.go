@@ -176,7 +176,7 @@ func (hm *SequencerHealthMonitor) healthCheck(ctx context.Context) error {
 		return ErrSequencerNotHealthy
 	}
 
-	curUnsafeTimeDiff := calculateTimeDiff(now, uint64(status.UnsafeL2.Time))
+	curUnsafeTimeDiff := calculateTimeDiff(now, status.UnsafeL2.Time.ToSeconds().ToUint64Sec())
 	if curUnsafeTimeDiff > hm.unsafeInterval {
 		hm.log.Error(
 			"unsafe head is falling behind the unsafe interval",
@@ -189,7 +189,7 @@ func (hm *SequencerHealthMonitor) healthCheck(ctx context.Context) error {
 		return ErrSequencerNotHealthy
 	}
 
-	if hm.safeEnabled && calculateTimeDiff(now, uint64(status.SafeL2.Time)) > hm.safeInterval {
+	if hm.safeEnabled && calculateTimeDiff(now, status.SafeL2.Time.ToSeconds().ToUint64Sec()) > hm.safeInterval {
 		hm.log.Error(
 			"safe head is not progressing as expected",
 			"now", now,
