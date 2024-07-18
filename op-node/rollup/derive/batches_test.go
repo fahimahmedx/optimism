@@ -176,7 +176,7 @@ func TestValidBatch(t *testing.T) {
 		Hash:       testutils.RandomHash(rng),
 		Number:     42,
 		ParentHash: testutils.RandomHash(rng),
-		Time:       10_000,
+		Time:       timeint.FromUint64SecToSec(10_000),
 	}
 	l1Y := eth.L1BlockRef{
 		Hash:       testutils.RandomHash(rng),
@@ -194,7 +194,7 @@ func TestValidBatch(t *testing.T) {
 		Hash:           testutils.RandomHash(rng),
 		Number:         1000,
 		ParentHash:     testutils.RandomHash(rng),
-		Time:           10_000 + 24 + 6 - 1, // add one block, and you get ahead of next l1 block by more than the drift
+		Time:           timeint.FromUint64SecToMilli(10_000 + 24 + 6 - 1), // add one block, and you get ahead of next l1 block by more than the drift
 		L1Origin:       l1X.ID(),
 		SequenceNumber: 0,
 	}
@@ -1578,6 +1578,9 @@ func TestValidBatch(t *testing.T) {
 	}
 
 	runTestCase := func(t *testing.T, testCase ValidBatchTestCase) {
+		if testCase.Name == "sequencer time drift on changing epoch with empty txs" {
+			log.Info("test")
+		}
 		ctx := context.Background()
 		rcfg := defaultConf()
 		if mod := testCase.ConfigMod; mod != nil {
