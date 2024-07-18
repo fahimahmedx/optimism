@@ -917,7 +917,7 @@ func (srv *ReqRespServer) handleSyncRequest(ctx context.Context, stream network.
 
 	w := snappy.NewBufferedWriter(stream)
 
-	if srv.cfg.IsEcotone(timeint.FromUint64SecToSec(uint64(envelope.ExecutionPayload.Timestamp))) {
+	if srv.cfg.IsEcotone(timeint.FromHexUint64SecToMilli(envelope.ExecutionPayload.Timestamp)) {
 		// 0 - resultCode: success = 0
 		// 1:5 - version: 1 (little endian)
 		tmp := [5]byte{0, 1, 0, 0, 0}
