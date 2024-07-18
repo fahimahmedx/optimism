@@ -24,6 +24,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-node/rollup"
 	"github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum-optimism/optimism/op-service/testlog"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 type mockPayloadFn func(n uint64) (*eth.ExecutionPayloadEnvelope, error)
@@ -65,7 +66,7 @@ func (s *syncTestData) getBlockRef(i uint64) eth.L2BlockRef {
 		Hash:       s.payloads[i].ExecutionPayload.BlockHash,
 		Number:     uint64(s.payloads[i].ExecutionPayload.BlockNumber),
 		ParentHash: s.payloads[i].ExecutionPayload.ParentHash,
-		Time:       uint64(s.payloads[i].ExecutionPayload.Timestamp),
+		Time:       timeint.FromHexUint64SecToSec(s.payloads[i].ExecutionPayload.Timestamp),
 	}
 }
 
@@ -82,7 +83,7 @@ func setupSyncTestData(length uint64) (*rollup.Config, *syncTestData) {
 	}
 
 	ecotoneBlock := length / 2
-	ecotoneTime := cfg.Genesis.L2Time + ecotoneBlock*cfg.BlockTime
+	ecotoneTime := cfg.Genesis.L2Time + cfg.BlockTime.MultiplyInt(ecotoneBlock)
 	cfg.EcotoneTime = &ecotoneTime
 
 	// create some simple fake test blocks
@@ -95,7 +96,7 @@ func setupSyncTestData(length uint64) (*rollup.Config, *syncTestData) {
 
 	payloads[0].ExecutionPayload.BlockHash, _ = payloads[0].CheckBlockHash()
 	for i := uint64(1); i <= length; i++ {
-		timestamp := cfg.Genesis.L2Time + i*cfg.BlockTime
+		timestamp := cfg.Genesis.L2Time + cfg.BlockTime.MultiplyInt(i)
 		payload := &eth.ExecutionPayloadEnvelope{
 			ExecutionPayload: &eth.ExecutionPayload{
 				ParentHash:  payloads[i-1].ExecutionPayload.BlockHash,
@@ -183,7 +184,7 @@ func TestSinglePeerSync(t *testing.T) {
 		require.Equal(t, exp.ExecutionPayload.BlockHash, p.ExecutionPayload.BlockHash, "expecting the correct payload")
 
 		require.Equal(t, exp.ParentBeaconBlockRoot, p.ParentBeaconBlockRoot)
-		if cfg.IsEcotone(uint64(p.ExecutionPayload.Timestamp)) {
+		if cfg.IsEcotone(timeint.FromUint64SecToSec(uint64(p.ExecutionPayload.Timestamp))) {
 			require.NotNil(t, p.ParentBeaconBlockRoot)
 		} else {
 			require.Nil(t, p.ParentBeaconBlockRoot)
@@ -333,7 +334,7 @@ func TestMultiPeerSync(t *testing.T) {
 		require.True(t, ok, "expecting known payload")
 		require.Equal(t, exp.ExecutionPayload.BlockHash, p.ExecutionPayload.BlockHash, "expecting the correct payload")
 		require.Equal(t, exp.ParentBeaconBlockRoot, p.ParentBeaconBlockRoot)
-		if cfg.IsEcotone(uint64(p.ExecutionPayload.Timestamp)) {
+		if cfg.IsEcotone(timeint.FromUint64SecToSec(uint64(p.ExecutionPayload.Timestamp))) {
 			require.NotNil(t, p.ParentBeaconBlockRoot)
 		} else {
 			require.Nil(t, p.ParentBeaconBlockRoot)

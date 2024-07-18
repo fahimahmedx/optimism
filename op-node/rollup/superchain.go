@@ -9,6 +9,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 
 	"github.com/ethereum-optimism/optimism/op-service/eth"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 	"github.com/ethereum-optimism/superchain-registry/superchain"
 )
 
@@ -57,7 +58,7 @@ func LoadOPStackRollupConfig(chainID uint64) (*Config, error) {
 		}
 	}
 
-	regolithTime := uint64(0)
+	regolithTime := timeint.FromUint64SecToSec(0)
 	cfg := &Config{
 		Genesis: Genesis{
 			L1: eth.BlockID{
@@ -68,7 +69,7 @@ func LoadOPStackRollupConfig(chainID uint64) (*Config, error) {
 				Hash:   common.Hash(chConfig.Genesis.L2.Hash),
 				Number: chConfig.Genesis.L2.Number,
 			},
-			L2Time:       chConfig.Genesis.L2Time,
+			L2Time:       timeint.FromUint64SecToSec(chConfig.Genesis.L2Time),
 			SystemConfig: genesisSysConfig,
 		},
 		// The below chain parameters can be different per OP-Stack chain,
@@ -82,10 +83,10 @@ func LoadOPStackRollupConfig(chainID uint64) (*Config, error) {
 		L1ChainID:              new(big.Int).SetUint64(superChain.Config.L1.ChainID),
 		L2ChainID:              new(big.Int).SetUint64(chConfig.ChainID),
 		RegolithTime:           &regolithTime,
-		CanyonTime:             chConfig.CanyonTime,
-		DeltaTime:              chConfig.DeltaTime,
-		EcotoneTime:            chConfig.EcotoneTime,
-		FjordTime:              chConfig.FjordTime,
+		CanyonTime:             timeint.FromUint64PtrToSecPtr(chConfig.CanyonTime),
+		DeltaTime:              timeint.FromUint64PtrToSecPtr(chConfig.DeltaTime),
+		EcotoneTime:            timeint.FromUint64PtrToSecPtr(chConfig.EcotoneTime),
+		FjordTime:              timeint.FromUint64PtrToSecPtr(chConfig.FjordTime),
 		BatchInboxAddress:      common.Address(chConfig.BatchInboxAddr),
 		DepositContractAddress: common.Address(addrs.OptimismPortalProxy),
 		L1SystemConfigAddress:  common.Address(addrs.SystemConfigProxy),

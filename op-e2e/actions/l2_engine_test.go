@@ -24,6 +24,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum-optimism/optimism/op-service/sources"
 	"github.com/ethereum-optimism/optimism/op-service/testlog"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 func TestL2EngineAPI(gt *testing.T) {
@@ -129,7 +130,7 @@ func TestL2EngineAPIBlockBuilding(gt *testing.T) {
 		nextBlockTime := eth.Uint64Quantity(parent.Time) + 2
 
 		var w *types.Withdrawals
-		if sd.RollupCfg.IsCanyon(uint64(nextBlockTime)) {
+		if sd.RollupCfg.IsCanyon(timeint.FromHexUint64SecToSec(nextBlockTime)) {
 			w = &types.Withdrawals{}
 		}
 
@@ -155,7 +156,7 @@ func TestL2EngineAPIBlockBuilding(gt *testing.T) {
 			engine.ActL2IncludeTx(dp.Addresses.Alice)(t)
 		}
 
-		envelope, err := l2Cl.GetPayload(t.Ctx(), eth.PayloadInfo{ID: *fcRes.PayloadID, Timestamp: uint64(nextBlockTime)})
+		envelope, err := l2Cl.GetPayload(t.Ctx(), eth.PayloadInfo{ID: *fcRes.PayloadID, Timestamp: timeint.FromUint64SecToSec(uint64(nextBlockTime))})
 		payload := envelope.ExecutionPayload
 		require.NoError(t, err)
 		require.Equal(t, parent.Hash(), payload.ParentHash, "block builds on parent block")

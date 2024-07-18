@@ -14,6 +14,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-node/rollup"
 	"github.com/ethereum-optimism/optimism/op-node/rollup/derive"
 	"github.com/ethereum-optimism/optimism/op-service/eth"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 	"github.com/ethereum/go-ethereum/common"
 )
 
@@ -29,11 +30,11 @@ type ChannelWithMetadata struct {
 }
 
 type FrameWithMetadata struct {
-	TxHash         common.Hash  `json:"transaction_hash"`
-	InclusionBlock uint64       `json:"inclusion_block"`
-	Timestamp      uint64       `json:"timestamp"`
-	BlockHash      common.Hash  `json:"block_hash"`
-	Frame          derive.Frame `json:"frame"`
+	TxHash         common.Hash     `json:"transaction_hash"`
+	InclusionBlock uint64          `json:"inclusion_block"`
+	Timestamp      timeint.Seconds `json:"timestamp"`
+	BlockHash      common.Hash     `json:"block_hash"`
+	Frame          derive.Frame    `json:"frame"`
 }
 
 type Config struct {
@@ -41,8 +42,8 @@ type Config struct {
 	InDirectory   string
 	OutDirectory  string
 	L2ChainID     *big.Int
-	L2GenesisTime uint64
-	L2BlockTime   uint64
+	L2GenesisTime timeint.Seconds
+	L2BlockTime   timeint.Seconds
 }
 
 func LoadFrames(directory string, inbox common.Address) []FrameWithMetadata {

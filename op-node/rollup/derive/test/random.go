@@ -9,6 +9,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-node/rollup/derive"
 	"github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum-optimism/optimism/op-service/testutils"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/trie"
 )
@@ -19,7 +20,7 @@ func RandomL2Block(rng *rand.Rand, txCount int, t time.Time) (*types.Block, []*t
 	l1Block := types.NewBlock(testutils.RandomHeader(rng), nil, nil, nil, trie.NewStackTrie(nil))
 	rollupCfg := rollup.Config{}
 	if testutils.RandomBool(rng) {
-		t := uint64(0)
+		t := timeint.FromUint64SecToSec(0)
 		rollupCfg.RegolithTime = &t
 	}
 	l1InfoTx, err := derive.L1InfoDeposit(&rollupCfg, eth.SystemConfig{}, 0, eth.BlockToInfo(l1Block), 0)

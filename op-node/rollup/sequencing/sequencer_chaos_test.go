@@ -23,6 +23,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum-optimism/optimism/op-service/testlog"
 	"github.com/ethereum-optimism/optimism/op-service/testutils"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 // ChaoticEngine simulates what the Engine deriver would do, upon events from the sequencer.
@@ -62,8 +63,7 @@ func (c *ChaoticEngine) OnEvent(ev event.Event) bool {
 		// init new payload building ID
 		_, err := c.rng.Read(c.currentPayloadInfo.ID[:])
 		require.NoError(c.t, err)
-		c.currentPayloadInfo.Timestamp = uint64(x.Attributes.Attributes.Timestamp)
-
+		c.currentPayloadInfo.Timestamp = timeint.FromUint64SecToSec(uint64(x.Attributes.Attributes.Timestamp))
 		// Move forward time, to simulate time consumption
 		c.clockRandomIncrement(0, time.Millisecond*300)
 		if c.rng.Intn(10) == 0 { // 10% chance the block start is slow
@@ -173,7 +173,7 @@ func (c *ChaoticEngine) OnEvent(ev event.Event) bool {
 				Hash:           payloadEnvelope.ExecutionPayload.BlockHash,
 				Number:         uint64(payloadEnvelope.ExecutionPayload.BlockNumber),
 				ParentHash:     payloadEnvelope.ExecutionPayload.ParentHash,
-				Time:           uint64(payloadEnvelope.ExecutionPayload.Timestamp),
+				Time:           timeint.FromHexUint64SecToSec(payloadEnvelope.ExecutionPayload.Timestamp),
 				L1Origin:       l1Origin,
 				SequenceNumber: 0, // ignored
 			}
@@ -247,7 +247,7 @@ func testSequencerChaosWithSeed(t *testing.T, seed int64) {
 	logger := testlog.Logger(t, log.LevelCrit)
 	seq, deps := createSequencer(logger)
 	testClock := clock.NewSimpleClock()
-	testClock.SetTime(deps.cfg.Genesis.L2Time)
+	testClock.SetTime(uint64(deps.cfg.Genesis.L2Time))
 	seq.timeNow = testClock.Now
 	emitter := &testutils.MockEmitter{}
 	seq.AttachEmitter(emitter)
@@ -296,7 +296,7 @@ func testSequencerChaosWithSeed(t *testing.T, seed int64) {
 			Hash:       l2Head.L1Origin.Hash,
 			Number:     l2Head.L1Origin.Number,
 			ParentHash: l1BlockHash(l2Head.L1Origin.Number - 1),
-			Time:       genesisRef.Time + (l2Head.L1Origin.Number-genesisRef.L1Origin.Number)*12,
+			Time:       genesisRef.Time + timeint.FromUint64SecToSec(12).MultiplyInt(l2Head.L1Origin.Number-genesisRef.L1Origin.Number),
 		}
 		// Handle sequencer time drift, by proceeding to the next L1 origin when we run out of valid time
 		if l2Head.Time+deps.cfg.BlockTime > origin.Time+deps.cfg.MaxSequencerDrift {
@@ -378,7 +378,7 @@ func testSequencerChaosWithSeed(t *testing.T, seed int64) {
 
 	now := testClock.Now()
 	timeSinceGenesis := now.Sub(genesisTime)
-	idealTimeSinceGenesis := time.Duration(blocksSinceGenesis*deps.cfg.BlockTime) * time.Second
+	idealTimeSinceGenesis := time.Duration(deps.cfg.BlockTime.MultiplyInt(blocksSinceGenesis)) * time.Second
 	diff := timeSinceGenesis - idealTimeSinceGenesis
 	// If timing keeps adjusting, even with many errors over time, it should stay close to target.
 	if diff.Abs() > time.Second*20 {

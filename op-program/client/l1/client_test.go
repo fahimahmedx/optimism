@@ -17,6 +17,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum-optimism/optimism/op-service/testlog"
 	"github.com/ethereum-optimism/optimism/op-service/testutils"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 var _ derive.L1Fetcher = (*OracleL1Client)(nil)
@@ -176,7 +177,7 @@ func blockNum(num uint64) eth.BlockInfo {
 		InfoCoinbase:    common.Address{},
 		InfoRoot:        common.Hash{},
 		InfoNum:         num,
-		InfoTime:        num * 2,
+		InfoTime:        timeint.FromUint64SecToSec(num * 2),
 		InfoMixDigest:   [32]byte{},
 		InfoBaseFee:     nil,
 		InfoReceiptRoot: common.Hash{},

@@ -6,6 +6,7 @@ import (
 
 	"github.com/ethereum-optimism/optimism/op-node/rollup"
 	"github.com/ethereum-optimism/optimism/op-service/testutils"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 )
@@ -27,7 +28,7 @@ func RandomSingularBatch(rng *rand.Rand, txCount int, chainID *big.Int) *Singula
 		ParentHash:   testutils.RandomHash(rng),
 		EpochNum:     rollup.Epoch(1 + rng.Int63n(100_000_000)),
 		EpochHash:    testutils.RandomHash(rng),
-		Timestamp:    uint64(rng.Int63n(2_000_000_000)),
+		Timestamp:    timeint.FromUint64SecToSec(uint64(rng.Int63n(2_000_000_000))),
 		Transactions: txsEncoded,
 	}
 }

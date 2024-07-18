@@ -11,6 +11,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-node/rollup"
 	plasma "github.com/ethereum-optimism/optimism/op-plasma"
 	"github.com/ethereum-optimism/optimism/op-service/eth"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 type DataIter interface {
@@ -44,7 +45,7 @@ type DataSourceFactory struct {
 	fetcher       L1Fetcher
 	blobsFetcher  L1BlobsFetcher
 	plasmaFetcher PlasmaInputFetcher
-	ecotoneTime   *uint64
+	ecotoneTime   *timeint.Seconds
 }
 
 func NewDataSourceFactory(log log.Logger, cfg *rollup.Config, fetcher L1Fetcher, blobsFetcher L1BlobsFetcher, plasmaFetcher PlasmaInputFetcher) *DataSourceFactory {

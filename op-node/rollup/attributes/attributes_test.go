@@ -19,6 +19,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum-optimism/optimism/op-service/testlog"
 	"github.com/ethereum-optimism/optimism/op-service/testutils"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 func TestAttributesHandler(t *testing.T) {
@@ -79,9 +80,9 @@ func TestAttributesHandler(t *testing.T) {
 		},
 		BlockTime:     1,
 		SeqWindowSize: 2,
-		RegolithTime:  new(uint64),
-		CanyonTime:    new(uint64),
-		EcotoneTime:   new(uint64),
+		RegolithTime:  new(timeint.Seconds),
+		CanyonTime:    new(timeint.Seconds),
+		EcotoneTime:   new(timeint.Seconds),
 	}
 
 	a1L1Info, err := derive.L1InfoDepositBytes(cfg, cfg.Genesis.SystemConfig, 1, aL1Info, refA0.Time+cfg.BlockTime)

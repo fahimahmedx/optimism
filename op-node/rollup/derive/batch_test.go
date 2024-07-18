@@ -16,6 +16,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-node/rollup"
 	"github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum-optimism/optimism/op-service/testutils"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 func RandomRawSpanBatch(rng *rand.Rand, chainId *big.Int) *RawSpanBatch {
@@ -61,7 +62,7 @@ func RandomRawSpanBatch(rng *rand.Rand, chainId *big.Int) *RawSpanBatch {
 	}
 	rawSpanBatch := RawSpanBatch{
 		spanBatchPrefix: spanBatchPrefix{
-			relTimestamp:  uint64(rng.Uint32()),
+			relTimestamp:  timeint.FromUint64SecToSec(uint64(rng.Uint32())),
 			l1OriginNum:   rng.Uint64(),
 			parentCheck:   [20]byte(testutils.RandomData(rng, 20)),
 			l1OriginCheck: [20]byte(testutils.RandomData(rng, 20)),
@@ -78,7 +79,7 @@ func RandomRawSpanBatch(rng *rand.Rand, chainId *big.Int) *RawSpanBatch {
 
 func RandomValidConsecutiveSingularBatches(rng *rand.Rand, chainID *big.Int) []*SingularBatch {
 	blockCount := 2 + rng.Intn(128)
-	l2BlockTime := uint64(2)
+	l2BlockTime := timeint.FromUint64SecToSec(2)
 
 	var singularBatches []*SingularBatch
 	for i := 0; i < blockCount; i++ {
@@ -125,8 +126,8 @@ func mockL1Origin(rng *rand.Rand, rawSpanBatch *RawSpanBatch, singularBatches []
 
 func TestBatchRoundTrip(t *testing.T) {
 	rng := rand.New(rand.NewSource(0xdeadbeef))
-	blockTime := uint64(2)
-	genesisTimestamp := uint64(0)
+	blockTime := timeint.FromUint64SecToSec(2)
+	genesisTimestamp := timeint.FromUint64SecToSec(0)
 	chainID := new(big.Int).SetUint64(rng.Uint64())
 
 	batches := []*BatchData{
@@ -169,8 +170,8 @@ func TestBatchRoundTrip(t *testing.T) {
 
 func TestBatchRoundTripRLP(t *testing.T) {
 	rng := rand.New(rand.NewSource(0xbeefdead))
-	blockTime := uint64(2)
-	genesisTimestamp := uint64(0)
+	blockTime := timeint.FromUint64SecToSec(2)
+	genesisTimestamp := timeint.FromUint64SecToSec(0)
 	chainID := new(big.Int).SetUint64(rng.Uint64())
 
 	batches := []*BatchData{

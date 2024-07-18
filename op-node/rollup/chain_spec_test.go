@@ -6,12 +6,13 @@ import (
 
 	"github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum-optimism/optimism/op-service/testlog"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/exp/slog"
 )
 
-func u64ptr(n uint64) *uint64 {
+func secondsptr(n timeint.Seconds) *timeint.Seconds {
 	return &n
 }
 
@@ -39,11 +40,11 @@ var testConfig = Config{
 	ChannelTimeout:          300,
 	L1ChainID:               big.NewInt(1),
 	L2ChainID:               big.NewInt(10),
-	RegolithTime:            u64ptr(10),
-	CanyonTime:              u64ptr(20),
-	DeltaTime:               u64ptr(30),
-	EcotoneTime:             u64ptr(40),
-	FjordTime:               u64ptr(50),
+	RegolithTime:            secondsptr(10),
+	CanyonTime:              secondsptr(20),
+	DeltaTime:               secondsptr(30),
+	EcotoneTime:             secondsptr(40),
+	FjordTime:               secondsptr(50),
 	InteropTime:             nil,
 	BatchInboxAddress:       common.HexToAddress("0xff00000000000000000000000000000000000010"),
 	DepositContractAddress:  common.HexToAddress("0xbEb5Fc579115071764c7423A4f12eDde41f106Ed"),
@@ -56,7 +57,7 @@ func TestChainSpec_CanyonForkActivation(t *testing.T) {
 	c := NewChainSpec(&testConfig)
 	tests := []struct {
 		name     string
-		blockNum uint64
+		blockNum timeint.Seconds
 		isCanyon bool
 	}{
 		{"Genesis", 0, false},
@@ -80,7 +81,7 @@ func TestChainSpec_MaxChannelBankSize(t *testing.T) {
 	c := NewChainSpec(&testConfig)
 	tests := []struct {
 		name        string
-		blockNum    uint64
+		blockNum    timeint.Seconds
 		expected    uint64
 		description string
 	}{
@@ -103,7 +104,7 @@ func TestChainSpec_MaxRLPBytesPerChannel(t *testing.T) {
 	c := NewChainSpec(&testConfig)
 	tests := []struct {
 		name        string
-		blockNum    uint64
+		blockNum    timeint.Seconds
 		expected    uint64
 		description string
 	}{
@@ -126,8 +127,8 @@ func TestChainSpec_MaxSequencerDrift(t *testing.T) {
 	c := NewChainSpec(&testConfig)
 	tests := []struct {
 		name        string
-		blockNum    uint64
-		expected    uint64
+		blockNum    timeint.Seconds
+		expected    timeint.Seconds
 		description string
 	}{
 		{"Genesis", 0, testConfig.MaxSequencerDrift, "Before Fjord activation, should use rollup config value"},

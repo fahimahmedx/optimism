@@ -9,6 +9,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-program/client/l2/engineapi"
 	"github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum-optimism/optimism/op-service/testlog"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/log"
@@ -27,7 +28,7 @@ func RunEngineAPITests(t *testing.T, createBackend func(t *testing.T) engineapi.
 		api.assert.Equal(block.BlockHash, api.headHash(), "should create and import new block")
 	})
 
-	zero := uint64(0)
+	zero := timeint.FromUint64SecToSec(0)
 	rollupCfg := &rollup.Config{
 		RegolithTime: &zero, // activate Regolith upgrade
 	}

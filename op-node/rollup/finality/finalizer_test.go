@@ -17,12 +17,13 @@ import (
 	"github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum-optimism/optimism/op-service/testlog"
 	"github.com/ethereum-optimism/optimism/op-service/testutils"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 func TestEngineQueue_Finalize(t *testing.T) {
 	rng := rand.New(rand.NewSource(1234))
 
-	l1Time := uint64(2)
+	l1Time := timeint.FromUint64SecToSec(2)
 	refA := testutils.RandomBlockRef(rng)
 
 	refB := eth.L1BlockRef{

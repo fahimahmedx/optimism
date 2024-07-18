@@ -14,6 +14,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-challenger/game/fault/contracts"
 	metrics2 "github.com/ethereum-optimism/optimism/op-challenger/game/fault/contracts/metrics"
 	"github.com/ethereum-optimism/optimism/op-service/sources/batching"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -382,7 +383,7 @@ func TestConfirmationDepth(t *testing.T) {
 
 	// Wait enough time for the sequencer to submit a block with distance from L1 head, submit it,
 	// and for the slower verifier to read a full sequence window and cover confirmation depth for reading and some margin
-	<-time.After(time.Duration((cfg.DeployConfig.SequencerWindowSize+verConfDepth+3)*cfg.DeployConfig.L1BlockTime) * time.Second)
+	<-time.After(time.Duration(cfg.DeployConfig.L1BlockTime.MultiplyInt(cfg.DeployConfig.SequencerWindowSize+verConfDepth+3)) * time.Second)
 
 	// within a second, get both L1 and L2 verifier and sequencer block heads
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -394,11 +395,11 @@ func TestConfirmationDepth(t *testing.T) {
 	l2VerHead, err := l2Verif.BlockByNumber(ctx, nil)
 	require.NoError(t, err)
 
-	seqInfo, err := derive.L1BlockInfoFromBytes(sys.RollupConfig, l2SeqHead.Time(), l2SeqHead.Transactions()[0].Data())
+	seqInfo, err := derive.L1BlockInfoFromBytes(sys.RollupConfig, timeint.FromUint64SecToSec(l2SeqHead.Time()), l2SeqHead.Transactions()[0].Data())
 	require.NoError(t, err)
 	require.LessOrEqual(t, seqInfo.Number+seqConfDepth, l1Head.NumberU64(), "the seq L2 head block should have an origin older than the L1 head block by at least the sequencer conf depth")
 
-	verInfo, err := derive.L1BlockInfoFromBytes(sys.RollupConfig, l2VerHead.Time(), l2VerHead.Transactions()[0].Data())
+	verInfo, err := derive.L1BlockInfoFromBytes(sys.RollupConfig, timeint.FromUint64SecToSec(l2VerHead.Time()), l2VerHead.Transactions()[0].Data())
 	require.NoError(t, err)
 	require.LessOrEqual(t, verInfo.Number+verConfDepth, l1Head.NumberU64(), "the ver L2 head block should have an origin older than the L1 head block by at least the verifier conf depth")
 }
@@ -513,7 +514,7 @@ func TestMissingBatchE2E(t *testing.T) {
 	})
 
 	// Wait until the block it was first included in shows up in the safe chain on the verifier
-	_, err = geth.WaitForBlock(receipt.BlockNumber, l2Verif, time.Duration((sys.RollupConfig.SeqWindowSize+4)*cfg.DeployConfig.L1BlockTime)*time.Second)
+	_, err = geth.WaitForBlock(receipt.BlockNumber, l2Verif, time.Duration(cfg.DeployConfig.L1BlockTime.MultiplyInt(sys.RollupConfig.SeqWindowSize+4))*time.Second)
 	require.Nil(t, err, "Waiting for block on verifier")
 
 	// Assert that the transaction is not found on the verifier
@@ -550,10 +551,11 @@ func L1InfoFromState(ctx context.Context, contract *bindings.L1Block, l2Number *
 		return nil, fmt.Errorf("failed to get number: %w", err)
 	}
 
-	out.Time, err = contract.Timestamp(&opts)
+	time, err := contract.Timestamp(&opts)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get timestamp: %w", err)
 	}
+	out.Time = timeint.FromUint64SecToSec(time)
 
 	out.BaseFee, err = contract.Basefee(&opts)
 	if err != nil {
@@ -968,11 +970,11 @@ func TestL1InfoContract(t *testing.T) {
 		var txList, stateList []*derive.L1BlockInfo
 		for b := start; ; {
 			var infoFromTx *derive.L1BlockInfo
-			infoFromTx, err := derive.L1BlockInfoFromBytes(sys.RollupConfig, b.Time(), b.Transactions()[0].Data())
+			infoFromTx, err := derive.L1BlockInfoFromBytes(sys.RollupConfig, timeint.FromUint64SecToSec(b.Time()), b.Transactions()[0].Data())
 			require.NoError(t, err)
 			txList = append(txList, infoFromTx)
 
-			ecotone := sys.RollupConfig.IsEcotone(b.Time()) && !sys.RollupConfig.IsEcotoneActivationBlock(b.Time())
+			ecotone := sys.RollupConfig.IsEcotone(timeint.FromUint64SecToSec(b.Time())) && !sys.RollupConfig.IsEcotoneActivationBlock(timeint.FromUint64SecToSec(b.Time()))
 			infoFromState, err := L1InfoFromState(ctx, contract, b.Number(), ecotone)
 			require.Nil(t, err)
 			stateList = append(stateList, infoFromState)
@@ -997,13 +999,13 @@ func TestL1InfoContract(t *testing.T) {
 
 		l1blocks[h] = &derive.L1BlockInfo{
 			Number:         b.NumberU64(),
-			Time:           b.Time(),
+			Time:           timeint.FromUint64SecToSec(b.Time()),
 			BaseFee:        b.BaseFee(),
 			BlockHash:      h,
 			SequenceNumber: 0, // ignored, will be overwritten
 			BatcherAddr:    sys.RollupConfig.Genesis.SystemConfig.BatcherAddr,
 		}
-		if sys.RollupConfig.IsEcotone(b.Time()) && !sys.RollupConfig.IsEcotoneActivationBlock(b.Time()) {
+		if sys.RollupConfig.IsEcotone(timeint.FromUint64SecToSec(b.Time())) && !sys.RollupConfig.IsEcotoneActivationBlock(timeint.FromUint64SecToSec(b.Time())) {
 			scalars, err := sys.RollupConfig.Genesis.SystemConfig.EcotoneScalars()
 			require.NoError(t, err)
 			l1blocks[h].BlobBaseFeeScalar = scalars.BlobBaseFeeScalar
@@ -1260,7 +1262,7 @@ func testFees(t *testing.T, cfg SystemConfig) {
 	gpoContract, err := bindings.NewGasPriceOracle(predeploys.GasPriceOracleAddr, l2Seq)
 	require.Nil(t, err)
 
-	if !sys.RollupConfig.IsEcotone(sys.L2GenesisCfg.Timestamp) {
+	if !sys.RollupConfig.IsEcotone(timeint.FromUint64SecToSec(sys.L2GenesisCfg.Timestamp)) {
 		overhead, err := gpoContract.Overhead(&bind.CallOpts{})
 		require.Nil(t, err, "reading gpo overhead")
 		require.Equal(t, overhead.Uint64(), cfg.DeployConfig.GasPriceOracleOverhead, "wrong gpo overhead")
@@ -1364,17 +1366,17 @@ func testFees(t *testing.T, cfg SystemConfig) {
 
 	gpoEcotone, err := gpoContract.IsEcotone(nil)
 	require.NoError(t, err)
-	require.Equal(t, sys.RollupConfig.IsEcotone(header.Time), gpoEcotone, "GPO and chain must have same ecotone view")
+	require.Equal(t, sys.RollupConfig.IsEcotone(timeint.FromUint64SecToSec(header.Time)), gpoEcotone, "GPO and chain must have same ecotone view")
 
 	gpoFjord, err := gpoContract.IsFjord(nil)
 	require.NoError(t, err)
-	require.Equal(t, sys.RollupConfig.IsFjord(header.Time), gpoFjord, "GPO and chain must have same fjord view")
+	require.Equal(t, sys.RollupConfig.IsFjord(timeint.FromUint64SecToSec(header.Time)), gpoFjord, "GPO and chain must have same fjord view")
 
 	gpoL1Fee, err := gpoContract.GetL1Fee(&bind.CallOpts{}, bytes)
 	require.Nil(t, err)
 
 	adjustedGPOFee := gpoL1Fee
-	if sys.RollupConfig.IsFjord(header.Time) {
+	if sys.RollupConfig.IsFjord(timeint.FromUint64SecToSec(header.Time)) {
 		// The fastlz size of the transaction is 102 bytes
 		require.Equal(t, uint64(102), tx.RollupCostData().FastLzSize)
 		// Which results in both the fjord cost function and GPO using the minimum value for the fastlz regression:
@@ -1384,7 +1386,7 @@ func testFees(t *testing.T, cfg SystemConfig) {
 		require.Greater(t, types.MinTransactionSize.Uint64(), uint64(99))
 		// Because of this, we don't need to do any adjustment as the GPO and cost func are both bounded to the minimum value.
 		// However, if the fastlz regression output is ever larger than the minimum, this will require an adjustment.
-	} else if sys.RollupConfig.IsRegolith(header.Time) {
+	} else if sys.RollupConfig.IsRegolith(timeint.FromUint64SecToSec(header.Time)) {
 		// if post-regolith, adjust the GPO fee by removing the overhead it adds because of signature data
 		artificialGPOOverhead := big.NewInt(68 * 16) // it adds 68 bytes to cover signature and RLP data
 		l1BaseFee := big.NewInt(7)                   // we assume the L1 basefee is the minimum, 7
@@ -1394,7 +1396,7 @@ func testFees(t *testing.T, cfg SystemConfig) {
 	require.Equal(t, l1Fee, adjustedGPOFee, "GPO reports L1 fee mismatch")
 
 	require.Equal(t, receipt.L1Fee, l1Fee, "l1 fee in receipt is correct")
-	if !sys.RollupConfig.IsEcotone(header.Time) { // FeeScalar receipt attribute is removed as of Ecotone
+	if !sys.RollupConfig.IsEcotone(timeint.FromUint64SecToSec(header.Time)) { // FeeScalar receipt attribute is removed as of Ecotone
 		require.Equal(t,
 			new(big.Float).Mul(
 				new(big.Float).SetInt(l1Header.BaseFee),

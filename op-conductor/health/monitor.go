@@ -12,6 +12,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-node/p2p"
 	"github.com/ethereum-optimism/optimism/op-node/rollup"
 	"github.com/ethereum-optimism/optimism/op-service/dial"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 var (
@@ -150,7 +151,7 @@ func (hm *SequencerHealthMonitor) healthCheck(ctx context.Context) error {
 		blockDiff = status.UnsafeL2.Number - hm.lastSeenUnsafeNum
 		// how many blocks do we expect to see, minus 1 to account for edge case with respect to time.
 		// for example, if diff = 2.001s and block time = 2s, expecting to see 1 block could potentially cause sequencer to be considered unhealthy.
-		expectedBlocks = timeDiff / hm.rollupCfg.BlockTime
+		expectedBlocks = uint64(timeint.FromUint64SecToSec(timeDiff) / hm.rollupCfg.BlockTime)
 		if expectedBlocks > 0 {
 			expectedBlocks--
 		}
@@ -160,7 +161,7 @@ func (hm *SequencerHealthMonitor) healthCheck(ctx context.Context) error {
 		hm.lastSeenUnsafeTime = now
 	}
 
-	if timeDiff > hm.rollupCfg.BlockTime && expectedBlocks > blockDiff {
+	if timeint.FromUint64SecToSec(timeDiff) > hm.rollupCfg.BlockTime && expectedBlocks > blockDiff {
 		hm.log.Error(
 			"unsafe head is not progressing as expected",
 			"now", now,
@@ -175,7 +176,7 @@ func (hm *SequencerHealthMonitor) healthCheck(ctx context.Context) error {
 		return ErrSequencerNotHealthy
 	}
 
-	curUnsafeTimeDiff := calculateTimeDiff(now, status.UnsafeL2.Time)
+	curUnsafeTimeDiff := calculateTimeDiff(now, uint64(status.UnsafeL2.Time))
 	if curUnsafeTimeDiff > hm.unsafeInterval {
 		hm.log.Error(
 			"unsafe head is falling behind the unsafe interval",
@@ -188,7 +189,7 @@ func (hm *SequencerHealthMonitor) healthCheck(ctx context.Context) error {
 		return ErrSequencerNotHealthy
 	}
 
-	if hm.safeEnabled && calculateTimeDiff(now, status.SafeL2.Time) > hm.safeInterval {
+	if hm.safeEnabled && calculateTimeDiff(now, uint64(status.SafeL2.Time)) > hm.safeInterval {
 		hm.log.Error(
 			"safe head is not progressing as expected",
 			"now", now,

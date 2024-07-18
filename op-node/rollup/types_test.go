@@ -15,6 +15,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 
 	"github.com/ethereum-optimism/optimism/op-service/eth"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 func randConfig() *Config {
@@ -31,7 +32,7 @@ func randConfig() *Config {
 		Genesis: Genesis{
 			L1:     eth.BlockID{Hash: randHash(), Number: 424242},
 			L2:     eth.BlockID{Hash: randHash(), Number: 1337},
-			L2Time: uint64(time.Now().Unix()),
+			L2Time: timeint.FromUint64SecToSec(uint64(time.Now().Unix())),
 			SystemConfig: eth.SystemConfig{
 				BatcherAddr: randAddr(),
 				Overhead:    randHash(),
@@ -165,13 +166,13 @@ func TestRandomConfigDescription(t *testing.T) {
 	})
 	t.Run("regolith genesis", func(t *testing.T) {
 		config := randConfig()
-		config.RegolithTime = new(uint64)
+		config.RegolithTime = new(timeint.Seconds)
 		out := config.Description(nil)
 		require.Contains(t, out, "Regolith: @ genesis")
 	})
 	t.Run("regolith date", func(t *testing.T) {
 		config := randConfig()
-		x := uint64(1677119335)
+		x := timeint.FromUint64SecToSec(1677119335)
 		config.RegolithTime = &x
 		out := config.Description(nil)
 		// Don't check human-readable part of the date, it's timezone-dependent.
@@ -184,60 +185,60 @@ func TestRandomConfigDescription(t *testing.T) {
 func TestActivations(t *testing.T) {
 	for _, test := range []struct {
 		name           string
-		setUpgradeTime func(t *uint64, c *Config)
-		checkEnabled   func(t uint64, c *Config) bool
+		setUpgradeTime func(t *timeint.Seconds, c *Config)
+		checkEnabled   func(t timeint.Seconds, c *Config) bool
 	}{
 		{
 			name: "Regolith",
-			setUpgradeTime: func(t *uint64, c *Config) {
+			setUpgradeTime: func(t *timeint.Seconds, c *Config) {
 				c.RegolithTime = t
 			},
-			checkEnabled: func(t uint64, c *Config) bool {
+			checkEnabled: func(t timeint.Seconds, c *Config) bool {
 				return c.IsRegolith(t)
 			},
 		},
 		{
 			name: "Canyon",
-			setUpgradeTime: func(t *uint64, c *Config) {
+			setUpgradeTime: func(t *timeint.Seconds, c *Config) {
 				c.CanyonTime = t
 			},
-			checkEnabled: func(t uint64, c *Config) bool {
+			checkEnabled: func(t timeint.Seconds, c *Config) bool {
 				return c.IsCanyon(t)
 			},
 		},
 		{
 			name: "Delta",
-			setUpgradeTime: func(t *uint64, c *Config) {
+			setUpgradeTime: func(t *timeint.Seconds, c *Config) {
 				c.DeltaTime = t
 			},
-			checkEnabled: func(t uint64, c *Config) bool {
+			checkEnabled: func(t timeint.Seconds, c *Config) bool {
 				return c.IsDelta(t)
 			},
 		},
 		{
 			name: "Ecotone",
-			setUpgradeTime: func(t *uint64, c *Config) {
+			setUpgradeTime: func(t *timeint.Seconds, c *Config) {
 				c.EcotoneTime = t
 			},
-			checkEnabled: func(t uint64, c *Config) bool {
+			checkEnabled: func(t timeint.Seconds, c *Config) bool {
 				return c.IsEcotone(t)
 			},
 		},
 		{
 			name: "Fjord",
-			setUpgradeTime: func(t *uint64, c *Config) {
+			setUpgradeTime: func(t *timeint.Seconds, c *Config) {
 				c.FjordTime = t
 			},
-			checkEnabled: func(t uint64, c *Config) bool {
+			checkEnabled: func(t timeint.Seconds, c *Config) bool {
 				return c.IsFjord(t)
 			},
 		},
 		{
 			name: "Interop",
-			setUpgradeTime: func(t *uint64, c *Config) {
+			setUpgradeTime: func(t *timeint.Seconds, c *Config) {
 				c.InteropTime = t
 			},
-			checkEnabled: func(t uint64, c *Config) bool {
+			checkEnabled: func(t timeint.Seconds, c *Config) bool {
 				return c.IsInterop(t)
 			},
 		},
@@ -249,11 +250,11 @@ func TestActivations(t *testing.T) {
 			require.False(t, tt.checkEnabled(0, config), "false if nil time, even if checking 0")
 			require.False(t, tt.checkEnabled(123456, config), "false if nil time")
 
-			test.setUpgradeTime(new(uint64), config)
+			test.setUpgradeTime(new(timeint.Seconds), config)
 			require.True(t, tt.checkEnabled(0, config), "true at zero")
 			require.True(t, tt.checkEnabled(123456, config), "true for any")
 
-			x := uint64(123)
+			x := timeint.FromUint64SecToSec(123)
 			test.setUpgradeTime(&x, config)
 			require.False(t, tt.checkEnabled(0, config))
 			require.False(t, tt.checkEnabled(122, config))
@@ -478,7 +479,7 @@ func TestConfig_Check(t *testing.T) {
 		{
 			name: "PriorForkMissing",
 			modifier: func(cfg *Config) {
-				ecotoneTime := uint64(1)
+				ecotoneTime := timeint.FromUint64SecToSec(1)
 				cfg.EcotoneTime = &ecotoneTime
 			},
 			expectedErr: fmt.Errorf("fork ecotone set (to 1), but prior fork delta missing"),
@@ -486,8 +487,8 @@ func TestConfig_Check(t *testing.T) {
 		{
 			name: "PriorForkHasHigherOffset",
 			modifier: func(cfg *Config) {
-				regolithTime := uint64(2)
-				canyonTime := uint64(1)
+				regolithTime := timeint.FromUint64SecToSec(2)
+				canyonTime := timeint.FromUint64SecToSec(1)
 				cfg.RegolithTime = &regolithTime
 				cfg.CanyonTime = &canyonTime
 			},
@@ -496,10 +497,10 @@ func TestConfig_Check(t *testing.T) {
 		{
 			name: "PriorForkOK",
 			modifier: func(cfg *Config) {
-				regolithTime := uint64(1)
-				canyonTime := uint64(2)
-				deltaTime := uint64(3)
-				ecotoneTime := uint64(4)
+				regolithTime := timeint.FromUint64SecToSec(1)
+				canyonTime := timeint.FromUint64SecToSec(2)
+				deltaTime := timeint.FromUint64SecToSec(3)
+				ecotoneTime := timeint.FromUint64SecToSec(4)
 				cfg.RegolithTime = &regolithTime
 				cfg.CanyonTime = &canyonTime
 				cfg.DeltaTime = &deltaTime
@@ -524,11 +525,11 @@ func TestTimestampForBlock(t *testing.T) {
 
 	tests := []struct {
 		name              string
-		genesisTime       uint64
+		genesisTime       timeint.Seconds
 		genesisBlock      uint64
-		blockTime         uint64
+		blockTime         timeint.Seconds
 		blockNum          uint64
-		expectedBlockTime uint64
+		expectedBlockTime timeint.Seconds
 	}{
 		{
 			name:              "FirstBlock",
@@ -573,8 +574,8 @@ func TestForkchoiceUpdatedVersion(t *testing.T) {
 	config := randConfig()
 	tests := []struct {
 		name           string
-		canyonTime     uint64
-		ecotoneTime    uint64
+		canyonTime     timeint.Seconds
+		ecotoneTime    timeint.Seconds
 		attrs          *eth.PayloadAttributes
 		expectedMethod eth.EngineAPIMethod
 	}{
@@ -620,12 +621,12 @@ func TestForkchoiceUpdatedVersion(t *testing.T) {
 
 func TestNewPayloadVersion(t *testing.T) {
 	config := randConfig()
-	canyonTime := uint64(0)
+	canyonTime := timeint.FromUint64SecToSec(0)
 	config.CanyonTime = &canyonTime
 	tests := []struct {
 		name           string
-		ecotoneTime    uint64
-		payloadTime    uint64
+		ecotoneTime    timeint.Seconds
+		payloadTime    timeint.Seconds
 		expectedMethod eth.EngineAPIMethod
 	}{
 		{
@@ -653,12 +654,12 @@ func TestNewPayloadVersion(t *testing.T) {
 
 func TestGetPayloadVersion(t *testing.T) {
 	config := randConfig()
-	canyonTime := uint64(0)
+	canyonTime := timeint.FromUint64SecToSec(0)
 	config.CanyonTime = &canyonTime
 	tests := []struct {
 		name           string
-		ecotoneTime    uint64
-		payloadTime    uint64
+		ecotoneTime    timeint.Seconds
+		payloadTime    timeint.Seconds
 		expectedMethod eth.EngineAPIMethod
 	}{
 		{

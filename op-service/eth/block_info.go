@@ -3,6 +3,7 @@ package eth
 import (
 	"math/big"
 
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/consensus/misc/eip4844"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -15,7 +16,7 @@ type BlockInfo interface {
 	Coinbase() common.Address
 	Root() common.Hash // state-root
 	NumberU64() uint64
-	Time() uint64
+	Time() timeint.Seconds
 	// MixDigest field, reused for randomness after The Merge (Bellatrix hardfork)
 	MixDigest() common.Hash
 	BaseFee() *big.Int
@@ -72,8 +73,13 @@ func (b blockInfo) ParentBeaconRoot() *common.Hash {
 	return b.Block.BeaconRoot()
 }
 
+// This is an adapter function
+func (b blockInfo) Time() timeint.Seconds {
+	return timeint.FromUint64SecToSec((b.Block.Time()))
+}
+
 func BlockToInfo(b *types.Block) BlockInfo {
-	return blockInfo{b}
+	return blockInfo{b} // Need to use adapter to fix this
 }
 
 var _ BlockInfo = (*blockInfo)(nil)
@@ -98,8 +104,8 @@ func (h headerBlockInfo) NumberU64() uint64 {
 	return h.Header.Number.Uint64()
 }
 
-func (h headerBlockInfo) Time() uint64 {
-	return h.Header.Time
+func (h headerBlockInfo) Time() timeint.Seconds {
+	return timeint.FromUint64SecToSec(h.Header.Time)
 }
 
 func (h headerBlockInfo) MixDigest() common.Hash {

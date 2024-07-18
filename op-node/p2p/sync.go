@@ -25,6 +25,7 @@ import (
 
 	"github.com/ethereum-optimism/optimism/op-node/rollup"
 	"github.com/ethereum-optimism/optimism/op-service/eth"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 // StreamCtxFn provides a new context to use when handling stream requests
@@ -894,7 +895,7 @@ func (srv *ReqRespServer) handleSyncRequest(ctx context.Context, stream network.
 	if req < srv.cfg.Genesis.L2.Number {
 		return req, fmt.Errorf("cannot serve request for L2 block %d before genesis %d: %w", req, srv.cfg.Genesis.L2.Number, invalidRequestErr)
 	}
-	max, err := srv.cfg.TargetBlockNumber(uint64(time.Now().Unix()))
+	max, err := srv.cfg.TargetBlockNumber(timeint.FromUint64SecToSec(uint64(time.Now().Unix())))
 	if err != nil {
 		return req, fmt.Errorf("cannot determine max target block number to verify request: %w", invalidRequestErr)
 	}
@@ -916,7 +917,7 @@ func (srv *ReqRespServer) handleSyncRequest(ctx context.Context, stream network.
 
 	w := snappy.NewBufferedWriter(stream)
 
-	if srv.cfg.IsEcotone(uint64(envelope.ExecutionPayload.Timestamp)) {
+	if srv.cfg.IsEcotone(timeint.FromUint64SecToSec(uint64(envelope.ExecutionPayload.Timestamp))) {
 		// 0 - resultCode: success = 0
 		// 1:5 - version: 1 (little endian)
 		tmp := [5]byte{0, 1, 0, 0, 0}

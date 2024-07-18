@@ -22,6 +22,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-node/rollup/sequencing"
 	"github.com/ethereum-optimism/optimism/op-node/rollup/sync"
 	"github.com/ethereum-optimism/optimism/op-service/eth"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 // MockL1OriginSelector is a shim to override the origin as sequencer, so we can force it to stay on an older origin.
@@ -181,7 +182,7 @@ func (s *L2Sequencer) ActBuildToL1HeadExclUnsafe(t Testing) {
 	}
 }
 
-func (s *L2Sequencer) ActBuildL2ToTime(t Testing, target uint64) {
+func (s *L2Sequencer) ActBuildL2ToTime(t Testing, target timeint.Seconds) {
 	for s.L2Unsafe().Time < target {
 		s.ActL2StartBlock(t)
 		s.ActL2EndBlock(t)

@@ -6,6 +6,7 @@ import (
 	"math/rand"
 
 	"github.com/ethereum-optimism/optimism/op-service/eth"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 )
@@ -20,7 +21,7 @@ type MockBlockInfo struct {
 	InfoCoinbase    common.Address
 	InfoRoot        common.Hash
 	InfoNum         uint64
-	InfoTime        uint64
+	InfoTime        timeint.Seconds
 	InfoMixDigest   [32]byte
 	InfoBaseFee     *big.Int
 	InfoBlobBaseFee *big.Int
@@ -52,7 +53,7 @@ func (l *MockBlockInfo) NumberU64() uint64 {
 	return l.InfoNum
 }
 
-func (l *MockBlockInfo) Time() uint64 {
+func (l *MockBlockInfo) Time() timeint.Seconds {
 	return l.InfoTime
 }
 
@@ -108,7 +109,7 @@ func RandomBlockInfo(rng *rand.Rand) *MockBlockInfo {
 	return &MockBlockInfo{
 		InfoParentHash:  RandomHash(rng),
 		InfoNum:         rng.Uint64(),
-		InfoTime:        rng.Uint64(),
+		InfoTime:        timeint.FromUint64SecToSec(rng.Uint64()),
 		InfoHash:        RandomHash(rng),
 		InfoBaseFee:     big.NewInt(rng.Int63n(1000_000 * 1e9)), // a million GWEI
 		InfoBlobBaseFee: big.NewInt(rng.Int63n(2000_000 * 1e9)), // two million GWEI

@@ -39,6 +39,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-service/predeploys"
 	"github.com/ethereum-optimism/optimism/op-service/retry"
 	"github.com/ethereum-optimism/optimism/op-service/sources"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 	"github.com/ethereum-optimism/optimism/op-service/txmgr"
 )
 
@@ -341,10 +342,10 @@ func check4788Contract(ctx context.Context, env *actionEnv) error {
 	if err != nil {
 		return fmt.Errorf("config retrieval failed: %w", err)
 	}
-	t := head.Time
-	alignment := head.Time % conf.BlockTime
+	t := timeint.FromUint64SecToSec(head.Time)
+	alignment := timeint.FromUint64SecToSec(head.Time) % conf.BlockTime
 	for i := 0; i < 20; i++ {
-		ti := t - uint64(i)
+		ti := t - timeint.FromUint64SecToSec(uint64(i))
 		if !conf.IsEcotone(ti) {
 			continue
 		}
@@ -362,7 +363,7 @@ func check4788Contract(ctx context.Context, env *actionEnv) error {
 			}
 			revert = revert || len(code) == 0
 		}
-		input := new(uint256.Int).SetUint64(ti).Bytes32()
+		input := new(uint256.Int).SetUint64(ti.ToUint64Sec()).Bytes32()
 		if err := execTx(ctx, &predeploys.EIP4788ContractAddr, input[:], revert, env); err != nil {
 			return fmt.Errorf("failed at t = %d", ti)
 		}
@@ -659,7 +660,7 @@ func checkUpgradeTxs(ctx context.Context, env *actionEnv) error {
 	}
 
 	activationBlockNum := rollupCfg.Genesis.L2.Number +
-		((*rollupCfg.EcotoneTime - rollupCfg.Genesis.L2Time) / rollupCfg.BlockTime)
+		uint64((*rollupCfg.EcotoneTime-rollupCfg.Genesis.L2Time)/rollupCfg.BlockTime)
 	env.log.Info("upgrade block num", "num", activationBlockNum)
 	l2RPC := client.NewBaseRPCClient(env.l2.Client())
 	l2EthCl, err := sources.NewL2Client(l2RPC, env.log, nil,

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/ethereum-optimism/optimism/op-service/predeploys"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core"
@@ -61,13 +62,13 @@ func NewL2Genesis(config *DeployConfig, block *types.Block) (*core.Genesis, erro
 		TerminalTotalDifficulty:       big.NewInt(0),
 		TerminalTotalDifficultyPassed: true,
 		BedrockBlock:                  new(big.Int).SetUint64(uint64(config.L2GenesisBlockNumber)),
-		RegolithTime:                  config.RegolithTime(block.Time()),
-		CanyonTime:                    config.CanyonTime(block.Time()),
-		ShanghaiTime:                  config.CanyonTime(block.Time()),
-		CancunTime:                    config.EcotoneTime(block.Time()),
-		EcotoneTime:                   config.EcotoneTime(block.Time()),
-		FjordTime:                     config.FjordTime(block.Time()),
-		InteropTime:                   config.InteropTime(block.Time()),
+		RegolithTime:                  config.RegolithTime(timeint.FromUint64SecToSec(block.Time())).FromSecPtrToUint64Ptr(),
+		CanyonTime:                    config.CanyonTime(timeint.FromUint64SecToSec(block.Time())).FromSecPtrToUint64Ptr(),
+		ShanghaiTime:                  config.CanyonTime(timeint.FromUint64SecToSec(block.Time())).FromSecPtrToUint64Ptr(),
+		CancunTime:                    config.EcotoneTime(timeint.FromUint64SecToSec(block.Time())).FromSecPtrToUint64Ptr(),
+		EcotoneTime:                   config.EcotoneTime(timeint.FromUint64SecToSec(block.Time())).FromSecPtrToUint64Ptr(),
+		FjordTime:                     config.FjordTime(timeint.FromUint64SecToSec(block.Time())).FromSecPtrToUint64Ptr(),
+		InteropTime:                   config.InteropTime(timeint.FromUint64SecToSec(block.Time())).FromSecPtrToUint64Ptr(),
 		Optimism: &params.OptimismConfig{
 			EIP1559Denominator:       eip1559Denom,
 			EIP1559Elasticity:        eip1559Elasticity,
@@ -154,7 +155,7 @@ func NewL1Genesis(config *DeployConfig) (*core.Genesis, error) {
 		// warning: clique has an overly strict block header timestamp check against the system wallclock,
 		// causing blocks to get scheduled as "future block" and not get mined instantly when produced.
 		chainConfig.Clique = &params.CliqueConfig{
-			Period: config.L1BlockTime,
+			Period: uint64(config.L1BlockTime),
 			Epoch:  30000,
 		}
 		extraData = append(append(make([]byte, 32), config.CliqueSignerAddress[:]...), make([]byte, crypto.SignatureLength)...)

@@ -6,6 +6,7 @@ import (
 
 	"github.com/ethereum-optimism/optimism/op-node/rollup"
 	"github.com/ethereum-optimism/optimism/op-service/eth"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/require"
 )
@@ -61,11 +62,11 @@ var mainnetCfg = rollup.Config{
 	BatchInboxAddress:       common.HexToAddress("0xff00000000000000000000000000000000000010"),
 	DepositContractAddress:  common.HexToAddress("0xbEb5Fc579115071764c7423A4f12eDde41f106Ed"),
 	L1SystemConfigAddress:   common.HexToAddress("0x229047fed2591dbec1eF1118d64F7aF3dB9EB290"),
-	RegolithTime:            u64Ptr(0),
-	CanyonTime:              u64Ptr(1704992401),
-	DeltaTime:               u64Ptr(1708560000),
-	EcotoneTime:             u64Ptr(1710374401),
-	FjordTime:               u64Ptr(1720627201),
+	RegolithTime:            secondsPtr(0),
+	CanyonTime:              secondsPtr(1704992401),
+	DeltaTime:               secondsPtr(1708560000),
+	EcotoneTime:             secondsPtr(1710374401),
+	FjordTime:               secondsPtr(1720627201),
 	ProtocolVersionsAddress: common.HexToAddress("0x8062AbC286f5e7D9428a0Ccb9AbD71e50d93b935"),
 }
 
@@ -96,11 +97,11 @@ var sepoliaCfg = rollup.Config{
 	BatchInboxAddress:       common.HexToAddress("0xff00000000000000000000000000000011155420"),
 	DepositContractAddress:  common.HexToAddress("0x16fc5058f25648194471939df75cf27a2fdc48bc"),
 	L1SystemConfigAddress:   common.HexToAddress("0x034edd2a225f7f429a63e0f1d2084b9e0a93b538"),
-	RegolithTime:            u64Ptr(0),
-	CanyonTime:              u64Ptr(1699981200),
-	DeltaTime:               u64Ptr(1703203200),
-	EcotoneTime:             u64Ptr(1708534800),
-	FjordTime:               u64Ptr(1716998400),
+	RegolithTime:            secondsPtr(0),
+	CanyonTime:              secondsPtr(1699981200),
+	DeltaTime:               secondsPtr(1703203200),
+	EcotoneTime:             secondsPtr(1708534800),
+	FjordTime:               secondsPtr(1716998400),
 	ProtocolVersionsAddress: common.HexToAddress("0x79ADD5713B383DAa0a138d3C4780C7A1804a8090"),
 }
 
@@ -131,14 +132,14 @@ var sepoliaDev0Cfg = rollup.Config{
 	BatchInboxAddress:       common.HexToAddress("0xff00000000000000000000000000000011155421"),
 	DepositContractAddress:  common.HexToAddress("0x76114bd29dFcC7a9892240D317E6c7C2A281Ffc6"),
 	L1SystemConfigAddress:   common.HexToAddress("0xa6b72407e2dc9EBF84b839B69A24C88929cf20F7"),
-	RegolithTime:            u64Ptr(0),
-	CanyonTime:              u64Ptr(0),
-	DeltaTime:               u64Ptr(0),
-	EcotoneTime:             u64Ptr(1706634000),
-	FjordTime:               u64Ptr(1715961600),
+	RegolithTime:            secondsPtr(0),
+	CanyonTime:              secondsPtr(0),
+	DeltaTime:               secondsPtr(0),
+	EcotoneTime:             secondsPtr(1706634000),
+	FjordTime:               secondsPtr(1715961600),
 	ProtocolVersionsAddress: common.HexToAddress("0x252CbE9517F731C618961D890D534183822dcC8d"),
 }
 
-func u64Ptr(v uint64) *uint64 {
+func secondsPtr(v timeint.Seconds) *timeint.Seconds {
 	return &v
 }

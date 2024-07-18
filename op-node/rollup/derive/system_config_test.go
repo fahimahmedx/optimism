@@ -12,6 +12,7 @@ import (
 
 	"github.com/ethereum-optimism/optimism/op-node/rollup"
 	"github.com/ethereum-optimism/optimism/op-service/eth"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 var (
@@ -46,8 +47,8 @@ func TestProcessSystemConfigUpdateLogEvent(t *testing.T) {
 		hook   func(*testing.T, *types.Log) *types.Log
 		err    bool
 		// forks (optional)
-		ecotoneTime *uint64
-		l1Time      uint64
+		ecotoneTime *timeint.Seconds
+		l1Time      timeint.Seconds
 	}{
 		{
 			// The log data is ignored by consensus and no modifications to the
@@ -169,7 +170,7 @@ func TestProcessSystemConfigUpdateLogEvent(t *testing.T) {
 				Scalar: eth.Bytes32{0: 1, 24 + 3: 0xb3, 28 + 3: 0xbb},
 			},
 			err:         false,
-			ecotoneTime: new(uint64), // activate ecotone
+			ecotoneTime: new(timeint.Seconds), // activate ecotone
 			l1Time:      200,
 		},
 		{

@@ -8,6 +8,7 @@ import (
 
 	"github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum-optimism/optimism/op-service/testlog"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 	"github.com/ethereum-optimism/optimism/op-supervisor/supervisor/types"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/log"
@@ -168,7 +169,7 @@ func makeBlockRef(number uint64) eth.L1BlockRef {
 		Number:     number,
 		Hash:       common.Hash{byte(number)},
 		ParentHash: common.Hash{byte(number - 1)},
-		Time:       number * 1000,
+		Time:       timeint.FromUint64SecToSec(number * 1000),
 	}
 }
 

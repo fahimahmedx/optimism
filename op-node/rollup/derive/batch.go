@@ -7,6 +7,7 @@ import (
 	"io"
 	"sync"
 
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/rlp"
 )
@@ -35,7 +36,7 @@ const (
 // Derivation pipeline decodes Batch from Channel, and converts to one or multiple payload attributes.
 type Batch interface {
 	GetBatchType() int
-	GetTimestamp() uint64
+	GetTimestamp() timeint.Seconds
 	LogContext(log.Logger) log.Logger
 	AsSingularBatch() (*SingularBatch, bool)
 	AsSpanBatch() (*SpanBatch, bool)

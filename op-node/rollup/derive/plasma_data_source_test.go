@@ -12,6 +12,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum-optimism/optimism/op-service/testlog"
 	"github.com/ethereum-optimism/optimism/op-service/testutils"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -64,7 +65,7 @@ func TestPlasmaDataSource(t *testing.T) {
 	da.OnFinalizedHeadSignal(finalitySignal.OnFinalized)
 
 	// Create rollup genesis and config
-	l1Time := uint64(2)
+	l1Time := timeint.FromUint64SecToSec(2)
 	refA := testutils.RandomBlockRef(rng)
 	refA.Number = 1
 	l1Refs := []eth.L1BlockRef{refA}
@@ -307,7 +308,7 @@ func TestPlasmaDataSourceStall(t *testing.T) {
 	da.OnFinalizedHeadSignal(finalitySignal.OnFinalized)
 
 	// Create rollup genesis and config
-	l1Time := uint64(2)
+	l1Time := timeint.FromUint64SecToSec(2)
 	refA := testutils.RandomBlockRef(rng)
 	refA.Number = 1
 	l1Refs := []eth.L1BlockRef{refA}
@@ -429,7 +430,7 @@ func TestPlasmaDataSourceInvalidData(t *testing.T) {
 	da := plasma.NewPlasmaDAWithStorage(logger, pcfg, storage, &plasma.NoopMetrics{})
 
 	// Create rollup genesis and config
-	l1Time := uint64(2)
+	l1Time := timeint.FromUint64SecToSec(2)
 	refA := testutils.RandomBlockRef(rng)
 	refA.Number = 1
 	l1Refs := []eth.L1BlockRef{refA}

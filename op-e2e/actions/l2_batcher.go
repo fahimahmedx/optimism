@@ -27,6 +27,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-node/rollup/derive"
 	plasma "github.com/ethereum-optimism/optimism/op-plasma"
 	"github.com/ethereum-optimism/optimism/op-service/eth"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 	"github.com/ethereum-optimism/optimism/op-service/txmgr"
 )
 
@@ -200,7 +201,7 @@ func (s *L2Batcher) Buffer(t Testing) error {
 				t.Fatalf("ForceSubmitSingularBatch and ForceSubmitSpanBatch cannot be set to true at the same time")
 			} else {
 				// use span batch if we're forcing it or if we're at/beyond delta
-				if s.l2BatcherCfg.ForceSubmitSpanBatch || s.rollupCfg.IsDelta(block.Time()) {
+				if s.l2BatcherCfg.ForceSubmitSpanBatch || s.rollupCfg.IsDelta(timeint.FromUint64SecToSec(block.Time())) {
 					ch, err = derive.NewSpanChannelOut(s.rollupCfg.Genesis.L2Time, s.rollupCfg.L2ChainID, target, derive.Zlib)
 					// use singular batches in all other cases
 				} else {

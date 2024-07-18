@@ -14,6 +14,7 @@ import (
 
 	plasma "github.com/ethereum-optimism/optimism/op-plasma"
 	"github.com/ethereum-optimism/optimism/op-service/eth"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 var (
@@ -42,7 +43,7 @@ type Genesis struct {
 	// The L2 block the rollup starts from (no transactions, pre-configured state)
 	L2 eth.BlockID `json:"l2"`
 	// Timestamp of L2 block
-	L2Time uint64 `json:"l2_time"`
+	L2Time timeint.Seconds `json:"l2_time"`
 	// Initial system configuration values.
 	// The L2 genesis block may not include transactions, and thus cannot encode the config values,
 	// unlike later L2 blocks.
@@ -66,7 +67,7 @@ type Config struct {
 	// Genesis anchor point of the rollup
 	Genesis Genesis `json:"genesis"`
 	// Seconds per L2 block
-	BlockTime uint64 `json:"block_time"`
+	BlockTime timeint.Seconds `json:"block_time"`
 	// Sequencer batches may not be more than MaxSequencerDrift seconds after
 	// the L1 timestamp of the sequencing window end.
 	//
@@ -77,7 +78,7 @@ type Config struct {
 	// instead of reading this rollup configuration field directly to determine
 	// the max sequencer drift for a given block based on the block's L1 origin.
 	// Chains that activate Fjord at genesis may leave this field empty.
-	MaxSequencerDrift uint64 `json:"max_sequencer_drift,omitempty"`
+	MaxSequencerDrift timeint.Seconds `json:"max_sequencer_drift,omitempty"`
 	// Number of epochs (L1 blocks) per sequencing window, including the epoch L1 origin block itself
 	SeqWindowSize uint64 `json:"seq_window_size"`
 	// Number of L1 blocks between when a channel can be opened and when it must be closed by.
@@ -91,27 +92,27 @@ type Config struct {
 	// a pre-mainnet Bedrock change that addresses findings of the Sherlock contest related to deposit attributes.
 	// "Regolith" is the loose deposited rock that sits on top of Bedrock.
 	// Active if RegolithTime != nil && L2 block timestamp >= *RegolithTime, inactive otherwise.
-	RegolithTime *uint64 `json:"regolith_time,omitempty"`
+	RegolithTime *timeint.Seconds `json:"regolith_time,omitempty"`
 
 	// CanyonTime sets the activation time of the Canyon network upgrade.
 	// Active if CanyonTime != nil && L2 block timestamp >= *CanyonTime, inactive otherwise.
-	CanyonTime *uint64 `json:"canyon_time,omitempty"`
+	CanyonTime *timeint.Seconds `json:"canyon_time,omitempty"`
 
 	// DeltaTime sets the activation time of the Delta network upgrade.
 	// Active if DeltaTime != nil && L2 block timestamp >= *DeltaTime, inactive otherwise.
-	DeltaTime *uint64 `json:"delta_time,omitempty"`
+	DeltaTime *timeint.Seconds `json:"delta_time,omitempty"`
 
 	// EcotoneTime sets the activation time of the Ecotone network upgrade.
 	// Active if EcotoneTime != nil && L2 block timestamp >= *EcotoneTime, inactive otherwise.
-	EcotoneTime *uint64 `json:"ecotone_time,omitempty"`
+	EcotoneTime *timeint.Seconds `json:"ecotone_time,omitempty"`
 
 	// FjordTime sets the activation time of the Fjord network upgrade.
 	// Active if FjordTime != nil && L2 block timestamp >= *FjordTime, inactive otherwise.
-	FjordTime *uint64 `json:"fjord_time,omitempty"`
+	FjordTime *timeint.Seconds `json:"fjord_time,omitempty"`
 
 	// InteropTime sets the activation time for an experimental feature-set, activated like a hardfork.
 	// Active if InteropTime != nil && L2 block timestamp >= *InteropTime, inactive otherwise.
-	InteropTime *uint64 `json:"interop_time,omitempty"`
+	InteropTime *timeint.Seconds `json:"interop_time,omitempty"`
 
 	// Note: below addresses are part of the block-derivation process,
 	// and required to be the same network-wide to stay in consensus.
@@ -177,11 +178,11 @@ func (cfg *Config) ValidateL2Config(ctx context.Context, client L2Client, skipL2
 	return nil
 }
 
-func (cfg *Config) TimestampForBlock(blockNumber uint64) uint64 {
-	return cfg.Genesis.L2Time + ((blockNumber - cfg.Genesis.L2.Number) * cfg.BlockTime)
+func (cfg *Config) TimestampForBlock(blockNumber uint64) timeint.Seconds {
+	return cfg.Genesis.L2Time + cfg.BlockTime.MultiplyInt(blockNumber-cfg.Genesis.L2.Number)
 }
 
-func (cfg *Config) TargetBlockNumber(timestamp uint64) (num uint64, err error) {
+func (cfg *Config) TargetBlockNumber(timestamp timeint.Seconds) (num uint64, err error) {
 	// subtract genesis time from timestamp to get the time elapsed since genesis, and then divide that
 	// difference by the block time to get the expected L2 block number at the current time. If the
 	// unsafe head does not have this block number, then there is a gap in the queue.
@@ -191,7 +192,7 @@ func (cfg *Config) TargetBlockNumber(timestamp uint64) (num uint64, err error) {
 	}
 	wallClockGenesisDiff := timestamp - genesisTimestamp
 	// Note: round down, we should not request blocks into the future.
-	blocksSinceGenesis := wallClockGenesisDiff / cfg.BlockTime
+	blocksSinceGenesis := uint64(wallClockGenesisDiff / cfg.BlockTime)
 	return cfg.Genesis.L2.Number + blocksSinceGenesis, nil
 }
 
@@ -365,7 +366,7 @@ func validatePlasmaConfig(cfg *Config) error {
 }
 
 // checkFork checks that fork A is before or at the same time as fork B
-func checkFork(a, b *uint64, aName, bName ForkName) error {
+func checkFork(a, b *timeint.Seconds, aName, bName ForkName) error {
 	if a == nil && b == nil {
 		return nil
 	}
@@ -386,56 +387,56 @@ func (c *Config) L1Signer() types.Signer {
 }
 
 // IsRegolith returns true if the Regolith hardfork is active at or past the given timestamp.
-func (c *Config) IsRegolith(timestamp uint64) bool {
+func (c *Config) IsRegolith(timestamp timeint.Seconds) bool {
 	return c.RegolithTime != nil && timestamp >= *c.RegolithTime
 }
 
 // IsCanyon returns true if the Canyon hardfork is active at or past the given timestamp.
-func (c *Config) IsCanyon(timestamp uint64) bool {
+func (c *Config) IsCanyon(timestamp timeint.Seconds) bool {
 	return c.CanyonTime != nil && timestamp >= *c.CanyonTime
 }
 
 // IsDelta returns true if the Delta hardfork is active at or past the given timestamp.
-func (c *Config) IsDelta(timestamp uint64) bool {
+func (c *Config) IsDelta(timestamp timeint.Seconds) bool {
 	return c.DeltaTime != nil && timestamp >= *c.DeltaTime
 }
 
 // IsEcotone returns true if the Ecotone hardfork is active at or past the given timestamp.
-func (c *Config) IsEcotone(timestamp uint64) bool {
+func (c *Config) IsEcotone(timestamp timeint.Seconds) bool {
 	return c.EcotoneTime != nil && timestamp >= *c.EcotoneTime
 }
 
 // IsFjord returns true if the Fjord hardfork is active at or past the given timestamp.
-func (c *Config) IsFjord(timestamp uint64) bool {
+func (c *Config) IsFjord(timestamp timeint.Seconds) bool {
 	return c.FjordTime != nil && timestamp >= *c.FjordTime
 }
 
 // IsFjordActivationBlock returns whether the specified block is the first block subject to the
 // Fjord upgrade.
-func (c *Config) IsFjordActivationBlock(l2BlockTime uint64) bool {
+func (c *Config) IsFjordActivationBlock(l2BlockTime timeint.Seconds) bool {
 	return c.IsFjord(l2BlockTime) &&
 		l2BlockTime >= c.BlockTime &&
 		!c.IsFjord(l2BlockTime-c.BlockTime)
 }
 
 // IsInterop returns true if the Interop hardfork is active at or past the given timestamp.
-func (c *Config) IsInterop(timestamp uint64) bool {
+func (c *Config) IsInterop(timestamp timeint.Seconds) bool {
 	return c.InteropTime != nil && timestamp >= *c.InteropTime
 }
 
-func (c *Config) IsRegolithActivationBlock(l2BlockTime uint64) bool {
+func (c *Config) IsRegolithActivationBlock(l2BlockTime timeint.Seconds) bool {
 	return c.IsRegolith(l2BlockTime) &&
 		l2BlockTime >= c.BlockTime &&
 		!c.IsRegolith(l2BlockTime-c.BlockTime)
 }
 
-func (c *Config) IsCanyonActivationBlock(l2BlockTime uint64) bool {
+func (c *Config) IsCanyonActivationBlock(l2BlockTime timeint.Seconds) bool {
 	return c.IsCanyon(l2BlockTime) &&
 		l2BlockTime >= c.BlockTime &&
 		!c.IsCanyon(l2BlockTime-c.BlockTime)
 }
 
-func (c *Config) IsDeltaActivationBlock(l2BlockTime uint64) bool {
+func (c *Config) IsDeltaActivationBlock(l2BlockTime timeint.Seconds) bool {
 	return c.IsDelta(l2BlockTime) &&
 		l2BlockTime >= c.BlockTime &&
 		!c.IsDelta(l2BlockTime-c.BlockTime)
@@ -443,13 +444,13 @@ func (c *Config) IsDeltaActivationBlock(l2BlockTime uint64) bool {
 
 // IsEcotoneActivationBlock returns whether the specified block is the first block subject to the
 // Ecotone upgrade. Ecotone activation at genesis does not count.
-func (c *Config) IsEcotoneActivationBlock(l2BlockTime uint64) bool {
+func (c *Config) IsEcotoneActivationBlock(l2BlockTime timeint.Seconds) bool {
 	return c.IsEcotone(l2BlockTime) &&
 		l2BlockTime >= c.BlockTime &&
 		!c.IsEcotone(l2BlockTime-c.BlockTime)
 }
 
-func (c *Config) IsInteropActivationBlock(l2BlockTime uint64) bool {
+func (c *Config) IsInteropActivationBlock(l2BlockTime timeint.Seconds) bool {
 	return c.IsInterop(l2BlockTime) &&
 		l2BlockTime >= c.BlockTime &&
 		!c.IsInterop(l2BlockTime-c.BlockTime)
@@ -461,7 +462,7 @@ func (c *Config) ForkchoiceUpdatedVersion(attr *eth.PayloadAttributes) eth.Engin
 		// Don't begin payload build process.
 		return eth.FCUV3
 	}
-	ts := uint64(attr.Timestamp)
+	ts := timeint.FromHexUint64SecToSec(attr.Timestamp)
 	if c.IsEcotone(ts) {
 		// Cancun
 		return eth.FCUV3
@@ -476,7 +477,7 @@ func (c *Config) ForkchoiceUpdatedVersion(attr *eth.PayloadAttributes) eth.Engin
 }
 
 // NewPayloadVersion returns the EngineAPIMethod suitable for the chain hard fork version.
-func (c *Config) NewPayloadVersion(timestamp uint64) eth.EngineAPIMethod {
+func (c *Config) NewPayloadVersion(timestamp timeint.Seconds) eth.EngineAPIMethod {
 	if c.IsEcotone(timestamp) {
 		// Cancun
 		return eth.NewPayloadV3
@@ -486,7 +487,7 @@ func (c *Config) NewPayloadVersion(timestamp uint64) eth.EngineAPIMethod {
 }
 
 // GetPayloadVersion returns the EngineAPIMethod suitable for the chain hard fork version.
-func (c *Config) GetPayloadVersion(timestamp uint64) eth.EngineAPIMethod {
+func (c *Config) GetPayloadVersion(timestamp timeint.Seconds) eth.EngineAPIMethod {
 	if c.IsEcotone(timestamp) {
 		// Cancun
 		return eth.GetPayloadV3
@@ -603,7 +604,7 @@ func (c *Config) LogDescription(log log.Logger, l2Chains map[string]string) {
 	)
 }
 
-func fmtForkTimeOrUnset(v *uint64) string {
+func fmtForkTimeOrUnset(v *timeint.Seconds) string {
 	if v == nil {
 		return "(not configured)"
 	}
@@ -613,7 +614,7 @@ func fmtForkTimeOrUnset(v *uint64) string {
 	return fmt.Sprintf("@ %-10v ~ %s", *v, fmtTime(*v))
 }
 
-func fmtTime(v uint64) string {
+func fmtTime(v timeint.Seconds) string {
 	return time.Unix(int64(v), 0).Format(time.UnixDate)
 }
 

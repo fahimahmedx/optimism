@@ -18,6 +18,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-node/rollup/engine"
 	"github.com/ethereum-optimism/optimism/op-node/rollup/event"
 	"github.com/ethereum-optimism/optimism/op-service/eth"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 // sealingDuration defines the expected time it takes to seal the block
@@ -512,16 +513,16 @@ func (d *Sequencer) startBuildingBlock() {
 	// empty blocks (other than the L1 info deposit and any user deposits). We handle this by
 	// setting NoTxPool to true, which will cause the Sequencer to not include any transactions
 	// from the transaction pool.
-	attrs.NoTxPool = uint64(attrs.Timestamp) > l1Origin.Time+d.spec.MaxSequencerDrift(l1Origin.Time)
+	attrs.NoTxPool = timeint.FromHexUint64SecToSec(attrs.Timestamp) > l1Origin.Time+d.spec.MaxSequencerDrift(l1Origin.Time)
 
 	// For the Ecotone activation block we shouldn't include any sequencer transactions.
-	if d.rollupCfg.IsEcotoneActivationBlock(uint64(attrs.Timestamp)) {
+	if d.rollupCfg.IsEcotoneActivationBlock(timeint.FromHexUint64SecToSec(attrs.Timestamp)) {
 		attrs.NoTxPool = true
 		d.log.Info("Sequencing Ecotone upgrade block")
 	}
 
 	// For the Fjord activation block we shouldn't include any sequencer transactions.
-	if d.rollupCfg.IsFjordActivationBlock(uint64(attrs.Timestamp)) {
+	if d.rollupCfg.IsFjordActivationBlock(timeint.FromHexUint64SecToSec(attrs.Timestamp)) {
 		attrs.NoTxPool = true
 		d.log.Info("Sequencing Fjord upgrade block")
 	}

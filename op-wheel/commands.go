@@ -28,6 +28,7 @@ import (
 	oplog "github.com/ethereum-optimism/optimism/op-service/log"
 	opmetrics "github.com/ethereum-optimism/optimism/op-service/metrics"
 	"github.com/ethereum-optimism/optimism/op-service/sources"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 	"github.com/ethereum-optimism/optimism/op-wheel/cheat"
 	"github.com/ethereum-optimism/optimism/op-wheel/engine"
 )
@@ -122,7 +123,7 @@ func withEngineFlags(flags ...cli.Flag) []cli.Flag {
 
 func ParseBuildingArgs(ctx *cli.Context) *engine.BlockBuildingSettings {
 	return &engine.BlockBuildingSettings{
-		BlockTime:    ctx.Uint64(BlockTimeFlag.Name),
+		BlockTime:    timeint.FromUint64SecToSec(ctx.Uint64(BlockTimeFlag.Name)),
 		AllowGaps:    ctx.Bool(AllowGaps.Name),
 		Random:       hashFlagValue(RandaoFlag.Name, ctx),
 		FeeRecipient: addrFlagValue(FeeRecipientFlag.Name, ctx),
@@ -226,10 +227,10 @@ func rollupFromGethConfig(cfg *params.ChainConfig) *rollup.Config {
 	return &rollup.Config{
 		L2ChainID: cfg.ChainID,
 
-		RegolithTime: cfg.RegolithTime,
-		CanyonTime:   cfg.CanyonTime,
-		EcotoneTime:  cfg.EcotoneTime,
-		InteropTime:  cfg.InteropTime,
+		RegolithTime: timeint.FromUint64PtrToSecPtr(cfg.RegolithTime),
+		CanyonTime:   timeint.FromUint64PtrToSecPtr(cfg.CanyonTime),
+		EcotoneTime:  timeint.FromUint64PtrToSecPtr(cfg.EcotoneTime),
+		InteropTime:  timeint.FromUint64PtrToSecPtr(cfg.InteropTime),
 	}
 }
 

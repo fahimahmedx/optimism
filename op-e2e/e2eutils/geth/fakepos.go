@@ -19,6 +19,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-service/clock"
 	opeth "github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum-optimism/optimism/op-service/testutils"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 type Beacon interface {
@@ -31,7 +32,7 @@ type fakePoS struct {
 	clock     clock.Clock
 	eth       *eth.Ethereum
 	log       log.Logger
-	blockTime uint64
+	blockTime timeint.Seconds
 
 	withdrawalsIndex uint64
 
@@ -81,10 +82,10 @@ func (f *fakePoS) Start() error {
 				if head.Time >= uint64(now.Unix()) {
 					continue
 				}
-				newBlockTime := head.Time + f.blockTime
+				newBlockTime := timeint.FromUint64SecToSec(head.Time) + f.blockTime
 				if time.Unix(int64(newBlockTime), 0).Add(5 * time.Minute).Before(f.clock.Now()) {
 					// We're a long way behind, let's skip some blocks...
-					newBlockTime = uint64(f.clock.Now().Unix())
+					newBlockTime = timeint.FromUint64SecToSec(uint64(f.clock.Now().Unix()))
 				}
 				// create some random withdrawals
 				withdrawals := make([]*types.Withdrawal, withdrawalsRNG.Intn(4))
@@ -98,13 +99,13 @@ func (f *fakePoS) Start() error {
 					}
 				}
 				attrs := &engine.PayloadAttributes{
-					Timestamp:             newBlockTime,
+					Timestamp:             uint64(newBlockTime),
 					Random:                common.Hash{},
 					SuggestedFeeRecipient: head.Coinbase,
 					Withdrawals:           withdrawals,
 				}
 				parentBeaconBlockRoot := f.FakeBeaconBlockRoot(head.Time) // parent beacon block root
-				isCancun := f.eth.BlockChain().Config().IsCancun(new(big.Int).SetUint64(head.Number.Uint64()+1), newBlockTime)
+				isCancun := f.eth.BlockChain().Config().IsCancun(new(big.Int).SetUint64(head.Number.Uint64()+1), uint64(newBlockTime))
 				if isCancun {
 					attrs.BeaconRoot = &parentBeaconBlockRoot
 				}
@@ -168,7 +169,7 @@ func (f *fakePoS) Start() error {
 					}
 				}
 				if envelope.BlobsBundle != nil {
-					slot := (envelope.ExecutionPayload.Timestamp - f.eth.BlockChain().Genesis().Time()) / f.blockTime
+					slot := uint64(timeint.FromUint64SecToSec(envelope.ExecutionPayload.Timestamp-f.eth.BlockChain().Genesis().Time()) / f.blockTime)
 					if f.beacon == nil {
 						f.log.Error("no blobs storage available")
 						continue

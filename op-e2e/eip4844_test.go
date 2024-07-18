@@ -26,6 +26,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-service/sources"
 	"github.com/ethereum-optimism/optimism/op-service/testlog"
 	"github.com/ethereum-optimism/optimism/op-service/testutils"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 // TestSystem4844E2E runs the SystemE2E test with 4844 enabled on L1,
@@ -171,7 +172,7 @@ func testSystem4844E2E(t *testing.T, multiBlob bool) {
 		// blob tx should have filled up all but last blob
 		bcl := sys.L1BeaconHTTPClient()
 		hashes := toIndexedBlobHashes(blobTx.BlobHashes()...)
-		sidecars, err := bcl.BeaconBlobSideCars(context.Background(), false, sys.L1Slot(blobBlock.Time()), hashes)
+		sidecars, err := bcl.BeaconBlobSideCars(context.Background(), false, sys.L1Slot(timeint.FromUint64SecToSec(blobBlock.Time())), hashes)
 		require.NoError(t, err)
 		require.Len(t, sidecars.Data, maxBlobs)
 		for i := 0; i < maxBlobs-1; i++ {

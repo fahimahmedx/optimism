@@ -9,6 +9,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum-optimism/optimism/op-service/testlog"
 	"github.com/ethereum-optimism/optimism/op-service/testutils"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/log"
@@ -191,7 +192,7 @@ func TestOriginSelector_FjordSeqDrift(t *testing.T) {
 	cfg := &rollup.Config{
 		MaxSequencerDrift: 8,
 		BlockTime:         2,
-		FjordTime:         u64ptr(20), // a's timestamp
+		FjordTime:         timeint.FromUint64SecToSec(20).ToSecondsPtr(), // a's timestamp
 	}
 	l1 := &testutils.MockL1Source{}
 	defer l1.AssertExpectations(t)

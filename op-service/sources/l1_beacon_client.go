@@ -17,6 +17,7 @@ import (
 
 	"github.com/ethereum-optimism/optimism/op-service/client"
 	"github.com/ethereum-optimism/optimism/op-service/eth"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 const (
@@ -184,7 +185,7 @@ func NewL1BeaconClient(cl BeaconClient, cfg L1BeaconClientConfig, fallbacks ...B
 	}
 }
 
-type TimeToSlotFn func(timestamp uint64) (uint64, error)
+type TimeToSlotFn func(timestamp timeint.Seconds) (uint64, error)
 
 // GetTimeToSlotFn returns a function that converts a timestamp to a slot number.
 func (cl *L1BeaconClient) GetTimeToSlotFn(ctx context.Context) (TimeToSlotFn, error) {
@@ -204,16 +205,16 @@ func (cl *L1BeaconClient) GetTimeToSlotFn(ctx context.Context) (TimeToSlotFn, er
 		return nil, err
 	}
 
-	genesisTime := uint64(genesis.Data.GenesisTime)
-	secondsPerSlot := uint64(config.Data.SecondsPerSlot)
+	genesisTime := timeint.FromUint64SecToSec(uint64(genesis.Data.GenesisTime))
+	secondsPerSlot := timeint.FromUint64SecToSec(uint64(config.Data.SecondsPerSlot))
 	if secondsPerSlot == 0 {
 		return nil, fmt.Errorf("got bad value for seconds per slot: %v", config.Data.SecondsPerSlot)
 	}
-	cl.timeToSlotFn = func(timestamp uint64) (uint64, error) {
+	cl.timeToSlotFn = func(timestamp timeint.Seconds) (uint64, error) {
 		if timestamp < genesisTime {
 			return 0, fmt.Errorf("provided timestamp (%v) precedes genesis time (%v)", timestamp, genesisTime)
 		}
-		return (timestamp - genesisTime) / secondsPerSlot, nil
+		return ((timestamp - genesisTime) / secondsPerSlot).ToUint64Sec(), nil
 	}
 	return cl.timeToSlotFn, nil
 }

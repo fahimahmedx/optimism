@@ -61,21 +61,21 @@ func TestLogProcessor(t *testing.T) {
 		expected := []storedLog{
 			{
 				block:     block1.ID(),
-				timestamp: block1.Time,
+				timestamp: block1.Time.ToUint64Sec(),
 				logIdx:    0,
 				logHash:   logToHash(rcpts[0].Logs[0]),
 				execMsg:   nil,
 			},
 			{
 				block:     block1.ID(),
-				timestamp: block1.Time,
+				timestamp: block1.Time.ToUint64Sec(),
 				logIdx:    0,
 				logHash:   logToHash(rcpts[0].Logs[1]),
 				execMsg:   nil,
 			},
 			{
 				block:     block1.ID(),
-				timestamp: block1.Time,
+				timestamp: block1.Time.ToUint64Sec(),
 				logIdx:    0,
 				logHash:   logToHash(rcpts[1].Logs[0]),
 				execMsg:   nil,

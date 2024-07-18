@@ -21,6 +21,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum-optimism/optimism/op-service/testlog"
 	"github.com/ethereum-optimism/optimism/op-service/testutils"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 func TestOutputAtBlock(t *testing.T) {
@@ -86,7 +87,7 @@ func TestOutputAtBlock(t *testing.T) {
 		Hash:           header.Hash(),
 		Number:         header.Number.Uint64(),
 		ParentHash:     header.ParentHash,
-		Time:           header.Time,
+		Time:           timeint.FromUint64SecToSec(header.Time),
 		L1Origin:       eth.BlockID{},
 		SequenceNumber: 0,
 	}

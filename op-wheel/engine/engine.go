@@ -20,6 +20,7 @@ import (
 	"github.com/ethereum-optimism/optimism/op-service/client"
 	"github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum-optimism/optimism/op-service/sources"
+	"github.com/ethereum-optimism/optimism/op-service/timeint"
 )
 
 const (
@@ -118,7 +119,7 @@ func debugSetHead(ctx context.Context, open client.RPC, head uint64) error {
 }
 
 type BlockBuildingSettings struct {
-	BlockTime uint64
+	BlockTime timeint.Seconds
 	// skip a block; timestamps will still increase in multiples of BlockTime like L1, but there may be gaps.
 	AllowGaps    bool
 	Random       common.Hash
@@ -129,7 +130,7 @@ type BlockBuildingSettings struct {
 func BuildBlock(ctx context.Context, client *sources.EngineAPIClient, status *StatusData, settings *BlockBuildingSettings) (*eth.ExecutionPayloadEnvelope, error) {
 	timestamp := status.Head.Time + settings.BlockTime
 	if settings.AllowGaps {
-		now := uint64(time.Now().Unix())
+		now := timeint.FromUint64SecToSec(uint64(time.Now().Unix()))
 		if now > timestamp {
 			timestamp = now - ((now - timestamp) % settings.BlockTime)
 		}
@@ -170,7 +171,7 @@ func BuildBlock(ctx context.Context, client *sources.EngineAPIClient, status *St
 	return payload, nil
 }
 
-func newPayloadAttributes(evp sources.EngineVersionProvider, timestamp uint64, prevRandao common.Hash, feeRecipient common.Address) *eth.PayloadAttributes {
+func newPayloadAttributes(evp sources.EngineVersionProvider, timestamp timeint.Seconds, prevRandao common.Hash, feeRecipient common.Address) *eth.PayloadAttributes {
 	pa := &eth.PayloadAttributes{
 		Timestamp:             hexutil.Uint64(timestamp),
 		PrevRandao:            eth.Bytes32(prevRandao),
@@ -239,7 +240,7 @@ func Auto(ctx context.Context, metrics Metricer, client *sources.EngineAPIClient
 							log.Error("failed to find block for new safe block progress", "err", err)
 							continue
 						}
-						status.Safe = eth.L1BlockRef{Hash: safe.Hash(), Number: safe.Number.Uint64(), Time: safe.Time, ParentHash: safe.ParentHash}
+						status.Safe = eth.L1BlockRef{Hash: safe.Hash(), Number: safe.Number.Uint64(), Time: timeint.FromUint64SecToSec(safe.Time), ParentHash: safe.ParentHash}
 					}
 					if status.Finalized.Number+32 <= status.Safe.Number {
 						finalized, err := getHeader(ctx, client.RPC, methodEthGetBlockByNumber, hexutil.Uint64(status.Safe.Number-32).String())
@@ -248,7 +249,7 @@ func Auto(ctx context.Context, metrics Metricer, client *sources.EngineAPIClient
 							log.Error("failed to find block for new finalized block progress", "err", err)
 							continue
 						}
-						status.Finalized = eth.L1BlockRef{Hash: finalized.Hash(), Number: finalized.Number.Uint64(), Time: finalized.Time, ParentHash: finalized.ParentHash}
+						status.Finalized = eth.L1BlockRef{Hash: finalized.Hash(), Number: finalized.Number.Uint64(), Time: timeint.FromUint64SecToSec(finalized.Time), ParentHash: finalized.ParentHash}
 					}
 				}
 
@@ -296,9 +297,9 @@ func Status(ctx context.Context, client client.RPC) (*StatusData, error) {
 		return nil, err
 	}
 	return &StatusData{
-		Head:      eth.L1BlockRef{Hash: head.Hash(), Number: head.NumberU64(), Time: head.Time(), ParentHash: head.ParentHash()},
-		Safe:      eth.L1BlockRef{Hash: safe.Hash(), Number: safe.Number.Uint64(), Time: safe.Time, ParentHash: safe.ParentHash},
-		Finalized: eth.L1BlockRef{Hash: finalized.Hash(), Number: finalized.Number.Uint64(), Time: finalized.Time, ParentHash: finalized.ParentHash},
+		Head:      eth.L1BlockRef{Hash: head.Hash(), Number: head.NumberU64(), Time: timeint.FromUint64SecToSec(head.Time()), ParentHash: head.ParentHash()},
+		Safe:      eth.L1BlockRef{Hash: safe.Hash(), Number: safe.Number.Uint64(), Time: timeint.FromUint64SecToSec(safe.Time), ParentHash: safe.ParentHash},
+		Finalized: eth.L1BlockRef{Hash: finalized.Hash(), Number: finalized.Number.Uint64(), Time: timeint.FromUint64SecToSec(finalized.Time), ParentHash: finalized.ParentHash},
 		Txs:       uint64(len(head.Transactions())),
 		Gas:       head.GasUsed(),
 		StateRoot: head.Root(),
@@ -348,10 +349,10 @@ func CopyPayload(ctx context.Context, number uint64, copyFrom client.RPC, copyTo
 }
 
 func blockAsPayloadEnv(block *types.Block, evp sources.EngineVersionProvider) (*eth.ExecutionPayloadEnvelope, error) {
-	var canyon *uint64
+	var canyon *timeint.Seconds
 	// hack: if we're calling at least FCUV2, get empty withdrawals by setting Canyon before the block time
 	if v := evp.ForkchoiceUpdatedVersion(&eth.PayloadAttributes{Timestamp: hexutil.Uint64(block.Time())}); v != eth.FCUV1 {
-		canyon = new(uint64)
+		canyon = new(timeint.Seconds)
 	}
 	return eth.BlockAsPayloadEnv(block, canyon)
 }
