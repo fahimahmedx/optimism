@@ -127,10 +127,10 @@ func TestL2EngineAPIBlockBuilding(gt *testing.T) {
 		l2Cl, err := sources.NewEngineClient(engine.RPCClient(), log, nil, sources.EngineClientDefaultConfig(sd.RollupCfg))
 		require.NoError(t, err)
 
-		nextBlockTime := eth.Uint64Quantity(parent.Time) + 2
+		nextBlockTime := timeint.FromUint64SecToMilli(parent.Time + 2)
 
 		var w *types.Withdrawals
-		if sd.RollupCfg.IsCanyon(timeint.FromHexUint64SecToSec(nextBlockTime)) {
+		if sd.RollupCfg.IsCanyon(nextBlockTime) {
 			w = &types.Withdrawals{}
 		}
 
@@ -140,7 +140,7 @@ func TestL2EngineAPIBlockBuilding(gt *testing.T) {
 			SafeBlockHash:      genesisBlock.Hash(),
 			FinalizedBlockHash: genesisBlock.Hash(),
 		}, &eth.PayloadAttributes{
-			Timestamp:             nextBlockTime,
+			Timestamp:             eth.Uint64Quantity((nextBlockTime.ToSeconds().ToUint64Sec())),
 			PrevRandao:            eth.Bytes32{},
 			SuggestedFeeRecipient: common.Address{'C'},
 			Transactions:          nil,

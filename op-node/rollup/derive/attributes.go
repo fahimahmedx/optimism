@@ -140,7 +140,7 @@ func (ba *FetchingAttributesBuilder) PreparePayloadAttributes(ctx context.Contex
 	}
 
 	return &eth.PayloadAttributes{
-		Timestamp:             hexutil.Uint64(nextL2Time),
+		Timestamp:             hexutil.Uint64(nextL2Time.ToSeconds()),
 		PrevRandao:            eth.Bytes32(l1Info.MixDigest()),
 		SuggestedFeeRecipient: predeploys.SequencerFeeVaultAddr,
 		Transactions:          txs,

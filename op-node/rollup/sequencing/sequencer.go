@@ -516,13 +516,13 @@ func (d *Sequencer) startBuildingBlock() {
 	attrs.NoTxPool = timeint.FromHexUint64SecToSec(attrs.Timestamp) > l1Origin.Time+d.spec.MaxSequencerDrift(l1Origin.Time)
 
 	// For the Ecotone activation block we shouldn't include any sequencer transactions.
-	if d.rollupCfg.IsEcotoneActivationBlock(timeint.FromHexUint64SecToSec(attrs.Timestamp)) {
+	if d.rollupCfg.IsEcotoneActivationBlock(timeint.FromHexUint64SecToSec(attrs.Timestamp).ToMilliseconds()) {
 		attrs.NoTxPool = true
 		d.log.Info("Sequencing Ecotone upgrade block")
 	}
 
 	// For the Fjord activation block we shouldn't include any sequencer transactions.
-	if d.rollupCfg.IsFjordActivationBlock(timeint.FromHexUint64SecToSec(attrs.Timestamp)) {
+	if d.rollupCfg.IsFjordActivationBlock(timeint.FromHexUint64SecToSec(attrs.Timestamp).ToMilliseconds()) {
 		attrs.NoTxPool = true
 		d.log.Info("Sequencing Fjord upgrade block")
 	}

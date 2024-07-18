@@ -173,7 +173,7 @@ func BuildBlock(ctx context.Context, client *sources.EngineAPIClient, status *St
 
 func newPayloadAttributes(evp sources.EngineVersionProvider, timestamp timeint.Seconds, prevRandao common.Hash, feeRecipient common.Address) *eth.PayloadAttributes {
 	pa := &eth.PayloadAttributes{
-		Timestamp:             hexutil.Uint64(timestamp),
+		Timestamp:             hexutil.Uint64(timestamp.ToUint64Sec()),
 		PrevRandao:            eth.Bytes32(prevRandao),
 		SuggestedFeeRecipient: feeRecipient,
 	}

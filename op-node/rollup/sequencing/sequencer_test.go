@@ -60,7 +60,7 @@ func (m *FakeAttributesBuilder) PreparePayloadAttributes(ctx context.Context,
 		GasLimit:              &gasLimit,
 	}
 
-	if m.cfg.IsEcotone(timeint.FromHexUint64SecToSec(attrs.Timestamp)) {
+	if m.cfg.IsEcotone(timeint.FromHexUint64SecToSec(attrs.Timestamp).ToMilliseconds()) {
 		r := testutils.RandomHash(m.rng)
 		attrs.ParentBeaconBlockRoot = &r
 	}
