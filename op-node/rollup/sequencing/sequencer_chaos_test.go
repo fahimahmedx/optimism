@@ -164,6 +164,7 @@ func (c *ChaoticEngine) OnEvent(ev event.Event) bool {
 					BlockHash:    testutils.RandomHash(c.rng),
 					Timestamp:    c.currentAttributes.Attributes.Timestamp,
 					Transactions: c.currentAttributes.Attributes.Transactions,
+					Milliseconds: c.currentAttributes.Attributes.Milliseconds,
 					// Not all attributes matter to sequencer. We can leave these nil.
 				},
 			}
@@ -173,7 +174,7 @@ func (c *ChaoticEngine) OnEvent(ev event.Event) bool {
 				Hash:           payloadEnvelope.ExecutionPayload.BlockHash,
 				Number:         uint64(payloadEnvelope.ExecutionPayload.BlockNumber),
 				ParentHash:     payloadEnvelope.ExecutionPayload.ParentHash,
-				Time:           timeint.FromHexUint64SecToMilli(payloadEnvelope.ExecutionPayload.Timestamp),
+				Time:           timeint.FromHexUint64MilliToMilli(payloadEnvelope.ExecutionPayload.Milliseconds),
 				L1Origin:       l1Origin,
 				SequenceNumber: 0, // ignored
 			}

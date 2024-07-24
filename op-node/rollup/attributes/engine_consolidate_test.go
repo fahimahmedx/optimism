@@ -45,6 +45,7 @@ func ecotoneArgs() args {
 				GasLimit:     validGasLimit,
 				Withdrawals:  &validWithdrawals,
 				FeeRecipient: validFeeRecipient,
+				Milliseconds: validTimestamp * 1000,
 			},
 		},
 		attrs: &eth.PayloadAttributes{

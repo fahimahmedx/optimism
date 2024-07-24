@@ -1571,6 +1571,7 @@ func TestValidBatch(t *testing.T) {
 				Timestamp:    hexutil.Uint64(l2Block.Time.ToSeconds()),
 				BlockHash:    l2Block.Hash,
 				Transactions: []hexutil.Bytes{txData},
+				Milliseconds: hexutil.Uint64(l2Block.Time),
 			},
 		}
 		l2Client.Mock.On("L2BlockRefByNumber", l2Block.Number).Return(l2Block, &nilErr)
@@ -1631,6 +1632,7 @@ func TestValidBatch(t *testing.T) {
 			Timestamp:    hexutil.Uint64(l2B1.Time.ToSeconds()),
 			BlockHash:    l2B1.Hash,
 			Transactions: []hexutil.Bytes{txData, randTxData},
+			Milliseconds: hexutil.Uint64(l2B1.Time),
 		},
 	}
 	l2Client.Mock.On("PayloadByNumber", l2B1.Number).Return(&payload, &nilErr).Once()
@@ -1678,6 +1680,7 @@ func TestValidBatch(t *testing.T) {
 			BlockHash:   l2B1.Hash,
 			// First TX is not a deposit TX. it will make error when extracting L2BlockRef from the payload
 			Transactions: []hexutil.Bytes{randTxData},
+			Milliseconds: hexutil.Uint64(l2B1.Time),
 		},
 	}
 	l2Client.Mock.On("PayloadByNumber", l2B1.Number).Return(&payload, &nilErr).Once()

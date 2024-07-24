@@ -197,6 +197,7 @@ type ExecutionPayload struct {
 	BlobGasUsed *Uint64Quantity `json:"blobGasUsed,omitempty"`
 	// Nil if not present (Bedrock, Canyon, Delta)
 	ExcessBlobGas *Uint64Quantity `json:"excessBlobGas,omitempty"`
+	Milliseconds  Uint64Quantity  `json:"milliseconds"`
 }
 
 func (payload *ExecutionPayload) ID() BlockID {
@@ -247,6 +248,7 @@ func (envelope *ExecutionPayloadEnvelope) CheckBlockHash() (actual common.Hash, 
 		Nonce:            types.BlockNonce{}, // zeroed, proof-of-work legacy
 		BaseFee:          (*uint256.Int)(&payload.BaseFeePerGas).ToBig(),
 		ParentBeaconRoot: envelope.ParentBeaconBlockRoot,
+		Milliseconds:     uint64(payload.Milliseconds),
 	}
 
 	if payload.CanyonBlock() {
@@ -289,6 +291,7 @@ func BlockAsPayload(bl *types.Block, canyonForkTime *timeint.Seconds) (*Executio
 		Transactions:  opaqueTxs,
 		ExcessBlobGas: (*Uint64Quantity)(bl.ExcessBlobGas()),
 		BlobGasUsed:   (*Uint64Quantity)(bl.BlobGasUsed()),
+		Milliseconds:  Uint64Quantity(bl.Milliseconds()),
 	}
 
 	if canyonForkTime != nil && timeint.FromHexUint64SecToSec(payload.Timestamp) >= *canyonForkTime {
@@ -329,6 +332,8 @@ type PayloadAttributes struct {
 	NoTxPool bool `json:"noTxPool,omitempty"`
 	// GasLimit override
 	GasLimit *Uint64Quantity `json:"gasLimit,omitempty"`
+	// value for the timestamp field of the new payload in milliseconds
+	Milliseconds Uint64Quantity `json:"milliseconds"`
 }
 
 type ExecutePayloadStatus string

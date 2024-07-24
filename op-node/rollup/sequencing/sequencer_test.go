@@ -308,6 +308,7 @@ func TestSequencerBuild(t *testing.T) {
 			BlockHash:    common.Hash{0x12, 0x34},
 			Timestamp:    sentAttributes.Attributes.Timestamp,
 			Transactions: sentAttributes.Attributes.Transactions,
+			Milliseconds: sentAttributes.Attributes.Milliseconds,
 			// Not all attributes matter to sequencer. We can leave these nil.
 		},
 	}
@@ -315,7 +316,7 @@ func TestSequencerBuild(t *testing.T) {
 		Hash:           payloadEnvelope.ExecutionPayload.BlockHash,
 		Number:         uint64(payloadEnvelope.ExecutionPayload.BlockNumber),
 		ParentHash:     payloadEnvelope.ExecutionPayload.ParentHash,
-		Time:           timeint.FromHexUint64SecToMilli(payloadEnvelope.ExecutionPayload.Timestamp),
+		Time:           timeint.FromHexUint64MilliToMilli(payloadEnvelope.ExecutionPayload.Milliseconds),
 		L1Origin:       l1Origin.ID(),
 		SequenceNumber: 0,
 	}
@@ -421,7 +422,7 @@ func createSequencer(log log.Logger) (*Sequencer, *sequencerTestDeps) {
 			Hash:           payload.BlockHash,
 			Number:         uint64(payload.BlockNumber),
 			ParentHash:     payload.ParentHash,
-			Time:           timeint.FromHexUint64SecToMilli(payload.Timestamp),
+			Time:           timeint.FromHexUint64MilliToMilli(payload.Milliseconds),
 			L1Origin:       decodeID(payload.Transactions[0]),
 			SequenceNumber: 0,
 		}, nil

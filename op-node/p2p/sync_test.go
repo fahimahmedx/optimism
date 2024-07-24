@@ -66,7 +66,7 @@ func (s *syncTestData) getBlockRef(i uint64) eth.L2BlockRef {
 		Hash:       s.payloads[i].ExecutionPayload.BlockHash,
 		Number:     uint64(s.payloads[i].ExecutionPayload.BlockNumber),
 		ParentHash: s.payloads[i].ExecutionPayload.ParentHash,
-		Time:       timeint.FromHexUint64SecToMilli(s.payloads[i].ExecutionPayload.Timestamp),
+		Time:       timeint.FromHexUint64MilliToMilli(s.payloads[i].ExecutionPayload.Milliseconds),
 	}
 }
 
@@ -90,7 +90,8 @@ func setupSyncTestData(length uint64) (*rollup.Config, *syncTestData) {
 	payloads := make(map[uint64]*eth.ExecutionPayloadEnvelope)
 	payloads[0] = &eth.ExecutionPayloadEnvelope{
 		ExecutionPayload: &eth.ExecutionPayload{
-			Timestamp: eth.Uint64Quantity(cfg.Genesis.L2Time.ToSeconds()),
+			Timestamp:    eth.Uint64Quantity(cfg.Genesis.L2Time.ToSeconds()),
+			Milliseconds: eth.Uint64Quantity(cfg.Genesis.L2Time),
 		},
 	}
 
@@ -99,9 +100,10 @@ func setupSyncTestData(length uint64) (*rollup.Config, *syncTestData) {
 		timestamp := cfg.Genesis.L2Time + cfg.BlockTime.MultiplyInt(i)
 		payload := &eth.ExecutionPayloadEnvelope{
 			ExecutionPayload: &eth.ExecutionPayload{
-				ParentHash:  payloads[i-1].ExecutionPayload.BlockHash,
-				BlockNumber: eth.Uint64Quantity(i),
-				Timestamp:   eth.Uint64Quantity(timestamp.ToSeconds()),
+				ParentHash:   payloads[i-1].ExecutionPayload.BlockHash,
+				BlockNumber:  eth.Uint64Quantity(i),
+				Timestamp:    eth.Uint64Quantity(timestamp.ToSeconds()),
+				Milliseconds: eth.Uint64Quantity(timestamp),
 			},
 		}
 

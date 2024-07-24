@@ -382,12 +382,14 @@ func (s *OpConductorTestSuite) TestScenario2() {
 // [follower, healthy, not sequencing] -- become leader --> [leader, healthy, sequencing]
 func (s *OpConductorTestSuite) TestScenario3() {
 	s.enableSynchronization()
+	timestamp := hexutil.Uint64(time.Now().Unix())
 
 	mockPayload := &eth.ExecutionPayloadEnvelope{
 		ExecutionPayload: &eth.ExecutionPayload{
-			BlockNumber: 1,
-			Timestamp:   hexutil.Uint64(time.Now().Unix()),
-			BlockHash:   [32]byte{1, 2, 3},
+			BlockNumber:  1,
+			Timestamp:    timestamp,
+			BlockHash:    [32]byte{1, 2, 3},
+			Milliseconds: timestamp * 1000,
 		},
 	}
 
@@ -419,14 +421,16 @@ func (s *OpConductorTestSuite) TestScenario3() {
 // [follower, healthy, not sequencing] -- become leader, unsafe head does not match, retry, eventually succeed --> [leader, healthy, sequencing]
 func (s *OpConductorTestSuite) TestScenario4() {
 	s.enableSynchronization()
+	timestamp := hexutil.Uint64(time.Now().Unix())
 
 	// unsafe in consensus is 1 block ahead of unsafe in sequencer, we try to post the unsafe payload to sequencer and return error to allow retry
 	// this is normal because the latest unsafe (in consensus) might not arrive at sequencer through p2p yet
 	mockPayload := &eth.ExecutionPayloadEnvelope{
 		ExecutionPayload: &eth.ExecutionPayload{
-			BlockNumber: 2,
-			Timestamp:   hexutil.Uint64(time.Now().Unix()),
-			BlockHash:   [32]byte{1, 2, 3},
+			BlockNumber:  2,
+			Timestamp:    timestamp,
+			BlockHash:    [32]byte{1, 2, 3},
+			Milliseconds: timestamp * 1000,
 		},
 	}
 

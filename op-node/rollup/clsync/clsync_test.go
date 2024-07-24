@@ -102,6 +102,7 @@ func TestCLSync(t *testing.T) {
 		BaseFeePerGas: eth.Uint256Quantity(*uint256.NewInt(7)),
 		BlockHash:     refA1.Hash,
 		Transactions:  []eth.Data{a1L1Info},
+		Milliseconds:  eth.Uint64Quantity(refA1.Time),
 	}}
 	a2L1Info, err := derive.L1InfoDepositBytes(cfg, cfg.Genesis.SystemConfig, refA2.SequenceNumber, aL1Info, refA2.Time)
 	require.NoError(t, err)
@@ -120,6 +121,7 @@ func TestCLSync(t *testing.T) {
 		BaseFeePerGas: eth.Uint256Quantity(*uint256.NewInt(7)),
 		BlockHash:     refA2.Hash,
 		Transactions:  []eth.Data{a2L1Info},
+		Milliseconds:  eth.Uint64Quantity(refA2.Time),
 	}}
 
 	metrics := &testutils.TestDerivationMetrics{}

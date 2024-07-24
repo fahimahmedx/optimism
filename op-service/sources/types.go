@@ -310,6 +310,7 @@ func (block *RPCBlock) ExecutionPayloadEnvelope(trustCache bool) (*eth.Execution
 		Withdrawals:   block.Withdrawals,
 		BlobGasUsed:   block.BlobGasUsed,
 		ExcessBlobGas: block.ExcessBlobGas,
+		Milliseconds:  block.Milliseconds,
 	}
 
 	return &eth.ExecutionPayloadEnvelope{

@@ -103,6 +103,7 @@ func TestAttributesHandler(t *testing.T) {
 		BaseFeePerGas: eth.Uint256Quantity(*uint256.NewInt(7)),
 		BlockHash:     common.Hash{},
 		Transactions:  []eth.Data{a1L1Info},
+		Milliseconds:  eth.Uint64Quantity(refA0.Time + cfg.BlockTime),
 	}, ParentBeaconBlockRoot: &parentBeaconBlockRoot}
 	// fix up the block-hash
 	payloadA1.ExecutionPayload.BlockHash, _ = payloadA1.CheckBlockHash()
@@ -140,6 +141,7 @@ func TestAttributesHandler(t *testing.T) {
 		BaseFeePerGas: eth.Uint256Quantity(*uint256.NewInt(7)),
 		BlockHash:     common.Hash{},
 		Transactions:  []eth.Data{a1L1Info},
+		Milliseconds:  eth.Uint64Quantity(refA0.Time + cfg.BlockTime),
 	}, ParentBeaconBlockRoot: &parentBeaconBlockRoot}
 	// fix up the block-hash
 	payloadA1Alt.ExecutionPayload.BlockHash, _ = payloadA1Alt.CheckBlockHash()

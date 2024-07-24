@@ -125,11 +125,13 @@ func createSignedP2Payload(payload MarshalSSZ, signer Signer, l2ChainID *big.Int
 }
 
 func createExecutionPayload(w types.Withdrawals, excessGas, gasUsed *uint64) *eth.ExecutionPayload {
+	timestamp := hexutil.Uint64(time.Now().Unix())
 	return &eth.ExecutionPayload{
-		Timestamp:     hexutil.Uint64(time.Now().Unix()),
+		Timestamp:     timestamp,
 		Withdrawals:   &w,
 		ExcessBlobGas: (*eth.Uint64Quantity)(excessGas),
 		BlobGasUsed:   (*eth.Uint64Quantity)(gasUsed),
+		Milliseconds:  timestamp * 1000,
 	}
 }
 

@@ -44,6 +44,7 @@ func TestCommitAndRead(t *testing.T) {
 			Timestamp:    hexutil.Uint64(now - 20),
 			Transactions: []eth.Data{},
 			ExtraData:    []byte{},
+			Milliseconds: hexutil.Uint64((now - 20).ToMilliseconds()),
 		},
 	}
 
@@ -54,16 +55,18 @@ func TestCommitAndRead(t *testing.T) {
 	// eth.BlockV3
 	one := hexutil.Uint64(1)
 	hash := common.HexToHash("0x12345")
+	timestamp := hexutil.Uint64(time.Now().Unix())
 	payload = &eth.ExecutionPayloadEnvelope{
 		ParentBeaconBlockRoot: &hash,
 		ExecutionPayload: &eth.ExecutionPayload{
 			BlockNumber:   2,
-			Timestamp:     hexutil.Uint64(time.Now().Unix()),
+			Timestamp:     timestamp,
 			Transactions:  []eth.Data{},
 			ExtraData:     []byte{},
 			Withdrawals:   &types.Withdrawals{},
 			ExcessBlobGas: &one,
 			BlobGasUsed:   &one,
+			Milliseconds:  timestamp * 1000,
 		},
 	}
 

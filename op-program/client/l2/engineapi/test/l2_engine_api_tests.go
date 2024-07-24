@@ -161,6 +161,7 @@ func RunEngineAPITests(t *testing.T, createBackend func(t *testing.T) engineapi.
 
 		// Then make it invalid to check NewPayload rejects it
 		newBlock.Timestamp = eth.Uint64Quantity(genesis.Time)
+		newBlock.Milliseconds = eth.Uint64Quantity(genesis.Milliseconds)
 		updateBlockHash(envelope)
 
 		r, err := api.engine.NewPayloadV2(api.ctx, newBlock)
@@ -179,6 +180,7 @@ func RunEngineAPITests(t *testing.T, createBackend func(t *testing.T) engineapi.
 
 		// Then make it invalid to check NewPayload rejects it
 		newBlock.Timestamp = eth.Uint64Quantity(genesis.Time - 1)
+		newBlock.Milliseconds = eth.Uint64Quantity(genesis.Milliseconds - 1000)
 		updateBlockHash(envelope)
 
 		r, err := api.engine.NewPayloadV2(api.ctx, newBlock)
