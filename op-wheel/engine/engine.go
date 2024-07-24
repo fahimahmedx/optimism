@@ -176,6 +176,7 @@ func newPayloadAttributes(evp sources.EngineVersionProvider, timestamp timeint.S
 		Timestamp:             hexutil.Uint64(timestamp.ToUint64Sec()),
 		PrevRandao:            eth.Bytes32(prevRandao),
 		SuggestedFeeRecipient: feeRecipient,
+		Milliseconds:          hexutil.Uint64(timestamp.ToUint64Milli()),
 	}
 
 	ver := evp.ForkchoiceUpdatedVersion(pa)
@@ -351,7 +352,7 @@ func CopyPayload(ctx context.Context, number uint64, copyFrom client.RPC, copyTo
 func blockAsPayloadEnv(block *types.Block, evp sources.EngineVersionProvider) (*eth.ExecutionPayloadEnvelope, error) {
 	var canyon *timeint.Seconds
 	// hack: if we're calling at least FCUV2, get empty withdrawals by setting Canyon before the block time
-	if v := evp.ForkchoiceUpdatedVersion(&eth.PayloadAttributes{Timestamp: hexutil.Uint64(block.Time())}); v != eth.FCUV1 {
+	if v := evp.ForkchoiceUpdatedVersion(&eth.PayloadAttributes{Timestamp: hexutil.Uint64(block.Time()), Milliseconds: hexutil.Uint64(block.Milliseconds())}); v != eth.FCUV1 {
 		canyon = new(timeint.Seconds)
 	}
 	return eth.BlockAsPayloadEnv(block, canyon)

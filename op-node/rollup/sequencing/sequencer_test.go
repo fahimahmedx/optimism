@@ -58,9 +58,10 @@ func (m *FakeAttributesBuilder) PreparePayloadAttributes(ctx context.Context,
 		Transactions:          []eth.Data{encodeID(epoch)}, // simplified replacement for L1-info tx.
 		NoTxPool:              false,
 		GasLimit:              &gasLimit,
+		Milliseconds:          eth.Uint64Quantity(l2Parent.Time + m.cfg.BlockTime),
 	}
 
-	if m.cfg.IsEcotone(timeint.FromHexUint64SecToSec(attrs.Timestamp).ToMilliseconds()) {
+	if m.cfg.IsEcotone(timeint.FromHexUint64MilliToMilli(attrs.Milliseconds)) {
 		r := testutils.RandomHash(m.rng)
 		attrs.ParentBeaconBlockRoot = &r
 	}
@@ -259,7 +260,7 @@ func TestSequencerBuild(t *testing.T) {
 		x, ok := ev.(engine.BuildStartEvent)
 		require.True(t, ok)
 		require.Equal(t, head, x.Attributes.Parent)
-		require.Equal(t, head.Time+deps.cfg.BlockTime, timeint.FromHexUint64SecToMilli(x.Attributes.Attributes.Timestamp))
+		require.Equal(t, head.Time+deps.cfg.BlockTime, timeint.FromHexUint64MilliToMilli(x.Attributes.Attributes.Milliseconds))
 		require.Equal(t, eth.L1BlockRef{}, x.Attributes.DerivedFrom)
 		sentAttributes = x.Attributes
 	})

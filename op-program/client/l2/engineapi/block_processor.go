@@ -50,6 +50,7 @@ func NewBlockProcessorFromPayloadAttributes(provider BlockDataProvider, parent c
 		MixDigest:        common.Hash(attrs.PrevRandao),
 		Nonce:            types.EncodeNonce(0),
 		ParentBeaconRoot: attrs.ParentBeaconBlockRoot,
+		Millisecond:      uint64(attrs.Milliseconds),
 	}
 
 	// Ecotone

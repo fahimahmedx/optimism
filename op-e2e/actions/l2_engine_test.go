@@ -147,6 +147,7 @@ func TestL2EngineAPIBlockBuilding(gt *testing.T) {
 			NoTxPool:              false,
 			GasLimit:              (*eth.Uint64Quantity)(&sd.RollupCfg.Genesis.SystemConfig.GasLimit),
 			Withdrawals:           w,
+			Milliseconds:          eth.Uint64Quantity(nextBlockTime.ToUint64Milli()),
 		})
 		require.NoError(t, err)
 		require.Equal(t, fcRes.PayloadStatus.Status, eth.ExecutionValid)

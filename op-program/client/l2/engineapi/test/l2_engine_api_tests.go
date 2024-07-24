@@ -80,6 +80,7 @@ func RunEngineAPITests(t *testing.T, createBackend func(t *testing.T) engineapi.
 			NoTxPool:              true,
 			GasLimit:              &gasLimit,
 			Withdrawals:           w,
+			Milliseconds:          eth.Uint64Quantity(genesis.Milliseconds + 1*1000)
 		})
 		api.assert.Error(err)
 		api.assert.Equal(eth.ExecutionInvalid, result.PayloadStatus.Status)
@@ -203,6 +204,7 @@ func RunEngineAPITests(t *testing.T, createBackend func(t *testing.T) engineapi.
 			Transactions:          nil,
 			NoTxPool:              true,
 			GasLimit:              &gasLimit,
+			Milliseconds: eth.Uint64Quantity(genesis.Milliseconds),
 		})
 		api.assert.Error(err)
 		api.assert.Equal(eth.ExecutionInvalid, result.PayloadStatus.Status)
@@ -223,6 +225,7 @@ func RunEngineAPITests(t *testing.T, createBackend func(t *testing.T) engineapi.
 			Transactions:          nil,
 			NoTxPool:              true,
 			GasLimit:              &gasLimit,
+			Milliseconds: eth.Uint64Quantity(genesis.Milliseconds - 1000),
 		})
 		api.assert.Error(err)
 		api.assert.Equal(eth.ExecutionInvalid, result.PayloadStatus.Status)
@@ -245,6 +248,7 @@ func RunEngineAPITests(t *testing.T, createBackend func(t *testing.T) engineapi.
 			Transactions:          nil,
 			NoTxPool:              true,
 			GasLimit:              &gasLimit,
+			Milliseconds: eth.Uint64Quantity(genesis.Milliseconds + 1000),
 		})
 		api.assert.Error(err)
 		api.assert.Equal(eth.ExecutionInvalid, result.PayloadStatus.Status)
@@ -416,6 +420,7 @@ func (h *testHelper) startBlockBuilding(head *types.Header, newBlockTimestamp et
 		NoTxPool:              true,
 		GasLimit:              &gasLimit,
 		Withdrawals:           w,
+		Milliseconds:          newBlockTimestamp*1000,
 	})
 	h.assert.NoError(err)
 	h.assert.Equal(eth.ExecutionValid, result.PayloadStatus.Status)

@@ -26,6 +26,7 @@ var (
 	validGasLimit         = eth.Uint64Quantity(1000)
 	validWithdrawals      = types.Withdrawals{}
 	validFeeRecipient     = predeploys.SequencerFeeVaultAddr
+	validMilliseconds     = eth.Uint64Quantity(123 * 1000)
 )
 
 type args struct {
@@ -45,7 +46,7 @@ func ecotoneArgs() args {
 				GasLimit:     validGasLimit,
 				Withdrawals:  &validWithdrawals,
 				FeeRecipient: validFeeRecipient,
-				Milliseconds: validTimestamp * 1000,
+				Milliseconds: validMilliseconds,
 			},
 		},
 		attrs: &eth.PayloadAttributes{
@@ -55,6 +56,7 @@ func ecotoneArgs() args {
 			ParentBeaconBlockRoot: &validParentBeaconRoot,
 			Withdrawals:           &validWithdrawals,
 			SuggestedFeeRecipient: validFeeRecipient,
+			Milliseconds:          validMilliseconds,
 		},
 		parentHash: validParentHash,
 	}

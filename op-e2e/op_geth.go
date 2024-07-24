@@ -239,12 +239,13 @@ func (d *OpGeth) CreatePayloadAttributes(txs ...*types.Transaction) (*eth.Payloa
 	}
 
 	attrs := eth.PayloadAttributes{
-		Timestamp:             eth.Uint64Quantity(timestamp.ToUint64Sec()),
+		Timestamp:             eth.Uint64Quantity(timestamp.ToSeconds().ToUint64Sec()),
 		Transactions:          txBytes,
 		NoTxPool:              true,
 		GasLimit:              (*eth.Uint64Quantity)(&d.SystemConfig.GasLimit),
 		Withdrawals:           withdrawals,
 		ParentBeaconBlockRoot: parentBeaconBlockRoot,
+		Milliseconds:          eth.Uint64Quantity(timestamp.toUint64Milli()),
 	}
 	return &attrs, nil
 }

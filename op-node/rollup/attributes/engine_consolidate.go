@@ -26,6 +26,9 @@ func AttributesMatchBlock(rollupCfg *rollup.Config, attrs *eth.PayloadAttributes
 	if attrs.Timestamp != block.Timestamp {
 		return fmt.Errorf("timestamp field does not match. expected: %v. got: %v", uint64(attrs.Timestamp), block.Timestamp)
 	}
+	if attrs.Milliseconds != block.Milliseconds {
+		return fmt.Errorf("milliseconds field does not match. expected: %v. got: %v", uint64(attrs.Milliseconds), block.Milliseconds)
+	}
 	if attrs.PrevRandao != block.PrevRandao {
 		return fmt.Errorf("random field does not match. expected: %v. got: %v", attrs.PrevRandao, block.PrevRandao)
 	}
