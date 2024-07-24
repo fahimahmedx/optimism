@@ -59,7 +59,7 @@ func L2BlockToBlockRef(rollupCfg *rollup.Config, block L2BlockRefSource) (eth.L2
 		Hash:           hash,
 		Number:         number,
 		ParentHash:     block.ParentHash(),
-		Time:           timeint.FromUint64SecToMilli(block.Time()),
+		Time:           timeint.FromUint64MilliToMilli(block.Milliseconds()),
 		L1Origin:       l1Origin,
 		SequenceNumber: sequenceNumber,
 	}, nil
