@@ -151,7 +151,7 @@ func (s *EngineAPIClient) GetPayload(ctx context.Context, payloadInfo eth.Payloa
 	e := s.log.New("payload_id", payloadInfo.ID)
 	e.Trace("getting payload")
 	var result eth.ExecutionPayloadEnvelope
-	method := s.evp.GetPayloadVersion(payloadInfo.Timestamp.ToMilliseconds())
+	method := s.evp.GetPayloadVersion(payloadInfo.Timestamp)
 	err := s.RPC.CallContext(ctx, &result, string(method), payloadInfo.ID)
 	if err != nil {
 		e.Warn("Failed to get payload", "payload_id", payloadInfo.ID, "err", err)

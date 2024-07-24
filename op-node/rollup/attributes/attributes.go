@@ -86,7 +86,7 @@ func (eq *AttributesHandler) OnEvent(ev event.Event) bool {
 			return true // from sequencing
 		}
 		eq.log.Warn("Block sealing job of derived attributes expired, job will be re-attempted.",
-			"build_id", x.Info.ID, "timestamp", x.Info.Timestamp, "err", x.Err)
+			"build_id", x.Info.ID, "timestamp in milliseconds", x.Info.Timestamp, "err", x.Err)
 		// If the engine failed to seal temporarily, just allow to resubmit (triggered on next safe-head poke)
 		eq.sentAttributes = false
 	case engine.PayloadSealInvalidEvent:
@@ -94,7 +94,7 @@ func (eq *AttributesHandler) OnEvent(ev event.Event) bool {
 			return true // from sequencing
 		}
 		eq.log.Warn("Cannot seal derived block attributes, input is invalid",
-			"build_id", x.Info.ID, "timestamp", x.Info.Timestamp, "err", x.Err)
+			"build_id", x.Info.ID, "timestamp in milliseconds", x.Info.Timestamp, "err", x.Err)
 		eq.sentAttributes = false
 		eq.attributes = nil
 		eq.emitter.Emit(engine.PendingSafeRequestEvent{})

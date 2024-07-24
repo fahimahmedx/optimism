@@ -272,7 +272,7 @@ func TestSequencerBuild(t *testing.T) {
 	testClock.Set(startedTime)
 	payloadInfo := eth.PayloadInfo{
 		ID:        eth.PayloadID{0x42},
-		Timestamp: (head.Time + deps.cfg.BlockTime).ToSeconds(),
+		Timestamp: head.Time + deps.cfg.BlockTime,
 	}
 	seq.OnEvent(engine.BuildStartedEvent{
 		Info:         payloadInfo,

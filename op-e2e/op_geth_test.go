@@ -206,7 +206,7 @@ func TestGethOnlyPendingBlockIsLatest(t *testing.T) {
 	time.Sleep(time.Second * 4) // conservatively wait 4 seconds, CI might lag during block building.
 
 	// retrieve the block
-	envelope, err := opGeth.l2Engine.GetPayload(ctx, eth.PayloadInfo{ID: *res.PayloadID, Timestamp: timeint.FromHexUint64SecToSec(attrs.Timestamp)})
+	envelope, err := opGeth.l2Engine.GetPayload(ctx, eth.PayloadInfo{ID: *res.PayloadID, Timestamp: timeint.FromHexUint64MilliToMilli(attrs.Milliseconds)})
 	require.NoError(t, err)
 
 	payload := envelope.ExecutionPayload

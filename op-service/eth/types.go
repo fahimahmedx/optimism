@@ -165,7 +165,7 @@ type (
 	PayloadID   = engine.PayloadID
 	PayloadInfo struct {
 		ID        PayloadID
-		Timestamp timeint.Seconds
+		Timestamp timeint.Milliseconds
 	}
 )
 

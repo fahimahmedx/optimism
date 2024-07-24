@@ -197,14 +197,14 @@ func (d *Sequencer) onBuildStarted(x engine.BuildStartedEvent) {
 		// If we are adding new blocks onto the tip of the chain, derived from L1,
 		// then don't try to build on top of it immediately, as sequencer.
 		d.log.Warn("Detected new block-building from L1 derivation, avoiding sequencing for now.",
-			"build_job", x.Info.ID, "build_timestamp", x.Info.Timestamp,
+			"build_job", x.Info.ID, "build_timestamp (ms)", x.Info.Timestamp,
 			"parent", x.Parent, "derived_from", x.DerivedFrom)
 		d.nextActionOK = false
 		return
 	}
 	if d.latest.Onto != x.Parent {
 		d.log.Warn("Canceling stale block-building job that was just started, as target to build onto has changed",
-			"stale", x.Parent, "new", d.latest.Onto, "job_id", x.Info.ID, "job_timestamp", x.Info.Timestamp)
+			"stale", x.Parent, "new", d.latest.Onto, "job_id", x.Info.ID, "job_timestamp (ms)", x.Info.Timestamp)
 		d.emitter.Emit(engine.BuildCancelEvent{
 			Info:  x.Info,
 			Force: true,
@@ -290,7 +290,7 @@ func (d *Sequencer) onPayloadSealInvalid(x engine.PayloadSealInvalidEvent) {
 		return // not our payload, should be ignored.
 	}
 	d.log.Error("Sequencer could not seal block",
-		"payloadID", x.Info.ID, "timestamp", x.Info.Timestamp, "err", x.Err)
+		"payloadID", x.Info.ID, "timestamp (ms)", x.Info.Timestamp, "err", x.Err)
 	d.handleInvalid()
 }
 
@@ -299,7 +299,7 @@ func (d *Sequencer) onPayloadSealExpiredError(x engine.PayloadSealExpiredErrorEv
 		return // not our payload, should be ignored.
 	}
 	d.log.Error("Sequencer temporarily could not seal block",
-		"payloadID", x.Info.ID, "timestamp", x.Info.Timestamp, "err", x.Err)
+		"payloadID", x.Info.ID, "timestamp (ms)", x.Info.Timestamp, "err", x.Err)
 	// Restart building, this way we get a block we should be able to seal
 	// (smaller, since we adapt build time).
 	d.handleInvalid()

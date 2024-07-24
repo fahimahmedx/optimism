@@ -156,7 +156,7 @@ func BuildBlock(ctx context.Context, client *sources.EngineAPIClient, status *St
 	case <-time.After(settings.BuildTime):
 	}
 
-	payload, err := client.GetPayload(ctx, eth.PayloadInfo{ID: *pre.PayloadID, Timestamp: timestamp})
+	payload, err := client.GetPayload(ctx, eth.PayloadInfo{ID: *pre.PayloadID, Timestamp: timestamp.ToMilliseconds()})
 	if err != nil {
 		return nil, fmt.Errorf("failed to get payload %v, %d time after instructing engine to build it: %w", pre.PayloadID, settings.BuildTime, err)
 	}

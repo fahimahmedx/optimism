@@ -52,7 +52,7 @@ func (o *OracleEngine) L2OutputRoot(l2ClaimBlockNum uint64) (eth.Bytes32, error)
 func (o *OracleEngine) GetPayload(ctx context.Context, payloadInfo eth.PayloadInfo) (*eth.ExecutionPayloadEnvelope, error) {
 	var res *eth.ExecutionPayloadEnvelope
 	var err error
-	switch method := o.rollupCfg.GetPayloadVersion(payloadInfo.Timestamp.ToMilliseconds()); method {
+	switch method := o.rollupCfg.GetPayloadVersion(payloadInfo.Timestamp); method {
 	case eth.GetPayloadV3:
 		res, err = o.api.GetPayloadV3(ctx, payloadInfo.ID)
 	case eth.GetPayloadV2:
