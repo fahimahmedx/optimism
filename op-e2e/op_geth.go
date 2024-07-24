@@ -213,7 +213,7 @@ func (d *OpGeth) StartBlockBuilding(ctx context.Context, attrs *eth.PayloadAttri
 // CreatePayloadAttributes creates a valid PayloadAttributes containing a L1Info deposit transaction followed by the supplied transactions.
 func (d *OpGeth) CreatePayloadAttributes(txs ...*types.Transaction) (*eth.PayloadAttributes, error) {
 	timestamp := timeint.FromHexUint64MilliToMilli(d.L2Head.Milliseconds + 2*1000) // assumes two second blocktimes
-	l1Info, err := derive.L1InfoDepositBytes(d.l2Engine.RollupConfig(), d.SystemConfig, d.sequenceNum, d.L1Head, timestamp.ToMilliseconds())
+	l1Info, err := derive.L1InfoDepositBytes(d.l2Engine.RollupConfig(), d.SystemConfig, d.sequenceNum, d.L1Head, timestamp)
 	if err != nil {
 		return nil, err
 	}
@@ -245,7 +245,7 @@ func (d *OpGeth) CreatePayloadAttributes(txs ...*types.Transaction) (*eth.Payloa
 		GasLimit:              (*eth.Uint64Quantity)(&d.SystemConfig.GasLimit),
 		Withdrawals:           withdrawals,
 		ParentBeaconBlockRoot: parentBeaconBlockRoot,
-		Milliseconds:          eth.Uint64Quantity(timestamp.toUint64Milli()),
+		Milliseconds:          eth.Uint64Quantity(timestamp.ToUint64Milli()),
 	}
 	return &attrs, nil
 }

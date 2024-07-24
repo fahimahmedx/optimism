@@ -176,7 +176,7 @@ func newPayloadAttributes(evp sources.EngineVersionProvider, timestamp timeint.S
 		Timestamp:             hexutil.Uint64(timestamp.ToUint64Sec()),
 		PrevRandao:            eth.Bytes32(prevRandao),
 		SuggestedFeeRecipient: feeRecipient,
-		Milliseconds:          hexutil.Uint64(timestamp.ToUint64Milli()),
+		Milliseconds:          hexutil.Uint64(timestamp.ToMilliseconds().ToUint64Milli()),
 	}
 
 	ver := evp.ForkchoiceUpdatedVersion(pa)

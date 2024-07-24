@@ -69,6 +69,19 @@ func FromHexUint64SecToMilli(t hexutil.Uint64) Milliseconds {
 	return s
 }
 
+func FromUint64MilliToMilli(t uint64) Milliseconds {
+	return Milliseconds(t)
+}
+
+func FromHexUint64MilliToMilli(t hexutil.Uint64) Milliseconds {
+	return Milliseconds(t)
+}
+
 func (t Milliseconds) ToUint64Milli() uint64 {
 	return uint64(t)
+}
+
+// This function is not reccomended as it truncates the timestamp.
+func (t Milliseconds) ToUint64Sec() uint64 {
+	return uint64(t / 1000)
 }
