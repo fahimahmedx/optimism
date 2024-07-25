@@ -96,7 +96,7 @@ func (bq *BatchQueue) NextBatch(ctx context.Context, parent eth.L2BlockRef) (*Si
 	if len(bq.nextSpan) > 0 {
 		// There are cached singular batches derived from the span batch.
 		// Check if the next cached batch matches the given parent block.
-		if bq.nextSpan[0].Timestamp.ToMilliseconds() == parent.Time+bq.config.BlockTime {
+		if bq.nextSpan[0].Timestamp == parent.Time+bq.config.BlockTime {
 			// Pop first one and return.
 			nextBatch := bq.popNextBatch(parent)
 			// len(bq.nextSpan) == 0 means it's the last batch of the span.
@@ -327,7 +327,7 @@ batchLoop:
 			ParentHash:   parent.Hash,
 			EpochNum:     rollup.Epoch(epoch.Number),
 			EpochHash:    epoch.Hash,
-			Timestamp:    nextTimestamp.ToSeconds(),
+			Timestamp:    nextTimestamp,
 			Transactions: nil,
 		}, nil
 	}

@@ -251,7 +251,7 @@ func blockToBatch(rollupCfg *rollup.Config, block *types.Block) (*derive.BatchDa
 	if l1InfoTx.Type() != types.DepositTxType {
 		return nil, derive.ErrNotDepositTx
 	}
-	l1Info, err := derive.L1BlockInfoFromBytes(rollupCfg, timeint.FromUint64SecToMilli(block.Time()), l1InfoTx.Data())
+	l1Info, err := derive.L1BlockInfoFromBytes(rollupCfg, timeint.FromUint64MilliToMilli(block.Milliseconds()), l1InfoTx.Data())
 	if err != nil {
 		return nil, fmt.Errorf("could not parse the L1 Info deposit: %w", err)
 	}
@@ -260,7 +260,7 @@ func blockToBatch(rollupCfg *rollup.Config, block *types.Block) (*derive.BatchDa
 		ParentHash:   block.ParentHash(),
 		EpochNum:     rollup.Epoch(l1Info.Number),
 		EpochHash:    l1Info.BlockHash,
-		Timestamp:    timeint.FromUint64SecToSec(block.Time()),
+		Timestamp:    timeint.FromUint64MilliToMilli(block.Milliseconds()),
 		Transactions: opaqueTxs,
 	}
 

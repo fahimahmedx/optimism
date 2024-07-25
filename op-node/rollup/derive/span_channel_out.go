@@ -48,7 +48,7 @@ func (co *SpanChannelOut) setRandomID() error {
 	return err
 }
 
-func NewSpanChannelOut(genesisTimestamp timeint.Seconds, chainID *big.Int, targetOutputSize uint64, compressionAlgo CompressionAlgo) (*SpanChannelOut, error) {
+func NewSpanChannelOut(genesisTimestamp timeint.Milliseconds, chainID *big.Int, targetOutputSize uint64, compressionAlgo CompressionAlgo) (*SpanChannelOut, error) {
 	c := &SpanChannelOut{
 		id:        ChannelID{},
 		frame:     0,

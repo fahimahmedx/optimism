@@ -28,7 +28,7 @@ func RandomSingularBatch(rng *rand.Rand, txCount int, chainID *big.Int) *Singula
 		ParentHash:   testutils.RandomHash(rng),
 		EpochNum:     rollup.Epoch(1 + rng.Int63n(100_000_000)),
 		EpochHash:    testutils.RandomHash(rng),
-		Timestamp:    timeint.FromUint64SecToSec(uint64(rng.Int63n(2_000_000_000))),
+		Timestamp:    timeint.FromUint64MilliToMilli(uint64(rng.Int63n(2_000_000_000))),
 		Transactions: txsEncoded,
 	}
 }

@@ -24,7 +24,7 @@ type SingularBatch struct {
 	ParentHash   common.Hash  // parent L2 block hash
 	EpochNum     rollup.Epoch // aka l1 num
 	EpochHash    common.Hash  // l1 block hash
-	Timestamp    timeint.Seconds
+	Timestamp    timeint.Milliseconds
 	Transactions []hexutil.Bytes
 }
 
@@ -37,7 +37,7 @@ func (b *SingularBatch) GetBatchType() int {
 }
 
 // GetTimestamp returns its block timestamp
-func (b *SingularBatch) GetTimestamp() timeint.Seconds {
+func (b *SingularBatch) GetTimestamp() timeint.Milliseconds {
 	return b.Timestamp
 }
 

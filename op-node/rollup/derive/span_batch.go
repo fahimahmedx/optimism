@@ -33,10 +33,10 @@ var ErrTooBigSpanBatchSize = errors.New("span batch size limit reached")
 var ErrEmptySpanBatch = errors.New("span-batch must not be empty")
 
 type spanBatchPrefix struct {
-	relTimestamp  timeint.Seconds // Relative timestamp of the first block
-	l1OriginNum   uint64          // L1 origin number
-	parentCheck   [20]byte        // First 20 bytes of the first block's parent hash
-	l1OriginCheck [20]byte        // First 20 bytes of the last block's L1 origin hash
+	relTimestamp  timeint.Milliseconds // Relative timestamp of the first block
+	l1OriginNum   uint64               // L1 origin number
+	parentCheck   [20]byte             // First 20 bytes of the first block's parent hash
+	l1OriginCheck [20]byte             // First 20 bytes of the last block's L1 origin hash
 }
 
 type spanBatchPayload struct {
@@ -76,7 +76,7 @@ func (bp *spanBatchPrefix) decodeRelTimestamp(r *bytes.Reader) error {
 	if err != nil {
 		return fmt.Errorf("failed to read rel timestamp: %w", err)
 	}
-	bp.relTimestamp = timeint.FromUint64SecToSec(relTimestamp)
+	bp.relTimestamp = timeint.FromUint64SecToSec(relTimestamp) // is relTimestamp in seconds or milliseconds?
 	return nil
 }
 
@@ -341,7 +341,7 @@ func (b *RawSpanBatch) encode(w io.Writer) error {
 
 // derive converts RawSpanBatch into SpanBatch, which has a list of SpanBatchElement.
 // We need chain config constants to derive values for making payload attributes.
-func (b *RawSpanBatch) derive(blockTime, genesisTimestamp timeint.Seconds, chainID *big.Int) (*SpanBatch, error) {
+func (b *RawSpanBatch) derive(blockTime, genesisTimestamp timeint.Milliseconds, chainID *big.Int) (*SpanBatch, error) {
 	if b.blockCount == 0 {
 		return nil, ErrEmptySpanBatch
 	}
@@ -382,7 +382,7 @@ func (b *RawSpanBatch) derive(blockTime, genesisTimestamp timeint.Seconds, chain
 
 // ToSpanBatch converts RawSpanBatch to SpanBatch,
 // which implements a wrapper of derive method of RawSpanBatch
-func (b *RawSpanBatch) ToSpanBatch(blockTime, genesisTimestamp timeint.Seconds, chainID *big.Int) (*SpanBatch, error) {
+func (b *RawSpanBatch) ToSpanBatch(blockTime, genesisTimestamp timeint.Milliseconds, chainID *big.Int) (*SpanBatch, error) {
 	spanBatch, err := b.derive(blockTime, genesisTimestamp, chainID)
 	if err != nil {
 		return nil, err
@@ -395,7 +395,7 @@ func (b *RawSpanBatch) ToSpanBatch(blockTime, genesisTimestamp timeint.Seconds, 
 // because Span batch spec does not contain parent hash and epoch hash of every block in the span.
 type SpanBatchElement struct {
 	EpochNum     rollup.Epoch // aka l1 num
-	Timestamp    timeint.Seconds
+	Timestamp    timeint.Milliseconds
 	Transactions []hexutil.Bytes
 }
 
@@ -413,7 +413,7 @@ func singularBatchToElement(singularBatch *SingularBatch) *SpanBatchElement {
 type SpanBatch struct {
 	ParentCheck      [20]byte // First 20 bytes of the first block's parent hash
 	L1OriginCheck    [20]byte // First 20 bytes of the last block's L1 origin hash
-	GenesisTimestamp timeint.Seconds
+	GenesisTimestamp timeint.Milliseconds
 	ChainID          *big.Int
 	Batches          []*SpanBatchElement // List of block input in derived form
 
@@ -448,7 +448,7 @@ func (b *SpanBatch) GetBatchType() int {
 }
 
 // GetTimestamp returns timestamp of the first block in the span
-func (b *SpanBatch) GetTimestamp() timeint.Seconds {
+func (b *SpanBatch) GetTimestamp() timeint.Milliseconds {
 	return b.Batches[0].Timestamp
 }
 
@@ -498,7 +498,7 @@ func (b *SpanBatch) GetBlockEpochNum(i int) uint64 {
 }
 
 // GetBlockTimestamp returns the timestamp of the block at the given index in the span.
-func (b *SpanBatch) GetBlockTimestamp(i int) timeint.Seconds {
+func (b *SpanBatch) GetBlockTimestamp(i int) timeint.Milliseconds {
 	return b.Batches[i].Timestamp
 }
 
@@ -588,7 +588,7 @@ func (b *SpanBatch) GetSingularBatches(l1Origins []eth.L1BlockRef, l2SafeHead et
 	var singularBatches []*SingularBatch
 	originIdx := 0
 	for _, batch := range b.Batches {
-		if batch.Timestamp.ToMilliseconds() <= l2SafeHead.Time {
+		if batch.Timestamp <= l2SafeHead.Time {
 			continue
 		}
 		singularBatch := SingularBatch{
@@ -614,7 +614,7 @@ func (b *SpanBatch) GetSingularBatches(l1Origins []eth.L1BlockRef, l2SafeHead et
 }
 
 // NewSpanBatch converts given singularBatches into SpanBatchElements, and creates a new SpanBatch.
-func NewSpanBatch(genesisTimestamp timeint.Seconds, chainID *big.Int) *SpanBatch {
+func NewSpanBatch(genesisTimestamp timeint.Milliseconds, chainID *big.Int) *SpanBatch {
 	// newSpanBatchTxs can't fail with empty txs
 	sbtxs, _ := newSpanBatchTxs([][]byte{}, chainID)
 	return &SpanBatch{
@@ -626,7 +626,7 @@ func NewSpanBatch(genesisTimestamp timeint.Seconds, chainID *big.Int) *SpanBatch
 }
 
 // DeriveSpanBatch derives SpanBatch from BatchData.
-func DeriveSpanBatch(batchData *BatchData, blockTime, genesisTimestamp timeint.Seconds, chainID *big.Int) (*SpanBatch, error) {
+func DeriveSpanBatch(batchData *BatchData, blockTime, genesisTimestamp timeint.Milliseconds, chainID *big.Int) (*SpanBatch, error) {
 	rawSpanBatch, ok := batchData.inner.(*RawSpanBatch)
 	if !ok {
 		return nil, NewCriticalError(errors.New("failed type assertion to SpanBatch"))

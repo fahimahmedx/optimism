@@ -43,13 +43,13 @@ func (f *fakeBatchQueueInput) NextBatch(ctx context.Context) (Batch, error) {
 	return b, e
 }
 
-func mockHash(time timeint.Seconds, layer uint8) common.Hash {
+func mockHash(time timeint.Milliseconds, layer uint8) common.Hash {
 	hash := common.Hash{31: layer} // indicate L1 or L2
-	binary.LittleEndian.PutUint64(hash[:], time.ToUint64Sec())
+	binary.LittleEndian.PutUint64(hash[:], time.ToUint64Milli())
 	return hash
 }
 
-func b(chainId *big.Int, timestamp timeint.Seconds, epoch eth.L1BlockRef) *SingularBatch {
+func b(chainId *big.Int, timestamp timeint.Milliseconds, epoch eth.L1BlockRef) *SingularBatch {
 	rng := rand.New(rand.NewSource(int64(timestamp)))
 	signer := types.NewLondonSigner(chainId)
 	tx := testutils.RandomTx(rng, new(big.Int).SetUint64(rng.Uint64()), signer)
@@ -67,7 +67,7 @@ func buildSpanBatches(t *testing.T, parent *eth.L2BlockRef, singularBatches []*S
 	var spanBatches []Batch
 	idx := 0
 	for _, count := range blockCounts {
-		span := initializedSpanBatch(singularBatches[idx:idx+count], timeint.FromUint64SecToSec(0), chainId)
+		span := initializedSpanBatch(singularBatches[idx:idx+count], timeint.FromUint64SecToMilli(0), chainId)
 		spanBatches = append(spanBatches, span)
 		idx += count
 	}
@@ -107,7 +107,7 @@ func singularBatchToPayload(t *testing.T, batch *SingularBatch, blockNumber uint
 			BlockNumber:  hexutil.Uint64(blockNumber),
 			Timestamp:    hexutil.Uint64(batch.Timestamp),
 			Transactions: txs,
-			Milliseconds: hexutil.Uint64(batch.Timestamp.ToMilliseconds()),
+			Milliseconds: hexutil.Uint64(batch.Timestamp),
 		},
 	}
 }
@@ -117,7 +117,7 @@ func singularBatchToBlockRef(t *testing.T, batch *SingularBatch, blockNumber uin
 		Hash:       mockHash(batch.Timestamp, 2),
 		Number:     blockNumber,
 		ParentHash: batch.ParentHash,
-		Time:       batch.Timestamp.ToMilliseconds(),
+		Time:       batch.Timestamp,
 		L1Origin:   eth.BlockID{Hash: batch.EpochHash, Number: uint64(batch.EpochNum)},
 	}
 }
@@ -126,7 +126,7 @@ func L1Chain(l1Times []timeint.Seconds) []eth.L1BlockRef {
 	var out []eth.L1BlockRef
 	var parentHash common.Hash
 	for i, time := range l1Times {
-		hash := mockHash(time, 1)
+		hash := mockHash(time.ToMilliseconds(), 1)
 		out = append(out, eth.L1BlockRef{
 			Hash:       hash,
 			Number:     uint64(i),
@@ -398,7 +398,7 @@ func BatchQueueInvalidInternalAdvance(t *testing.T, batchType int) {
 	b, _, e = bq.NextBatch(context.Background(), safeHead)
 	require.Nil(t, e)
 	require.NotNil(t, b)
-	require.Equal(t, safeHead.Time+timeint.FromUint64SecToMilli(2), b.Timestamp.ToMilliseconds())
+	require.Equal(t, safeHead.Time+timeint.FromUint64SecToMilli(2), b.Timestamp)
 	require.Equal(t, rollup.Epoch(1), b.EpochNum)
 	safeHead.Number += 1
 	safeHead.Time += timeint.FromUint64SecToMilli(2)
@@ -414,7 +414,7 @@ func BatchQueueInvalidInternalAdvance(t *testing.T, batchType int) {
 	require.Nil(t, e)
 	require.NotNil(t, b)
 	require.Equal(t, rollup.Epoch(2), b.EpochNum)
-	require.Equal(t, safeHead.Time+timeint.FromUint64SecToMilli(2), b.Timestamp.ToMilliseconds())
+	require.Equal(t, safeHead.Time+timeint.FromUint64SecToMilli(2), b.Timestamp)
 	safeHead.Number += 1
 	safeHead.Time += timeint.FromUint64SecToMilli(2)
 	safeHead.Hash = mockHash(b.Timestamp, 2)
@@ -769,7 +769,7 @@ func TestBatchQueueOverlappingSpanBatch(t *testing.T) {
 	var inputBatches []Batch
 	batchSize := 3
 	for i := 0; i < len(expectedOutputBatches)-batchSize; i++ {
-		inputBatches = append(inputBatches, initializedSpanBatch(expectedOutputBatches[i:i+batchSize], timeint.FromUint64SecToSec(0), chainId))
+		inputBatches = append(inputBatches, initializedSpanBatch(expectedOutputBatches[i:i+batchSize], timeint.FromUint64SecToMilli(0), chainId))
 	}
 	inputBatches = append(inputBatches, nil)
 	// inputBatches:
@@ -874,12 +874,12 @@ func TestBatchQueueComplex(t *testing.T) {
 	inputErrors := []error{nil, nil, nil, nil, nil, nil, io.EOF}
 	// batches will be returned by fakeBatchQueueInput
 	inputBatches := []Batch{
-		initializedSpanBatch(expectedOutputBatches[0:2], timeint.FromUint64SecToSec(0), chainId), // [6, 8] - no overlap
+		initializedSpanBatch(expectedOutputBatches[0:2], timeint.FromUint64SecToMilli(0), chainId), // [6, 8] - no overlap
 		expectedOutputBatches[2], // [10] - no overlap
-		initializedSpanBatch(expectedOutputBatches[1:4], timeint.FromUint64SecToSec(0), chainId), // [8, 10, 12] - overlapped blocks: 8 or 8, 10
+		initializedSpanBatch(expectedOutputBatches[1:4], timeint.FromUint64SecToMilli(0), chainId), // [8, 10, 12] - overlapped blocks: 8 or 8, 10
 		expectedOutputBatches[4], // [14] - no overlap
-		initializedSpanBatch(expectedOutputBatches[4:6], timeint.FromUint64SecToSec(0), chainId), // [14, 16] - overlapped blocks: nothing or 14
-		initializedSpanBatch(expectedOutputBatches[6:9], timeint.FromUint64SecToSec(0), chainId), // [18, 20, 22] - no overlap
+		initializedSpanBatch(expectedOutputBatches[4:6], timeint.FromUint64SecToMilli(0), chainId), // [14, 16] - overlapped blocks: nothing or 14
+		initializedSpanBatch(expectedOutputBatches[6:9], timeint.FromUint64SecToMilli(0), chainId), // [18, 20, 22] - no overlap
 	}
 
 	// Shuffle the order of input batches
@@ -981,7 +981,7 @@ func TestBatchQueueResetSpan(t *testing.T) {
 	}
 
 	input := &fakeBatchQueueInput{
-		batches: []Batch{initializedSpanBatch(singularBatches, timeint.FromUint64SecToSec(0), chainId)},
+		batches: []Batch{initializedSpanBatch(singularBatches, timeint.FromUint64SecToMilli(0), chainId)},
 		errors:  []error{nil},
 		origin:  l1[2],
 	}

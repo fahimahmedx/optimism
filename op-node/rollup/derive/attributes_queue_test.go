@@ -47,7 +47,7 @@ func TestAttributesQueue(t *testing.T) {
 		ParentHash:   safeHead.Hash,
 		EpochNum:     rollup.Epoch(l1Info.InfoNum),
 		EpochHash:    l1Info.InfoHash,
-		Timestamp:    (safeHead.Time + cfg.BlockTime).ToSeconds(),
+		Timestamp:    safeHead.Time + cfg.BlockTime,
 		Transactions: []eth.Data{eth.Data("foobar"), eth.Data("example")},
 	}
 

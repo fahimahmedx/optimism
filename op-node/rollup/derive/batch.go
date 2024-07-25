@@ -36,7 +36,7 @@ const (
 // Derivation pipeline decodes Batch from Channel, and converts to one or multiple payload attributes.
 type Batch interface {
 	GetBatchType() int
-	GetTimestamp() timeint.Seconds
+	GetTimestamp() timeint.Milliseconds
 	LogContext(log.Logger) log.Logger
 	AsSingularBatch() (*SingularBatch, bool)
 	AsSpanBatch() (*SpanBatch, bool)
