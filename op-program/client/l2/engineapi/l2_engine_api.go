@@ -85,7 +85,7 @@ func computePayloadId(headBlockHash common.Hash, attrs *eth.PayloadAttributes) e
 	// Hash
 	hasher := sha256.New()
 	hasher.Write(headBlockHash[:])
-	_ = binary.Write(hasher, binary.BigEndian, attrs.Timestamp)
+	_ = binary.Write(hasher, binary.BigEndian, attrs.Milliseconds)
 	hasher.Write(attrs.PrevRandao[:])
 	hasher.Write(attrs.SuggestedFeeRecipient[:])
 	_ = binary.Write(hasher, binary.BigEndian, attrs.NoTxPool)
