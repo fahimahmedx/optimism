@@ -22,6 +22,7 @@ type L2BlockRefSource interface {
 	NumberU64() uint64
 	Time() uint64
 	Transactions() types.Transactions
+	Milliseconds() uint64
 }
 
 // L2BlockToBlockRef extracts the essential L2BlockRef information from an L2
@@ -47,7 +48,7 @@ func L2BlockToBlockRef(rollupCfg *rollup.Config, block L2BlockRefSource) (eth.L2
 		if tx.Type() != types.DepositTxType {
 			return eth.L2BlockRef{}, fmt.Errorf("first payload tx has unexpected tx type: %d", tx.Type())
 		}
-		info, err := L1BlockInfoFromBytes(rollupCfg, timeint.FromUint64SecToMilli(block.Time()), tx.Data())
+		info, err := L1BlockInfoFromBytes(rollupCfg, timeint.FromUint64MilliToMilli(block.Milliseconds()), tx.Data())
 		if err != nil {
 			return eth.L2BlockRef{}, fmt.Errorf("failed to parse L1 info deposit tx from L2 block: %w", err)
 		}
