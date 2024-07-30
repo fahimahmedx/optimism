@@ -128,6 +128,7 @@ func TestBlockToExecutionPayloadIncludesEcotoneProperties(t *testing.T) {
 		Hash:             hdr.Hash(),
 		BlobGasUsed:      (*hexutil.Uint64)(hdr.BlobGasUsed),
 		ExcessBlobGas:    (*hexutil.Uint64)(hdr.ExcessBlobGas),
+		Milliseconds:     hexutil.Uint64(hdr.Milliseconds),
 	}
 
 	block := RPCBlock{

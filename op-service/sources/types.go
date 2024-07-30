@@ -133,6 +133,8 @@ type RPCHeader struct {
 
 	// untrusted info included by RPC, may have to be checked
 	Hash common.Hash `json:"hash"`
+
+	Milliseconds hexutil.Uint64 `json:"milliseconds"`
 }
 
 // checkPostMerge checks that the block header meets all criteria to be a valid ExecutionPayloadHeader,
@@ -186,6 +188,7 @@ func (hdr *RPCHeader) createGethHeader() *types.Header {
 		BlobGasUsed:      (*uint64)(hdr.BlobGasUsed),
 		ExcessBlobGas:    (*uint64)(hdr.ExcessBlobGas),
 		ParentBeaconRoot: hdr.ParentBeaconRoot,
+		Milliseconds:     uint64(hdr.Milliseconds),
 	}
 }
 
