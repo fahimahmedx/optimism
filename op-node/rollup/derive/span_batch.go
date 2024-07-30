@@ -76,7 +76,7 @@ func (bp *spanBatchPrefix) decodeRelTimestamp(r *bytes.Reader) error {
 	if err != nil {
 		return fmt.Errorf("failed to read rel timestamp: %w", err)
 	}
-	bp.relTimestamp = timeint.FromUint64SecToSec(relTimestamp) // is relTimestamp in seconds or milliseconds?
+	bp.relTimestamp = timeint.FromUint64MilliToMilli(relTimestamp)
 	return nil
 }
 
